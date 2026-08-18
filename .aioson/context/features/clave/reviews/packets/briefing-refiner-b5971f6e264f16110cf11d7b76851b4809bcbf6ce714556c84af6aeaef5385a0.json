@@ -1,0 +1,38 @@
+{
+  "packet_id": "sha256:b5971f6e264f16110cf11d7b76851b4809bcbf6ce714556c84af6aeaef5385a0",
+  "schema_version": "review-packet/v1",
+  "feature_slug": "clave",
+  "agent": "briefing-refiner",
+  "profile": "framing",
+  "review_mode": "independent_review",
+  "artifact": {
+    "path": ".aioson/briefings/clave/briefings.md",
+    "sha256": "05da4b6c4d85a2b37ec4b5ee1b8d2ac5ad85fad43819ae71fb3dd83e37a4acd7",
+    "bytes": 18346
+  },
+  "authorities": [
+    {
+      "kind": "project-context",
+      "path": ".aioson/context/project.context.md",
+      "sha256": "ad70fd4d470269f156c8936bf0df0def5e5f44b2f3e92d959e122981abc57164",
+      "bytes": 1003
+    },
+    {
+      "kind": "prd",
+      "path": ".aioson/context/prd-clave.md",
+      "sha256": "793682695b955f7ff6ea69cfb9e06cefb84439ce380a159ebb128da78c71dcc9",
+      "bytes": 47513
+    }
+  ],
+  "reference_path": ".aioson/skills/process/review-intelligence/references/framing.md",
+  "challenge_lenses": [
+    "problem",
+    "user-value",
+    "scope",
+    "assumptions",
+    "future-state",
+    "ownership"
+  ],
+  "max_passes": 2,
+  "prepared_at": "2026-08-18T05:06:37.082Z"
+}

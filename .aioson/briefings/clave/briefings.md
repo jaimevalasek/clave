@@ -1,0 +1,129 @@
+---
+slug: clave
+created_at: 2026-08-15
+updated_at: 2026-08-15
+source_plans: [plans/CLAVE.md]
+---
+
+# Briefing — Clave
+
+## Context
+
+- Produto novo, sem código ainda (`framework_installed: false`). Fonte única e madura: pesquisa do próprio usuário em `plans/CLAVE.md`, com tese, modos, diferenciais, modelo de dados, design system, stack e fases já elaborados.
+- O app roda **dentro do AIOSON Play** (runtime Node + webview), não como servidor standalone. Isso impõe contrato próprio: porta via `process.env.PORT`/`BACKEND_PORT`, `manifest.json` como fonte de verdade, e a arquitetura proposta (front Vite + `servidor/` Node) caracteriza **split-stack**.
+- Nome confirmado nesta sessão: **Clave** (o usuário digitou "Crave" na ativação; confirmou Clave, preservando o trocadilho musical pauta/clave que a fonte define como arquitetura do produto).
+- Usuário-alvo primário: o próprio criador de lives (dogfooding), o que torna várias incertezas testáveis em uso real.
+
+## Problem
+
+Quando um criador conduz uma live — formato improvisado e reativo ao chat — ele quer um roteiro que modele o caminho sugerido **e os desvios possíveis**, para sustentar energia e retenção sem perder o fio da meada.
+
+As ferramentas de rundown existentes (Cuez, Rundown Studio, Sofie, vMix — levantamento do autor, não verificado nesta sessão) herdam o formato da TV: lista linear com coluna de tempo. Elas não modelam o que de fato acontece numa live:
+
+- O **vale de energia** só aparece quando já está acontecendo ao vivo — não há como "ver o tédio" antes de entrar no ar.
+- Quando o chat morre ou o assunto desvia, não existe plano B estruturado à mão; o improviso vira deriva.
+- A mídia da live (vídeos, links, snippets) vive espalhada fora da pauta.
+- A pós-produção (capítulos do YouTube, cortes/Shorts) é retrabalho manual depois de cada live.
+
+## Proposed solution
+
+Solução **fixada pelo autor da pesquisa** (SRC-001): "pauta viva" em três modos, com a pauta musical de 5 linhas como interface e o Palco renderizado na tela capturada pelo OBS (o público vê a pauta acontecendo — cenografia, não UI de ferramenta).
+
+| Modo | Job | Referência |
+|---|---|---|
+| **Bancada** | Compor antes (canvas de 5 pistas, drag & drop) | DAW / Ableton Live |
+| **Palco** | Conduzir ao vivo na tela do OBS (camadas pública/privada, atalhos) | Now Playing / mission control |
+| **Acervo** | Reciclar blocos que funcionaram | biblioteca de samples |
+
+Quatro diferenciais que a fonte marca como inegociáveis (cortar qualquer um vira commodity): **curva de energia** com detecção de vale, **cartas de resgate** fora do trilho, **blocos vivos** com anexos acionáveis, e **gravação do trajeto real** com marcadores prontos para capítulos/cortes.
+
+Stack fixada: React + Vite + TypeScript, Zustand, dnd-kit, SQLite via better-sqlite3, mídia em pasta local, sem `localStorage`, sem Electron (o Play é o runtime). Entrega em 7 fases (Bancada → Curva → Palco → Anexos → Trajeto → Acervo → Copiloto AIOSON).
+
+**Alternativas consideradas** (breadth dispensada — solução completa fixada pelo usuário): rundown linear/planilha rejeitado pela tese central; teleprompter privado rejeitado ("o Palco é cenário, não teleprompter"); app standalone/Electron rejeitado (o Play gerencia o processo). As variações remanescentes são as decisões abertas da própria fonte (§8), preservadas em `## Open questions`.
+
+## Themes
+
+1. **Bancada — composição** (fase 1): modelo de dados, store, 5 pistas, CRUD de bloco, drag para reordenar, persistência SQLite.
+2. **Curva de energia** (fase 2): cálculo, SVG suavizado, detecção de vale, aviso.
+3. **Palco — condução** (fase 3): layout de cenografia, mini-pauta, cronômetro duplo, atalhos, camada privada, deck de resgate com retorno ao trilho.
+4. **Anexos e mídia** (fase 4): upload para pasta local, tipos, abertura no Palco.
+5. **Trajeto e relatório** (fase 5): gravação da execução, planejado × tocado, marcadores YouTube, marcação de cortes.
+6. **Acervo — reciclagem** (fase 6): promover bloco, contadores de uso e recência, trazer cópia.
+7. **Copiloto AIOSON** (fase 7, diferida): sugestões de resgate, variações, esqueleto da próxima live.
+8. **Integração AIOSON Play** (transversal): manifest split-stack, portas via env, `GET /api/aioson-play`, preview.
+9. **Identidade visual e cenografia** (transversal): design system da fonte §5; autoridade visual ainda sem protótipo owned.
+
+## Risks
+
+- **Valor / tese central:** o Palco-na-tela-capturada não foi validado com o fluxo real de live. A decisão 1 do round 1 (comportamento por anexo via `telaCheia`) é **provisória por escolha do autor**: o protótipo do Palco é o checkpoint nomeado para confirmá-la, demonstrando vídeo local e vídeo por URL web/YouTube.
+- **Usabilidade / vazamento ao vivo — mitigado (round 1):** a salvaguarda hold-to-show (notas privadas só enquanto `N` está pressionada) elimina o vazamento por esquecimento; risco residual baixo (pressionar `N` deliberadamente com a tela capturada continua expondo o conteúdo — comportamento intencional).
+- **Cenografia sob compressão — risco reduzido (round 3):** pesquisa confirma que temas escuros com cores saturadas (o caso do DNA Tinta & Ouro adotado) sobrevivem melhor à compressão do YouTube que tons pastéis, com piso prático de ~20px para informação (`researchs/clave-cenografia-e-marcadores/summary.md`). A validação com OBS real segue necessária (questão 11).
+- **Viabilidade técnica — spike decidido (round 1):** primeiro item da fase 1 é o spike do `better-sqlite3` no runtime real do Play (dev-link): instalar, abrir e gravar um banco. Fallback documentado: `node:sqlite` (Node 22+) ou sql.js/WASM, mantendo a API de `servidor/db.ts` estável para troca barata. Vídeo em tela cheia enquanto o OBS captura pode custar frames — verificável na fase 4.
+- **Escopo:** 7 fases descrevem um produto inteiro; a pressão natural será cortar diferenciais — exatamente o que a fonte proíbe. O faseamento proposto já mitiga (cada fase fecha algo usável).
+- **Diferenciação — claim verificado (round 3):** a pesquisa sustentou o claim da fonte — nenhum concorrente instrumenta curva de energia ou deck de desvio (`researchs/clave-rundown-concorrentes/summary.md`). Risco residual: o Cuez desce do broadcast com agentes de IA; a defesa do Clave é o nicho criador solo, desconectado, local-first.
+
+## Identified gaps
+
+Lente de completude aplicada só onde material. As lacunas decididas no round 1 (2026-08-15) trazem a decisão registrada; as demais seguem para o PRD:
+
+- **Gestão de pautas — decidido (round 1):** lista mínima + reabrir última. Tela inicial lista pautas (criar, renomear, abrir, apagar, duplicar); o app reabre na última pauta usada; empty state guia a criação da primeira. Regra `crud-surface-integrity` se aplica (paridade criar/editar, identidade de linha pelo ID persistido).
+- **Gestão do Acervo — aberto:** só "clicar traz cópia" está descrito; editar/remover/arquivar item do acervo será detalhado no PRD (fase 6).
+- **Ciclo de vida da execução — decidido (round 1):** ao reabrir o app com `Execucao` sem `fim`, perguntar: retomar (continua no bloco onde parou) ou encerrar retroativamente (`fim` = último passo registrado). Nunca fechar silenciosamente nem descartar o trajeto.
+- **Edição durante o Palco — aberto (questão 8):** editar blocos ao vivo e o reflexo no trilho, na curva e no trajeto gravado seguem sem definição.
+- **Anexo com caminho quebrado — decidido (round 1):** checagem de anexos ao "entrar no ar" (badge de erro no bloco com anexo quebrado, antes de ficar ao vivo) e estado de erro explícito no Palco se a mídia falhar ao abrir — nunca falha silenciosa (brain vq-007). Anexos de vídeo podem ser arquivo local ou URL web/YouTube: a checagem pré-live verifica existência dos arquivos locais; anexos por URL dependem de rede e exibem o estado de erro se falharem ao abrir.
+- **Exportação de marcadores — decidido (round 1):** exportação gera texto no formato de capítulos do YouTube (uma linha por capítulo `MM:SS Título`, primeira linha obrigatoriamente `00:00`) com botão copiar e download `.txt`; trechos marcados para cortes exportam lista separada com timestamps de início/fim.
+- **Validação de domínio — decidido (round 1):** `titulo`, `energia` e `duracao` obrigatórios no domínio (não só no formulário), com valores iniciais sugeridos no formulário de criação; a invariante `resgate ⇒ ordem null` é validada no domínio e a troca de tipo recalcula a sequência (regra `crud-surface-integrity`).
+- **Contrato Play — decidido (round 1):** `manifest.json` split-stack completo (`processes` com `port_env`, `webview_target`, `has_api: true` ⇒ `GET /api/aioson-play` real) e leitura de portas exclusivamente via `process.env.PORT`/`BACKEND_PORT` entram como critérios da fase 1; sem `aioson-auth`/login (confirma a questão 12).
+- **Autoridade visual — resolvido (round 3):** `identity.md` do briefing extraído por referência do **AIOSON Design-DNA v1 "Tinta & Ouro"** (`aioson-ecosystem-identity/runs/variant-d/design-dna`, variante selecionada; o `identity.md` da raiz da exploração estava desatualizado e foi descartado), consumido pela skill `interface-design`; protótipo owned reconstruído sobre o DNA (`prototype.html` + `prototype-manifest.md`, status draft) com verificação de identidade e visual OK.
+- **Acessibilidade:** condução por atalhos sem alternativa apontada; dnd-kit dá base de a11y na Bancada; `prefers-reduced-motion` já previsto na fonte.
+
+## Sources
+
+Fonte primária: pesquisa do usuário `plans/CLAVE.md` (lida integralmente). Pesquisa web do round 3 (4 consultas, 2026-08-15) persistida em `researchs/clave-rundown-concorrentes/summary.md` e `researchs/clave-cenografia-e-marcadores/summary.md`. Autoridade visual por referência: `.aioson/briefings/clave/identity.md`, extraído do AIOSON Design-DNA v1 "Tinta & Ouro" (`aioson-com/.aioson/explorations/aioson-ecosystem-identity/runs/variant-d/design-dna`, variante selecionada; o `identity.md` da raiz da exploração foi verificado como desatualizado e descartado).
+
+### Source Inventory
+
+| Source | Path | Type | Role | Usage | Fingerprint | Purpose |
+|---|---|---|---|---|---|---|
+| SRC-001 | plans/CLAVE.md | documentation | fonte primária | consulted | sha256:87e5fc4d4ec83347a95c79a0d7f0f8cb6b883e52105e75b28ad4f3a82918e24e | Pesquisa completa: tese, três modos, quatro diferenciais, modelo de dados, design system, stack/arquitetura, 7 fases, 5 decisões abertas, vocabulário canônico |
+
+> Nota: arquivo solto em `plans/` (não é pack de diretório); `briefing:sources --json` não emite fingerprint para arquivos soltos, então o sha256 acima foi computado localmente (`sha256sum`) na data deste briefing.
+
+### Source Promise Map
+
+| Promise | Source | Locator | Approved intent | State |
+|---|---|---|---|---|
+| PROM-001 | SRC-001 | §2.1 Bancada | Canvas horizontal de 5 pistas; ordem esquerda→direita = ordem da live; pista Resgate tracejada fora do trilho; arrastar para reordenar, gaveta lateral de edição, `+` por pista | required |
+| PROM-002 | SRC-001 | §1.2 + §2.2 Palco | Palco na tela capturada pelo OBS com duas camadas (pública/privada; privada nunca renderiza por padrão), layout barra superior/centro/lateral/rodapé, tipografia gigante | required |
+| PROM-003 | SRC-001 | §3.1 Curva de energia | Energia 1–5 por bloco, onda da live inteira, detecção de vale (2 fracos seguidos) sinalizada em coral com soma de minutos e sugestão de resgate | required |
+| PROM-004 | SRC-001 | §3.2 + §2.2 | Cartas de resgate fora do trilho, deck sempre à mão no Palco, `R` saca aleatório, sair do resgate volta automaticamente ao ponto do trilho | required |
+| PROM-005 | SRC-001 | §3.3 Blocos vivos | Bloco carrega anexos (vídeo, imagem, link, código, chat, arquivo) com abrir/copiar direto no Palco | required |
+| PROM-006 | SRC-001 | §3.4 + §7 fase 5 | Gravação do trajeto real, comparativo planejado × tocado, timestamps prontos para capítulos do YouTube, marcação de trechos para cortes/Shorts | required |
+| PROM-007 | SRC-001 | §2.3 + §7 fase 6 | Acervo em grade com contador de uso e recência ("há quantos dias não vai ao ar"), clicar traz cópia para a pauta de hoje | required |
+| PROM-008 | SRC-001 | §7 fase 7 | Copiloto AIOSON: sugere resgate pelo ritmo, gera variações, monta esqueleto da próxima live | deferred |
+| PROM-009 | SRC-001 | §5 Design system | Paleta tinta/giz (nunca preto puro), cor codifica tipo de bloco em todas as superfícies, Archivo 900 / Sora / JetBrains Mono, coreografia única de entrada (35ms/palavra) + transições 150ms, `prefers-reduced-motion` | required |
+| PROM-010 | SRC-001 | §6 Stack | React+Vite+TS, Zustand, dnd-kit, better-sqlite3 síncrono, mídia em pasta local com path relativo no banco, **sem** `localStorage`, sem Electron (módulo do Play) | required |
+| PROM-011 | SRC-001 | §9 Vocabulário | Vocabulário canônico (Pauta, Bloco, Pista, Trilho, Resgate, Deck, Entrar no ar, Trajeto, Marcadores, Acervo) consistente em código, UI e conversa; proibido "slide/apresentação/item/task" | required |
+| PROM-012 | SRC-001 | §4 Regra invariante | `tipo === 'resgate'` ⇒ `ordem === null`; trocar tipo de/para resgate recalcula a sequência | required |
+| PROM-013 | SRC-001 | §2.2 Atalhos | `espaço`/`→` avança, `←` volta, `R` resgate aleatório, `N` alterna notas privadas | required |
+| PROM-014 | SRC-001 | §7 Fases | Ordem de entrega 1→7 (Bancada, Curva, Palco, Anexos, Trajeto, Acervo, Copiloto) como roadmap | required |
+
+> Nota (round 3): o sistema visual do PROM-009 (paleta tinta/giz azul, Archivo/Sora) foi **substituído por decisão do usuário (2026-08-15)** pelo AIOSON Design-DNA v1 via `identity.md` do briefing. Permanecem vigentes do PROM-009: cor codifica tipo de bloco (mapa tipo→metal), coreografia única de entrada (35 ms/palavra), timecode em mono e `prefers-reduced-motion`. Nenhuma outra promessa é afetada; nenhuma promessa foi descartada.
+
+## Open questions
+
+**Decisões do round 1** (review de 2026-08-15) e do **round 3** (sessão de 2026-08-15, pesquisa + direção do usuário) estão marcadas com ✔; a numeração original é preservada para manter as referências cruzadas do briefing.
+
+1. [decision-required] ✔ **Resolvida (round 1, provisória):** anexo de vídeo no Palco se comporta **por anexo, via `telaCheia`** — mídia marcada toma a tela capturada; desmarcada abre só para o apresentador. Nota do autor: o vídeo pode ser arquivo local **ou** URL da web/YouTube (o modelo §4 já prevê `caminho: path no disco ou URL`), e a confirmação final fica para o protótipo do Palco, que deve demonstrar os dois comportamentos.
+2. [decision-required] ✔ **Resolvida (round 1):** salvaguarda das notas privadas é **hold-to-show** — a camada privada só aparece enquanto `N` está pressionada; soltar esconde imediatamente; nunca existe estado persistente "notas visíveis".
+3. [decision-required] ✔ **Resolvida (round 1):** segunda tela no celular fica **fora do v1** (consequência da decisão 2; pode voltar em fase futura sem dívida).
+4. [decision-required] ✔ **Resolvida (round 1):** convidado remoto fica **fora do v1**.
+5. [decision-required] ✔ **Resolvida (round 1):** sem integração de chat — o app nasce **deliberadamente desconectado** no v1.
+6. [testable] Múltiplos trilhos ramificados são necessários, ou trilho único + resgates cobre o caso real? Testável nas primeiras lives reais do próprio autor. (fonte §8.5)
+7. [decision-required] ✔ **Resolvida (round 1) para pautas:** gestão de pautas no v1 é **lista mínima + reabrir última** — tela inicial lista pautas (criar, renomear, abrir, apagar, duplicar), o app reabre na última pauta usada, empty state guia a criação da primeira. Gestão do Acervo (editar/remover/arquivar item) permanece aberta para o PRD da fase 6.
+8. [decision-required] Edição de blocos durante execução ao vivo: permitida? Com que reflexo no trajeto gravado?
+9. [decision-required] ✔ **Resolvida (round 1; substituída no round 3 por decisão do usuário):** a autoridade visual é o **AIOSON Design-DNA v1 "Tinta & Ouro"** por referência — `identity.md` do briefing extraído de `aioson-ecosystem-identity/runs/variant-d/design-dna` (variante selecionada, 2026-08-11/12) e consumido pela skill `interface-design`. O `identity.md` da raiz da exploração (2026-08-09, identidade azul anterior) foi verificado como desatualizado e descartado. Do design system §5 da fonte sobrevivem: cor codifica tipo (mapa tipo→metal: tema→cobre, mídia→nióbio, interação→granada, convidado→prata, resgate→patina; ouro reservado a marca/gate), coreografia de entrada palavra-a-palavra (35 ms), timecode em mono e `prefers-reduced-motion`.
+10. [research-able] ✔ **Resolvida (round 3, pesquisa):** o claim competitivo se sustenta — Cuez é automação broadcast/newsroom (NRCS, agentes de IA em control room), Rundown Studio é rundown linear cronometrado, e o mais próximo (Storyflow) tem apenas "backup plans" estáticos; nenhum instrumenta curva de energia ou deck de desvio acionável. Evidência: `researchs/clave-rundown-concorrentes/summary.md`.
+11. [testable] Legibilidade da cenografia sob compressão real do YouTube — validar com protótipo dentro do OBS. Risco reduzido por pesquisa (round 3): cores saturadas sobre fundo escuro comprimem melhor que tons pastéis; piso prático de ~20px para informação (`researchs/clave-cenografia-e-marcadores/summary.md`).
+12. [decision-required] ✔ **Resolvida (round 1):** sem login/aioson-auth — uso local single-user, sem `requires_services`, refletido no manifest.
+13. [decision-required] **Nova (round 3, da pesquisa — não é escopo aprovado):** "marcadores inteligentes" — as regras de qualidade de capítulos do YouTube são determinísticas (ideal 90s–4min; 5min anula; 00:00 obrigatório) e a Bancada já conhece as durações previstas; o Clave pode avaliar a qualidade dos capítulos antes da live e sugerir fusões na exportação. O Product decide se entra na fase 5. Evidência: `researchs/clave-cenografia-e-marcadores/summary.md`.

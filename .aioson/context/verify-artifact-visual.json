@@ -1,0 +1,74 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "visual",
+  "slug": "clave",
+  "root": "C:\\dev\\playapps\\aioson-crave-2",
+  "mode": "advisory",
+  "ok": true,
+  "blocking": false,
+  "issues": [],
+  "warnings": [
+    "token adherence 37% (157 tokenized vs 263 literal values) — hardcoded colors and sizes are how a design system drifts",
+    "79 spacing values off the 4px grid (padding: 1px, padding: 7px, padding: 2px, margin-bottom: 10px, …) — systemless rhythm is the most visible amateur tell",
+    "management surface with no widget/KPI/chart markers — a management home opens with decision-driving widgets (management-home-widgets rule)"
+  ],
+  "checks": [
+    {
+      "id": "visual",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "metrics": {
+    "declarations": 1197,
+    "token_adherence_pct": 37,
+    "tokenized_values": 157,
+    "literal_values": 263,
+    "spacing_on_grid": 171,
+    "spacing_off_grid": 79,
+    "depth_strategies": [
+      "borders",
+      "shadows"
+    ],
+    "depth_counts": {
+      "borders": 48,
+      "shadows": 10,
+      "blur": 0
+    },
+    "font_families": [],
+    "keyframes": 9,
+    "animated_declarations": 12,
+    "reduced_motion_handled": true,
+    "states_present": [
+      "loading",
+      "empty",
+      "error",
+      "disabled",
+      "focus"
+    ],
+    "states_missing": [],
+    "interactive_surface": true,
+    "max_card_nesting": 0,
+    "max_card_sibling_run": 0,
+    "card_sibling_class": null,
+    "emoji_glyphs": [],
+    "em_dash_prose": 1,
+    "prototype_anchors": true,
+    "primary_marker": true,
+    "tour_marker": true,
+    "media_elements": 3,
+    "native_dialog_calls": [],
+    "structured_inputs_without_semantics": [],
+    "destructive_controls": 3,
+    "dialog_machinery": true,
+    "kanban_surface": false,
+    "dnd_markers": true,
+    "management_surface": true,
+    "widget_markers": false,
+    "files": [
+      ".aioson/briefings/clave/prototype.html"
+    ],
+    "manifest_visual_direction": true
+  },
+  "exitCode": 0
+}

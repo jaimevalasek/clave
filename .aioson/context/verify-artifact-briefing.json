@@ -1,0 +1,43 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "briefing",
+  "slug": "clave",
+  "root": "C:\\dev\\playapps\\clave",
+  "mode": "advisory",
+  "ok": true,
+  "blocking": false,
+  "issues": [],
+  "warnings": [
+    "source lineage not applicable to this briefing"
+  ],
+  "checks": [
+    {
+      "id": "briefing",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "metrics": {
+    "sections_present": 8,
+    "sections_missing": [],
+    "open_questions_total": 13,
+    "open_questions_by_class": {
+      "research-able": 1,
+      "testable": 2,
+      "decision-required": 10,
+      "out-of-scope": 0
+    },
+    "open_questions_unclassified": 0,
+    "tbd_total": 0,
+    "tbd_noncanonical": 0,
+    "has_source_inventory": true,
+    "has_promise_map": true,
+    "registry_status": "draft",
+    "file": ".aioson/briefings/clave/briefings.md",
+    "lineage": {
+      "applicable": false
+    },
+    "prototype_state": "prototype"
+  },
+  "exitCode": 0
+}

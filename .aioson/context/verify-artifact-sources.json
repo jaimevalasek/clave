@@ -1,0 +1,30 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "sources",
+  "slug": "clave",
+  "root": "C:\\dev\\playapps\\aioson-crave-2",
+  "mode": "blocking",
+  "ok": true,
+  "blocking": false,
+  "issues": [],
+  "warnings": [],
+  "checks": [
+    {
+      "id": "sources",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "metrics": {
+    "applicable": true,
+    "sources_total": 1,
+    "sources_present": 1,
+    "sources_missing": 0,
+    "promises_total": 14,
+    "promises_required": 13,
+    "coverage_rows": 14,
+    "lifecycle_stage": "post_prd_absorbed",
+    "absorbed": true
+  },
+  "exitCode": 0
+}

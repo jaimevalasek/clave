@@ -1,0 +1,271 @@
+{
+  "schema_version": "review-report/v1",
+  "packet_id": "sha256:78c7dba57cba387c2e8a254124dae75022530fc7d7d04425ee1a2d62e8f81b8a",
+  "feature_slug": "clave",
+  "agent": "sheldon",
+  "profile": "specification",
+  "review_mode": "independent_review",
+  "artifact": {
+    "path": ".aioson/context/prd-clave.md",
+    "sha256": "793682695b955f7ff6ea69cfb9e06cefb84439ce380a159ebb128da78c71dcc9"
+  },
+  "passes_completed": 2,
+  "review_status": "pass",
+  "summary": "Two bounded passes over the Clave PRD against the approved briefing, the round 3 refinement authority, the approved prototype and manifest, the project rules and the repository. Nine findings were repaired in place and one was routed to the briefing owner. All 14 PROM rows keep exactly one coverage decision, all 12 required CAPs keep a repository-backed fit row, and 48 AC rows are observable with declared evidence.",
+  "findings": [
+    {
+      "id": "SPEC-001",
+      "lens": "verifiability",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "AC-clave-02 required a hand rolled DD/MM/AAAA mask on the pauta date field. The approved prototype uses a native date input at prototype.html line 651 (input id fp-data type date), and form-fields-masks-and-validation forbids a second formatting layer where one already exists. The PRD therefore contradicted both the binding prototype and the project rule.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/clave/prototype.html",
+          "detail": "Line 651 renders the pauta date as a native date input, not a masked text field.",
+          "status": "recorded"
+        },
+        {
+          "type": "artifact",
+          "path": ".aioson/rules/form-fields-masks-and-validation.md",
+          "detail": "Rule requires correct input semantics and forbids hand rolling a second formatting layer when one exists.",
+          "status": "recorded"
+        }
+      ],
+      "impact": "Two implementers would have produced incompatible date entry, and the one following the PRD would have violated the project rule.",
+      "recommendation": "AC-clave-02 now fixes native date semantics with pt-BR presentation, a 120 character title limit and the inline required error, and deviation 7 records why no mask is added.",
+      "alternatives": [
+        "Keep the masked text field and record a rule exception, rejected because rules outrank the PRD and the prototype already resolves the field."
+      ],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "None. The field semantics are now the same in prototype, PRD and rule."
+    },
+    {
+      "id": "SPEC-002",
+      "lens": "coverage",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "The prototype renders a boot loading state (skeleton block with data-aioson-id estado-loading at prototype.html lines 64 and 593) and the PRD had no acceptance criterion or recorded deferral for it. Under the approval contract a material state the prototype renders and the PRD ignores is a silent loss.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/clave/prototype.html",
+          "detail": "Boot skeleton rendered as estado-loading before the seeded data paints.",
+          "status": "recorded"
+        }
+      ],
+      "impact": "The real app reads from a local database through a separate backend process, so first paint without a defined loading state would ship as an empty screen or a layout jump.",
+      "recommendation": "Added AC-clave-45 and listed loading among the material states in the prototype contract.",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "None."
+    },
+    {
+      "id": "SPEC-003",
+      "lens": "coverage",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "Responsive behaviour existed only as prototype build history. The prototype implements a 900px recomposition, a max-height 660px compression of the Palco and a 360px width without horizontal scroll, and builds 5 and 5.1 were dedicated to exactly these defects, yet no AC carried them.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/clave/prototype.html",
+          "detail": "Media queries at lines 314, 338 and 353 implement the 900px, low window and small width behaviour.",
+          "status": "recorded"
+        },
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/clave/prototype-manifest.md",
+          "detail": "Build 5 and 5.1 quality evidence record the 360px overflow repair and the Palco overlap repair in low windows.",
+          "status": "recorded"
+        }
+      ],
+      "impact": "Two runtime defects already found and fixed once in the prototype could return in the implementation with no acceptance row to catch them.",
+      "recommendation": "Added AC-clave-46 with the three measurable conditions and mapped it to PROM-009.",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "None."
+    },
+    {
+      "id": "SPEC-004",
+      "lens": "edge-cases",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "AC-clave-29 specified YouTube chapters only as MM:SS. A live longer than 59:59 is the normal case for this product, and MM:SS past one hour produces chapter lines YouTube does not accept.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-clave.md",
+          "detail": "The chapter export is the fourth differentiator and the PROM-006 promise; the format was under specified for the product's own typical live length.",
+          "status": "recorded"
+        },
+        {
+          "type": "research-cache",
+          "path": "researchs/clave-cenografia-e-marcadores/summary.md",
+          "detail": "Chapter rules verified in round 3: first line 00:00 is mandatory to activate the feature.",
+          "status": "recorded"
+        }
+      ],
+      "impact": "The headline post production promise would have failed on any live over an hour, which is most of them.",
+      "recommendation": "AC-clave-29 now requires MM:SS up to 59:59 and H:MM:SS from one hour, keeps 00:00 as the first line, and its evidence names both the short and the long live cases.",
+      "alternatives": [
+        "Always emit H:MM:SS, rejected because it is noisier than needed on short lives and YouTube accepts both forms."
+      ],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "None."
+    },
+    {
+      "id": "SPEC-005",
+      "lens": "failure-modes",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "User flow 6 allows editing at the Bancada while an execution stays open, but nothing defined what happens to the recorded trajectory when the edited block is deleted or changes type. The data model keeps a title and type snapshot per step, so the intended behaviour existed but was never an acceptance row.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": "plans/CLAVE.md",
+          "detail": "PassoTrajeto carries a snapshot of title and type precisely because the block may change later.",
+          "status": "recorded"
+        }
+      ],
+      "impact": "Without the rule, deleting a block that already went on air could empty or corrupt the report and the exported chapters.",
+      "recommendation": "Added AC-clave-47, referenced it from flow 6 and mapped it to PROM-006.",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "None."
+    },
+    {
+      "id": "SPEC-006",
+      "lens": "failure-modes",
+      "status": "resolved",
+      "severity": "warning",
+      "description": "The app is split stack: a frontend and a backend process the Play spawns on injected ports. The PRD defined no observable behaviour for a failed write or an unreachable backend, and the prototype cannot show it because it has no backend.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/clave/prototype-manifest.md",
+          "detail": "Limits section states the prototype proves no backend integration.",
+          "status": "recorded"
+        },
+        {
+          "type": "artifact",
+          "path": ".aioson/docs/integrations/ai-app-integration.md",
+          "detail": "Play app contract requires preserved status and error codes instead of silent failure.",
+          "status": "recorded"
+        }
+      ],
+      "impact": "A composed pauta could be reported as saved while nothing was written, which is the one loss this product cannot absorb before a live.",
+      "recommendation": "Added AC-clave-48 and deviation 8, and mapped both to PROM-010.",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "The concrete persistence engine is still unproven until the phase 1 spike, tracked as open question 16."
+    },
+    {
+      "id": "SPEC-007",
+      "lens": "ambiguity",
+      "status": "resolved",
+      "severity": "info",
+      "description": "AC-clave-08 omitted the domain bounds the prototype already enforces, and AC-clave-06 described the open execution as a global state when the prototype scopes it per pauta and marks each affected row in the list.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/clave/prototype.html",
+          "detail": "Duration input is bounded 1 to 600 at line 812, block title is capped at 140 characters at line 805, and execAberta at line 508 resolves the open execution per pauta.",
+          "status": "recorded"
+        }
+      ],
+      "impact": "Both gaps would surface as arbitrary implementation choices that QA could not fail.",
+      "recommendation": "AC-clave-08 now carries the 1 to 600 minute and 140 character bounds, and AC-clave-06 states the per pauta scope plus the list marker.",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "None."
+    },
+    {
+      "id": "SPEC-008",
+      "lens": "ownership",
+      "status": "resolved",
+      "severity": "info",
+      "description": "Two intentional departures from the approved prototype were not recorded as deviations: the accessibility attributes required by the form rule, which the prototype signals only through a CSS class and an inline message, and the write failure state the prototype cannot render.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/clave/prototype.html",
+          "detail": "Field errors use campo invalido plus erro-campo at lines 148, 150, 650, 806 and 813, with no aria-invalid or aria-describedby.",
+          "status": "recorded"
+        }
+      ],
+      "impact": "An unrecorded departure from a binding prototype reads later as an implementation mistake rather than a decision.",
+      "recommendation": "Added deviations 6, 7 and 8 to the prototype contract.",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "None."
+    },
+    {
+      "id": "SPEC-009",
+      "lens": "ownership",
+      "status": "resolved",
+      "severity": "info",
+      "description": "The PRD excluded a widget home while management-home-widgets asks a management entry surface to serve decisions. The exclusion rested on binding round 1 decision F3 but the conflict was never named, so it read as an unnoticed rule violation.",
+      "evidence": [
+        {
+          "type": "decision",
+          "detail": "Round 1 decision F3 selected the minimal pauta list after the widget home alternative was presented and not chosen by the user.",
+          "status": "recorded"
+        },
+        {
+          "type": "artifact",
+          "path": ".aioson/rules/management-home-widgets.md",
+          "detail": "Rule asks Product to name the home widgets and the decision each one serves.",
+          "status": "recorded"
+        }
+      ],
+      "impact": "Downstream agents would either re-open a settled scope decision or silently ignore a project rule.",
+      "recommendation": "Flow 1 now names the two decisions the entry surface serves, records that the alternative was offered and declined by the product owner, and states why aggregate indicators would have no decision to serve in a single user live production tool.",
+      "alternatives": [
+        "Add a widget home to satisfy the rule literally, rejected because it overturns a user owned scope decision."
+      ],
+      "confidence": "medium",
+      "owner": "sheldon",
+      "residual_risk": "If the product later accumulates cross live history, the rule should be revisited against a real decision the home could serve."
+    },
+    {
+      "id": "SPEC-010",
+      "lens": "coverage",
+      "status": "deferred",
+      "severity": "warning",
+      "description": "verify:artifact kind sources reports 22 lineage gaps because the approved briefing tables use headers the validator does not recognise: Source Inventory names its identifier column ID where SRC or Source is expected, and Source Promise Map names its columns ID and Promise where Promise and Approved intent are expected. The validator therefore parses no PROM at all and treats all 14 Source Coverage rows as unknown promises.",
+      "evidence": [
+        {
+          "type": "command",
+          "command": "aioson verify:artifact . --kind=sources --slug=clave --advisory",
+          "detail": "Reports source_inventory_columns, source_promise_map_columns and source_coverage_promise_unknown for PROM-001 to PROM-014.",
+          "status": "failed"
+        },
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/clave/refinement-report.md",
+          "detail": "Round 3 report records applied_hash aa9c5d37c5678a50952e80408b85d2ee5909046fab9cdce56cd9594d9313a640, which sha256sum confirms is the current briefings.md.",
+          "status": "passed"
+        }
+      ],
+      "impact": "The machine cannot confirm source lineage for this feature. Repairing the headers in place would change briefings.md, break the applied_hash the round 3 report binds, and make the accepted decisions F13, F14 and F15 non binding, including the visual authority the identity binding rests on.",
+      "recommendation": "Route the header repair to briefing-refiner, which owns the briefing and can rename the columns and reissue the report with a fresh hash through the official path. Lineage was verified by hand for this review: sha256 of plans/CLAVE.md matches the SRC-001 fingerprint, the applied hash matches the current briefing, and each of the 14 promises appears exactly once in Source Coverage.",
+      "alternatives": [
+        "Rename the headers and recompute applied_hash by hand, rejected because it destroys the tamper evidence the fail closed contract depends on."
+      ],
+      "confidence": "high",
+      "owner": "briefing-refiner",
+      "residual_risk": "Source lineage stays machine unverified until briefing-refiner repairs the tables. Manual verification is recorded in the PRD as open question 18 and is not blocking for Planner."
+    }
+  ],
+  "completed_at": "2026-08-18T04:05:00.000Z"
+}

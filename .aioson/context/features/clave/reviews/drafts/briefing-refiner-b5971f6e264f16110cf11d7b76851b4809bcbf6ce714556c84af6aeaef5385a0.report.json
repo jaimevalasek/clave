@@ -1,0 +1,75 @@
+{
+  "schema_version": "review-report/v1",
+  "packet_id": "sha256:b5971f6e264f16110cf11d7b76851b4809bcbf6ce714556c84af6aeaef5385a0",
+  "feature_slug": "clave",
+  "agent": "briefing-refiner",
+  "profile": "framing",
+  "review_mode": "independent_review",
+  "artifact": {
+    "path": ".aioson/briefings/clave/briefings.md",
+    "sha256": "05da4b6c4d85a2b37ec4b5ee1b8d2ac5ad85fad43819ae71fb3dd83e37a4acd7"
+  },
+  "passes_completed": 1,
+  "review_status": "decision_required",
+  "summary": "Migracao de formato da linhagem (3 rotulos de cabecalho para a forma canonica) autorizada pelo usuario. Conteudo intacto: 14 PROM-* e 1 SRC-001 preservados. Achados de linhagem caem de 19 para 1; o remanescente e o downgrade de PROM-014 no PRD, sem aprovacao explicita citada. Efeito colateral: os 3 review packets ligados ao hash anterior do briefing ficaram sem packet corrente.",
+  "findings": [
+    {
+      "id": "REFINER-CLAVE-016",
+      "lens": "assumptions",
+      "status": "decision_required",
+      "severity": "warning",
+      "description": "PROM-014 ('ordem de entrega 1 a 7 como roadmap') esta marcada required no briefing aprovado, mas o Source Coverage do PRD decidiu not_applicable justificando que roadmap nao e comportamento observavel de produto. O validador exige que um downgrade de promessa required cite aprovacao explicita do usuario, e a justificativa atual e tecnica, nao uma aprovacao registrada. Este achado so ficou visivel depois que a linhagem passou a ser legivel.",
+      "evidence": [
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/clave/briefings.md",
+          "detail": "### Source Promise Map, linha PROM-014, coluna State: required"
+        },
+        {
+          "type": "artifact",
+          "path": ".aioson/context/prd-clave.md",
+          "detail": "## Source Coverage, linha PROM-014: Product decision = not_applicable"
+        },
+        {
+          "type": "command",
+          "command": "aioson feature:trace . --feature=clave --json",
+          "status": "failed",
+          "detail": "source_required_promise_downgraded_without_user_approval (unico achado remanescente; era 1 de 19)"
+        }
+      ],
+      "impact": "Enquanto o achado existir, o Gate C permanece bloqueado por feature-completeness, mesmo com o plano de implementacao validado sem nenhum achado de stage plan.",
+      "recommendation": "O usuario aprova explicitamente o downgrade (a ordem 1 a 7 ja esta preservada como sequencia vinculante em ## Escopo do MVP e executada nas 8 fases do plano) e @product registra essa aprovacao citada na linha PROM-014 do Source Coverage, com re-review de @sheldon. A alternativa e devolver PROM-014 a required, o que exigiria uma AC artificial para uma promessa sem comportamento observavel.",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "user",
+      "residual_risk": "Nenhum apos a decisao do usuario ser registrada no PRD por @product."
+    },
+    {
+      "id": "REFINER-CLAVE-017",
+      "lens": "assumptions",
+      "status": "decision_required",
+      "severity": "warning",
+      "description": "A migracao mudou o sha256 do briefings.md de aa9c5d37 para 05da4b6c. O applied_hash do refinement-report.md foi reemitido no mesmo passo, entao as decisoes F13, F14 e F15 do round 3 continuam binding. Os tres review packets sob .aioson/context/features/clave/reviews/packets/ (briefing, briefing-refiner, sheldon), porem, estavam ligados ao hash anterior e passaram a reportar no_current_packet: review:status saiu de 'clear - sheldon: pass' para 'invalid_or_stale'.",
+      "evidence": [
+        {
+          "type": "command",
+          "command": "aioson review:status . --feature=clave --json",
+          "status": "failed",
+          "detail": "overall_status: invalid_or_stale; issues: briefing/briefing-refiner/sheldon = no_current_packet"
+        },
+        {
+          "type": "artifact",
+          "path": ".aioson/briefings/clave/lineage-migration/reports/aa9c5d37c5678a50952e80408b85d2ee5909046fab9cdce56cd9594d9313a640-05da4b6c4d85a2b37ec4b5ee1b8d2ac5ad85fad43819ae71fb3dd83e37a4acd7.json",
+          "detail": "Registro da migracao com before/after sha256, diff de duas linhas e backup imutavel"
+        }
+      ],
+      "impact": "O PASS do Sheldon ligado ao hash deixou de valer, e o @planner exige esse PASS corrente como input do Gate C.",
+      "recommendation": "Este packet do @briefing-refiner ja foi repreparado contra o briefing atual. @sheldon repreparar o seu e reemitir o PASS na mesma passada em que registrar a decisao de PROM-014; o packet de @briefing so precisa de repreparo se @briefing voltar a atuar.",
+      "alternatives": [],
+      "confidence": "high",
+      "owner": "sheldon",
+      "residual_risk": "Baixo: o conteudo do briefing nao mudou, entao o re-review do Sheldon confere formato de linhagem e a decisao de PROM-014, nao escopo."
+    }
+  ],
+  "completed_at": "2026-08-18T02:06:00.000Z"
+}
