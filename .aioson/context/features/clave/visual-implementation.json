@@ -1,0 +1,463 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "visual",
+  "slug": "clave",
+  "root": "C:\\dev\\playapps\\aioson-crave-2",
+  "mode": "advisory",
+  "ok": true,
+  "blocking": false,
+  "verdict": "pass",
+  "issues": [],
+  "warnings": [
+    "64 spacing values off the 4px grid (margin-top: 26px, padding: 7px, padding: 5px, gap: 18px, …) — systemless rhythm is the most visible amateur tell",
+    "management surface with no widget/KPI/chart markers — a management home opens with decision-driving widgets (management-home-widgets rule)",
+    "9 spaced em dash(es) across UI copy and mock content (\"`migrate-check OK — schema v${version}, ta\", \"`smoke-boot OK — porta ${port}, ${catal\", \"você escreve os pontos — as linhas que vão apar\", …) — repeated em-dash cadence is a model-writing tell; keep a deliberate few and rewrite the rest with periods, colons, or shorter sentences. Quotations stay verbatim — judge in context",
+    "declared finish never applied: @keyframes desenhar-curva — effects that exist only in the stylesheet decorate the code while the user sees flat; wire each one to a real surface or delete it. Dead declarations are not craft, and they read as leftovers in review",
+    "generation tell: 3 rule(s) ride a thick colored side border — the most recognizable generated-UI signature; carry the state in a background wash, an icon, or the tokened border system instead (status/tab/blockquote contexts are already exempt)",
+    "generation tell: 5 kicker/eyebrow label(s) directly above a heading — the heading carries its own weight; delete the label and let display scale argue. No brief earns this one back",
+    "generation tell: 1 font-size declaration(s) under 11px (10px) — functional text floors at 11px; if it matters enough to render, it matters enough to read",
+    "visual conformance NOT measured: no recorded prototype evidence for clave — nothing to hold the implementation to — this surface was not held to any prototype floor; record the outcome instead of assuming it",
+    "cross-project palette repetition / visual fingerprint: accent hue ~85° on a dark ground resembles recent project \"aioson-com\" (Δ3°, same accent family with the ground polarity flipped) — palette, type, material and motion fingerprints are compared so sameness cannot hide behind one changed color; draw a diversified start with `aioson design:seed` (or extract an identity from the owner's references), or record why these products genuinely share the family"
+  ],
+  "checks": [
+    {
+      "id": "visual",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "metrics": {
+    "declarations": 1346,
+    "token_adherence_pct": 73,
+    "tokenized_values": 338,
+    "literal_values": 126,
+    "spacing_on_grid": 17,
+    "spacing_off_grid": 64,
+    "depth_strategies": [
+      "borders",
+      "shadows"
+    ],
+    "depth_counts": {
+      "borders": 50,
+      "shadows": 4,
+      "blur": 0
+    },
+    "font_families": [
+      "georgia",
+      "inter",
+      "jetbrains mono"
+    ],
+    "display_face": "inter",
+    "font_delivery": {
+      "font_face_blocks": 2,
+      "webfont_linked": false,
+      "stylesheet_urls": [],
+      "declared_families": [
+        "inter",
+        "jetbrains mono"
+      ],
+      "delivered_families": [
+        "inter",
+        "jetbrains mono"
+      ],
+      "undelivered_families": [],
+      "delivered": true
+    },
+    "max_font_size_px": 46,
+    "font_size_count": 13,
+    "fluid_type": true,
+    "keyframes": 9,
+    "animated_declarations": 12,
+    "reduced_motion_handled": true,
+    "motion": {
+      "designed": true,
+      "transition_only": false,
+      "transitions": 19,
+      "keyframes": 9,
+      "keyframe_names": [
+        "surge-ponto",
+        "surge",
+        "palavra-entra",
+        "modal-entra",
+        "toast-entra",
+        "pulso-ar",
+        "brilho-sk",
+        "desenhar-curva",
+        "poeira-respira"
+      ],
+      "applied_keyframes": 8,
+      "applied_keyframe_names": [
+        "surge",
+        "modal-entra",
+        "poeira-respira",
+        "pulso-ar",
+        "palavra-entra",
+        "surge-ponto",
+        "toast-entra",
+        "brilho-sk"
+      ],
+      "unapplied_keyframes": [
+        "desenhar-curva"
+      ],
+      "animated_declarations": 12,
+      "ambient_loops": 3,
+      "signature": true,
+      "signature_kinds": [
+        "animated backdrop"
+      ],
+      "scroll_reveal": false,
+      "reduced_motion_handled": true,
+      "reduced_motion_declared": true,
+      "reduced_motion_effective": true
+    },
+    "states_present": [
+      "loading",
+      "empty",
+      "error",
+      "disabled",
+      "focus"
+    ],
+    "states_missing": [],
+    "interactive_surface": true,
+    "surface_capabilities": {
+      "focusable": true,
+      "controls": true,
+      "data_entry": true,
+      "async_work": true,
+      "collections": true
+    },
+    "states_owed": [
+      "loading",
+      "empty",
+      "error",
+      "disabled",
+      "focus"
+    ],
+    "states_unmet": [],
+    "max_card_nesting": 0,
+    "max_card_sibling_run": 0,
+    "card_sibling_class": null,
+    "emoji_glyphs": [],
+    "em_dash_prose": 9,
+    "prototype_anchors": false,
+    "primary_marker": false,
+    "tour_marker": false,
+    "media_elements": 5,
+    "media_evidence": {
+      "status": "unverified",
+      "candidates": 5,
+      "verified": 0,
+      "unverified": 5,
+      "items": [
+        {
+          "kind": "img",
+          "source": "{source.url}",
+          "verified": false,
+          "reason": "requires rendered load verification"
+        },
+        {
+          "kind": "video",
+          "source": "{source.url}",
+          "verified": false,
+          "reason": "requires rendered load verification"
+        },
+        {
+          "kind": "img",
+          "source": "{source.url}",
+          "verified": false,
+          "reason": "requires rendered load verification"
+        },
+        {
+          "kind": "video",
+          "source": "{source.url}",
+          "verified": false,
+          "reason": "requires rendered load verification"
+        },
+        {
+          "kind": "css-image",
+          "source": "%23n",
+          "verified": false,
+          "reason": "requires rendered load verification"
+        }
+      ]
+    },
+    "native_dialog_calls": [],
+    "structured_inputs_without_semantics": [],
+    "destructive_controls": 6,
+    "dialog_machinery": true,
+    "kanban_surface": false,
+    "dnd_markers": true,
+    "management_surface": true,
+    "widget_markers": false,
+    "palette": {
+      "color_literals": 207,
+      "chromatic_share_pct": 40,
+      "hue_clusters": 5,
+      "accent_hue": 85,
+      "accent_chroma": 0.132,
+      "ground": {
+        "hex": "#0b0a08",
+        "l": 0.15,
+        "c": 0.005,
+        "h": 86,
+        "pole": "dark"
+      }
+    },
+    "tells": {
+      "active": 3,
+      "present": [
+        "colored side border",
+        "kicker above heading",
+        "tiny text"
+      ],
+      "gradient_text": 0,
+      "colored_side_border": 3,
+      "kicker_above_heading": 5,
+      "icon_tile_stack": 0,
+      "chromatic_glow": 0,
+      "block_shadow": 0,
+      "saturated_display_faces": [],
+      "bounce_easing": 0,
+      "tiny_text": 1,
+      "buzzwords": 0,
+      "negation_pivots": 0,
+      "sanctioned_faces": [
+        "inter"
+      ]
+    },
+    "surface_mode": {
+      "mode": "operate",
+      "source": "detected",
+      "detected": "operate",
+      "operate_score": 6,
+      "brand_score": 1,
+      "operate_signals": [
+        "management markers",
+        "data table",
+        "dense forms",
+        "board / drag-and-drop"
+      ],
+      "brand_signals": [
+        "section rhythm"
+      ]
+    },
+    "utility_classes": {
+      "tokens": 336,
+      "utility": 0,
+      "share": 0
+    },
+    "craft": {
+      "measured": true,
+      "mode": "operate",
+      "active_levers": 4,
+      "lever_count": 4,
+      "levers": {
+        "typeface": true,
+        "material": true,
+        "motion": true,
+        "chrome": true
+      },
+      "material_techniques": [
+        "gradients",
+        "grain"
+      ],
+      "material_depth": 3,
+      "browser_surfaces": {
+        "count": 2,
+        "present": [
+          "scrollbar",
+          ":focus-visible"
+        ]
+      },
+      "unapplied_effects": [
+        "@keyframes desenhar-curva"
+      ],
+      "gradient_count": 6,
+      "layered_shadow_declarations": 0,
+      "grain_noise": true,
+      "blend_modes": 0,
+      "mask_layers": 0,
+      "modern_color_functions": 0,
+      "background_images": 1,
+      "transition_declarations": 19,
+      "scroll_reveal": false,
+      "modern_css": [
+        ":has()",
+        "fluid clamp() type",
+        "aspect-ratio",
+        "popover/dialog"
+      ],
+      "modern_css_capabilities": {
+        "features": [
+          ":has()",
+          "fluid clamp() type",
+          "aspect-ratio",
+          "popover/dialog"
+        ],
+        "capabilities": {
+          "architecture": {
+            "present": [
+              ":has()"
+            ],
+            "count": 1,
+            "active": true
+          },
+          "responsive": {
+            "present": [
+              "fluid clamp() type",
+              "aspect-ratio"
+            ],
+            "count": 2,
+            "active": true
+          },
+          "color": {
+            "present": [],
+            "count": 0,
+            "active": false
+          },
+          "typography": {
+            "present": [],
+            "count": 0,
+            "active": false
+          },
+          "interaction": {
+            "present": [
+              "popover/dialog"
+            ],
+            "count": 1,
+            "active": true
+          },
+          "motion": {
+            "present": [],
+            "count": 0,
+            "active": false
+          },
+          "performance": {
+            "present": [],
+            "count": 0,
+            "active": false
+          }
+        },
+        "active_capabilities": 3,
+        "capability_count": 7
+      }
+    },
+    "files": [
+      "index.html",
+      "src/features/attachments/attachments.css",
+      "src/features/board/board.css",
+      "src/features/guide/guide.css",
+      "src/features/library/library.css",
+      "src/features/report/report.css",
+      "src/features/rundowns/rundowns.css",
+      "src/features/stage/stage.css",
+      "src/ui/chrome.css",
+      "src/ui/fonts.css",
+      "src/ui/modal.css",
+      "src/ui/motion.css",
+      "src/ui/tokens.css",
+      "scripts/migrate-check.mjs",
+      "scripts/smoke-boot.mjs",
+      "server/src/app.ts",
+      "server/src/db/database.ts",
+      "server/src/db/migrations.ts",
+      "server/src/db/paths.ts",
+      "server/src/http/apiCatalog.ts",
+      "server/src/http/errors.ts",
+      "server/src/main.ts",
+      "server/src/repositories/attachmentRepository.ts",
+      "server/src/repositories/beatRepository.ts",
+      "server/src/repositories/blockRepository.ts",
+      "server/src/repositories/libraryRepository.ts",
+      "server/src/repositories/preferenceRepository.ts",
+      "server/src/repositories/runRepository.ts",
+      "server/src/repositories/rundownRepository.ts",
+      "server/src/routes/attachments.ts",
+      "server/src/routes/blocks.ts",
+      "server/src/routes/library.ts",
+      "server/src/routes/media.ts",
+      "server/src/routes/platform.ts",
+      "server/src/routes/preferences.ts",
+      "server/src/routes/rundowns.ts",
+      "server/src/routes/runs.ts",
+      "server/src/services/blockService.ts",
+      "server/src/services/libraryService.ts",
+      "server/src/services/mediaService.ts",
+      "server/src/services/preferenceService.ts",
+      "server/src/services/reportService.ts",
+      "server/src/services/runService.ts",
+      "server/src/services/rundownService.ts",
+      "shared/time.ts",
+      "shared/track.ts",
+      "shared/types.ts",
+      "shared/validation/attachment.ts",
+      "shared/validation/beat.ts",
+      "shared/validation/block.ts",
+      "shared/validation/libraryItem.ts",
+      "shared/validation/result.ts",
+      "shared/validation/rundown.ts",
+      "src/App.tsx",
+      "src/core/api.ts",
+      "src/core/router.ts",
+      "src/core/store.ts",
+      "src/core/vocabulary.ts",
+      "src/features/attachments/AttachmentViewer.tsx",
+      "src/features/attachments/PrivatePanel.tsx"
+    ],
+    "corpus": {
+      "documents": 1,
+      "stylesheets": 12,
+      "components": 84,
+      "files_total": 97,
+      "truncated": 0
+    },
+    "motion_ambition": {
+      "asked": 30,
+      "signature_asked": true,
+      "met": true,
+      "delivered": {
+        "signature": true,
+        "signature_kinds": [
+          "animated backdrop"
+        ],
+        "keyframes": 9,
+        "animated_declarations": 12,
+        "ambient_loops": 3,
+        "scroll_reveal": false
+      }
+    },
+    "conformance": {
+      "prototype": null,
+      "implementation": null,
+      "state": "not-compared",
+      "compared": [],
+      "not_compared": [
+        "craft",
+        "materials",
+        "tells",
+        "typeface",
+        "display type",
+        "modern CSS"
+      ],
+      "regressed": [],
+      "reason": "no recorded prototype evidence for clave — nothing to hold the implementation to"
+    },
+    "palette_repeat": {
+      "project": "aioson-com",
+      "delta_deg": 3,
+      "reason": "same accent family with the ground polarity flipped",
+      "same_face": false,
+      "same_material": false,
+      "same_motion": true
+    },
+    "fingerprint_recorded": true,
+    "assurance": {
+      "verdict": "pass",
+      "reasons": [],
+      "static_craft_verified": true,
+      "runtime_craft_verified": false
+    }
+  },
+  "exitCode": 0,
+  "measured_at": "2026-08-26T01:09:18.270Z"
+}

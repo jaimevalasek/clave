@@ -1,0 +1,304 @@
+/* Tokens — AIOSON Design-DNA v1 "Tinta & Ouro", porte do bloco `:root` do
+   protótipo aprovado (.aioson/briefings/clave/prototype.html) e de identity.md.
+   Registro estético: Constructed — a tipografia é a composição, profundidade só
+   por linhas, movimento mecânico curto. Ouro = marca / ação primária / gate.
+   Cor codifica tipo de bloco: nenhum tipo toma o ouro para si. */
+:root {
+  --tinta: #0b0a08;
+  --tinta-2: #161310;
+  --tinta-3: #1d1914;
+  --solido: #242019;
+  --giz: #f5f1e8;
+  --giz-2: #cdc5b4;
+  --fumaca: #8f8674;
+  --linha: rgba(224, 203, 163, 0.14);
+  --linha-2: rgba(233, 214, 177, 0.28);
+  --linha-fraca: rgba(224, 203, 163, 0.09);
+  --ouro: #e8ba52;
+
+  /* Mapa tipo→metal (fonte única em src/ui/typeColors.ts) */
+  --tema: #d8895b;
+  --midia: #b49bd8;
+  --interacao: #c9697a;
+  --convidado: #b3c2d6;
+  --resgate: #6ec6a2;
+
+  --perigo: #e25d5d;
+  --erro: #e25d5d;
+  --ok: #6ec6a2;
+
+  --font-display: Inter, 'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif;
+  --font-corpo: Inter, 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --voz-humana: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+  --font-dados: 'JetBrains Mono', 'Cascadia Code', monospace;
+
+  /* Escala de espaçamento: unidade base 4px */
+  --e-1: 4px;
+  --e-2: 8px;
+  --e-3: 12px;
+  --e-4: 16px;
+  --e-6: 24px;
+  --e-8: 32px;
+  --e-14: 56px;
+
+  /* Escada de raio */
+  --r-controle: 8px;
+  --r-cartao: 10px;
+  --r-painel: 16px;
+  --r-pilula: 99px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--tinta);
+  color: var(--giz);
+  font: 400 15px/1.62 var(--font-corpo);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  color: var(--giz);
+  background: var(--tinta);
+  border: 1px solid var(--linha);
+  border-radius: 6px;
+  padding: var(--e-2) var(--e-3);
+  width: 100%;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--ouro);
+  outline-offset: 1px;
+}
+
+::placeholder {
+  color: var(--fumaca);
+}
+
+a {
+  color: var(--ouro);
+}
+
+/* Voz da máquina: mono, caixa alta e tracking — nunca negrito como textura */
+.mono {
+  font-family: var(--font-dados);
+}
+
+.termo,
+b,
+strong {
+  color: var(--giz);
+  font-weight: 500;
+}
+
+.tecla {
+  display: inline-block;
+  border: 1px solid var(--linha-2);
+  border-radius: 4px;
+  padding: 1px 7px;
+  font: 500 12px var(--font-dados);
+  color: var(--giz);
+  white-space: nowrap;
+}
+
+.eyebrow {
+  font: 500 11px var(--font-dados);
+  letter-spacing: 0.22em;
+  color: var(--ouro);
+  text-transform: uppercase;
+  margin-bottom: var(--e-3);
+}
+
+/* D-01 · Batuta — o traço do eyebrow surge do nada e acelera */
+.batuta::before {
+  content: '';
+  display: inline-block;
+  width: 26px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, currentColor);
+  margin-right: var(--e-2);
+  vertical-align: middle;
+}
+
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  color: var(--fumaca);
+  font: 500 11px var(--font-dados);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 2px 0;
+  transition: color 0.15s;
+}
+
+.voltar:hover {
+  color: var(--ouro);
+}
+
+.btn {
+  border-radius: 6px;
+  padding: var(--e-2) var(--e-4);
+  font-weight: 500;
+  transition: filter 0.15s, border-color 0.15s;
+}
+
+.btn:hover {
+  filter: brightness(1.1);
+}
+
+/* Ação primária e gate: o ouro é a batuta */
+.btn-ar {
+  font-weight: 600;
+  background-color: #e8ba52;
+  background-image: linear-gradient(110deg, #e8ba52 0%, #f6d98a 45%, #e8ba52 62%);
+  background-size: 220% 100%;
+  background-position: 0% 0;
+  color: var(--tinta);
+  box-shadow: inset 0 0 0 1px rgba(11, 10, 8, 0.25);
+  transition: background-position 0.45s ease, filter 0.15s;
+}
+
+.btn-ar:hover {
+  background-position: 95% 0;
+  filter: none;
+}
+
+.btn-ar:hover,
+.btn-ar:focus-visible {
+  color: var(--tinta);
+}
+
+.btn-ar[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: none;
+}
+
+.btn-fantasma {
+  border: 1px solid var(--linha);
+  color: var(--giz);
+}
+
+.btn-fantasma:hover {
+  border-color: var(--linha-2);
+  filter: none;
+}
+
+.btn-perigo {
+  background: var(--perigo);
+  color: var(--tinta);
+}
+
+.btn-suave {
+  background: var(--tinta-3);
+  color: var(--giz);
+}
+
+.pagina {
+  padding: 36px var(--e-8);
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.pagina h1 {
+  font: 600 32px/1.08 var(--font-display);
+  letter-spacing: -0.025em;
+  margin-bottom: 6px;
+}
+
+.sub {
+  color: var(--fumaca);
+  margin-bottom: 28px;
+}
+
+.vazio {
+  border: 1px dashed var(--linha);
+  border-radius: var(--r-controle);
+  padding: var(--e-14) var(--e-8);
+  text-align: center;
+  color: var(--giz-2);
+}
+
+.vazio h2 {
+  font: 600 22px var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--giz);
+  margin-bottom: var(--e-2);
+}
+
+.vazio p {
+  max-width: 420px;
+  margin: 0 auto 18px;
+}
+
+.vazio .pauta-vazia-svg {
+  margin: 0 auto 18px;
+}
+
+.campo {
+  margin-bottom: 14px;
+}
+
+.campo label {
+  display: block;
+  font: 500 11px var(--font-dados);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fumaca);
+  margin-bottom: 6px;
+}
+
+.campo .erro-campo {
+  color: var(--erro);
+  font-size: 12px;
+  margin-top: var(--e-1);
+}
+
+.campo.invalido input,
+.campo.invalido select,
+.campo.invalido textarea {
+  border-color: var(--erro);
+}
+
+/* Grão de filme: textura de fundo, sem custo de layout */
+#grao {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 45;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 900px) {
+  .pagina {
+    padding: var(--e-6) var(--e-4);
+  }
+}

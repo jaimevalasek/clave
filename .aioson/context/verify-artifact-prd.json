@@ -3,7 +3,7 @@
   "kind": "prd",
   "slug": "clave",
   "root": "C:\\dev\\playapps\\aioson-crave-2",
-  "mode": "blocking",
+  "mode": "advisory",
   "ok": true,
   "blocking": false,
   "issues": [],
@@ -16,10 +16,10 @@
     }
   ],
   "metrics": {
-    "caps_total": 13,
+    "caps_total": 14,
     "caps_required": 12,
-    "fit_rows": 12,
-    "ac_rows": 48,
+    "fit_rows": 13,
+    "ac_rows": 52,
     "proms_total": 14,
     "proms_covered": 14,
     "fit_rows_without_path": 0,

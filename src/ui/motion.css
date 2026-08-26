@@ -1,0 +1,71 @@
+/* Movimento — identity.md §Motion.
+   Uma única coreografia: a entrada do bloco no Palco, palavra a palavra (35ms),
+   com a última palavra em serif itálico no metal do tipo (D-03 · Palavra viva).
+   Todo o resto é transição funcional de 150ms. */
+
+@keyframes surge {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes palavra-entra {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
+}
+
+@keyframes modal-entra {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+}
+
+@keyframes toast-entra {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+
+@keyframes pulso-ar {
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes brilho-sk {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes desenhar-curva {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* D-04 · Poeira de ouro — nebulosa no metal do bloco + fagulha de ouro.
+   Respira em 8s; nunca um campo de estrelas literal. */
+@keyframes poeira-respira {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* Com reduced-motion tudo fica estático: sem entrada palavra a palavra,
+   poeira congelada e transições em ~0ms. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001s !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,312 @@
+/* ===== Camada didática — tour de 5 passos + guia completo =====
+   Portado de `.aioson/briefings/clave/prototype.html` (build 5). O holofote é
+   um recorte no escuro, e o guia é uma coluna editorial de 740px com um
+   compasso no metal de cada movimento. */
+
+#btn-tour {
+  position: fixed;
+  right: var(--e-6);
+  bottom: var(--e-6);
+  z-index: 44;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  border-radius: var(--r-pilula);
+  border: 1px solid var(--linha-2);
+  background: var(--tinta-2);
+  color: var(--giz-2);
+  font: 500 11px var(--font-dados);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  /* Alvo de toque de 44px: o recuo maior à direita compensa o círculo à esquerda. */
+  padding: var(--e-3) var(--e-4) var(--e-3) var(--e-3);
+  min-height: 44px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+#btn-tour:hover {
+  border-color: var(--ouro);
+  color: var(--ouro);
+}
+
+#btn-tour .interr {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  color: var(--ouro);
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* ----- Tour ----- */
+.tour-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+}
+
+.tour-fundo.sem-alvo {
+  background: rgba(6, 5, 3, 0.72);
+}
+
+.tour-foco {
+  position: absolute;
+  border-radius: var(--r-controle);
+  outline: 2px solid var(--ouro);
+  outline-offset: var(--e-1);
+  box-shadow: 0 0 0 9999px rgba(6, 5, 3, 0.72);
+  pointer-events: none;
+  transition: left 0.25s ease, top 0.25s ease, width 0.25s ease, height 0.25s ease;
+}
+
+.tour-caixa-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 87;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--e-6);
+  pointer-events: none;
+}
+
+.tour-caixa-wrap.no-topo {
+  align-items: flex-start;
+  padding-top: var(--e-14);
+}
+
+.tour-caixa-wrap.na-base {
+  align-items: flex-end;
+  padding-bottom: var(--e-14);
+}
+
+.tour-caixa {
+  pointer-events: auto;
+  background: var(--tinta-2);
+  border: 1px solid var(--linha);
+  /* O fio de ouro à esquerda é a marca do momento de decisão, como nos gates. */
+  border-left: 2px solid var(--ouro);
+  border-radius: var(--r-cartao);
+  width: min(520px, 100%);
+  max-height: calc(100vh - var(--e-8));
+  overflow: auto;
+  padding: var(--e-8);
+  animation: modal-entra 0.15s ease-out;
+}
+
+.tour-caixa .passo-num {
+  font: 500 11px var(--font-dados);
+  letter-spacing: 0.22em;
+  color: var(--ouro);
+  margin-bottom: var(--e-3);
+}
+
+.tour-caixa h2 {
+  font: 600 22px var(--font-display);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--e-3);
+}
+
+/* D-03 · Palavra viva — a palavra que carrega o passo fala em serif itálico */
+.tour-caixa h2 em {
+  font-family: var(--voz-humana);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.tour-caixa p {
+  color: var(--giz-2);
+  line-height: 1.65;
+  margin-bottom: var(--e-3);
+}
+
+.tour-caixa .acoes-modal {
+  display: flex;
+  gap: var(--e-3);
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: var(--e-6);
+}
+
+.tour-caixa .acoes-secundarias {
+  display: flex;
+  gap: var(--e-3);
+  flex-wrap: wrap;
+}
+
+/* ----- Guia completo ----- */
+.guia-fundo {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 5, 3, 0.8);
+  z-index: 90;
+  overflow: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  animation: modal-entra 0.15s ease-out;
+}
+
+.guia {
+  background: var(--tinta-2);
+  border-left: 1px solid var(--linha);
+  border-right: 1px solid var(--linha);
+  width: min(740px, 100%);
+  min-height: 100%;
+  padding: var(--e-8) 44px var(--e-14);
+}
+
+.guia-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--e-6);
+}
+
+.guia h1 {
+  font: 600 30px/1.1 var(--font-display);
+  letter-spacing: -0.025em;
+}
+
+.guia .abertura {
+  color: var(--giz-2);
+  margin: var(--e-4) 0 var(--e-2);
+  max-width: 58ch;
+  line-height: 1.62;
+}
+
+.guia .fechar {
+  flex: none;
+  border: 1px solid var(--linha);
+  border-radius: var(--e-1);
+  padding: var(--e-3) var(--e-4);
+  min-height: 44px;
+  color: var(--giz-2);
+  font: 500 11px var(--font-dados);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.guia .fechar:hover {
+  border-color: var(--linha-2);
+  color: var(--giz);
+}
+
+.mov {
+  border-top: 1px solid var(--linha);
+  padding: var(--e-6) 0 var(--e-2);
+  margin-top: var(--e-6);
+  position: relative;
+}
+
+/* O compasso de 2px no metal do movimento, do lado de fora da coluna de texto */
+.mov::before {
+  content: '';
+  position: absolute;
+  left: -44px;
+  top: -1px;
+  width: 2px;
+  height: var(--e-6);
+  background: var(--metal, var(--ouro));
+}
+
+.mov .compasso {
+  font: 500 11px var(--font-dados);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--metal, var(--ouro));
+  margin-bottom: var(--e-2);
+}
+
+.mov h2 {
+  font: 600 21px var(--font-display);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--e-3);
+}
+
+.mov ol {
+  list-style: none;
+  counter-reset: passo-guia;
+}
+
+.mov li {
+  counter-increment: passo-guia;
+  display: grid;
+  grid-template-columns: var(--e-8) 1fr;
+  gap: var(--e-4);
+  padding: var(--e-3) 0;
+  border-bottom: 1px solid var(--linha-fraca);
+  color: var(--giz-2);
+  line-height: 1.62;
+}
+
+.mov li:last-child {
+  border-bottom: 0;
+}
+
+.mov li::before {
+  content: counter(passo-guia, decimal-leading-zero);
+  font: 500 11px var(--font-dados);
+  color: var(--fumaca);
+  padding-top: var(--e-1);
+}
+
+.guia .teclas {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--e-2) var(--e-4);
+  align-items: baseline;
+  color: var(--giz-2);
+  font-size: 14px;
+  padding: var(--e-2) 0 var(--e-1);
+}
+
+.guia .limite {
+  margin-top: var(--e-8);
+  border: 1px dashed var(--linha);
+  border-radius: var(--r-controle);
+  padding: var(--e-4) var(--e-6);
+  color: var(--fumaca);
+  font-size: 14px;
+  line-height: 1.62;
+}
+
+.guia .limite .r {
+  font: 500 11px var(--font-dados);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--giz-2);
+  margin-bottom: var(--e-2);
+}
+
+.guia .rodape-guia {
+  display: flex;
+  gap: var(--e-3);
+  flex-wrap: wrap;
+  margin-top: var(--e-8);
+}
+
+@media (max-width: 900px) {
+  .guia {
+    padding: var(--e-6) var(--e-4) var(--e-14);
+  }
+
+  .guia h1 {
+    font-size: 24px;
+  }
+
+  .mov::before {
+    left: -20px;
+  }
+
+  #btn-tour {
+    right: var(--e-4);
+    bottom: var(--e-4);
+  }
+}

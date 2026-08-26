@@ -1,0 +1,73 @@
+{
+  "ok": true,
+  "slug": "clave",
+  "checked_at": "2026-08-20T03:33:56.672Z",
+  "strict": false,
+  "criteria_total": 4,
+  "executable_total": 4,
+  "passed": 4,
+  "failed": 0,
+  "skipped_no_verification": 0,
+  "todo_placeholders": [],
+  "placeholder_errors": [],
+  "static_total": 0,
+  "static_passed": 0,
+  "static_failed": 0,
+  "strict_errors": [],
+  "integrity": {
+    "ok": true,
+    "is_runtime_feature": true,
+    "runtime_signals": [
+      "prototype-manifest"
+    ],
+    "errors": [],
+    "warnings": []
+  },
+  "checks": [
+    {
+      "id": "RG-build",
+      "command": "pnpm build",
+      "exitCode": 0,
+      "durationMs": 9202,
+      "stdout": "\u001b[36mvite v7.3.6 \u001b[32mbuilding client environment for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m✓\u001b[39m 98 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                 \u001b[39m\u001b[1m\u001b[2m  0.39 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip:  0.26 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-DHMXaww9.css  \u001b[39m\u001b[1m\u001b[2m 33.92 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip:  7.67 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-CH2xZAJ8.js   \u001b[39m\u001b[1m\u001b[2m309.00 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip: 98.21 kB\u001b[22m\n\u001b[32m✓ built in 1.56s\u001b[39m\n",
+      "stderr": "$ tsc --noEmit -p tsconfig.json && tsc -p server/tsconfig.json && vite build\n",
+      "timedOut": false,
+      "ok": true,
+      "signature": null
+    },
+    {
+      "id": "RG-migrate",
+      "command": "pnpm exec tsx scripts/migrate-check.mjs",
+      "exitCode": 0,
+      "durationMs": 982,
+      "stdout": "migrate-check OK — schema v3, tabelas: rundowns, library_items, blocks, attachments, beats, runs, run_steps, run_cuts, preferences\n",
+      "stderr": "",
+      "timedOut": false,
+      "ok": true,
+      "signature": null
+    },
+    {
+      "id": "RG-boot",
+      "command": "node scripts/smoke-boot.mjs",
+      "exitCode": 0,
+      "durationMs": 2701,
+      "stdout": "smoke-boot OK — porta 62907, 32 rotas no catálogo, pauta persistida em C:\\Users\\jaime\\AppData\\Local\\Temp\\clave-smoke-i4uQqH\\data\\clave.db\n",
+      "stderr": "",
+      "timedOut": false,
+      "ok": true,
+      "signature": null
+    },
+    {
+      "id": "RG-smoke",
+      "command": "pnpm playwright test",
+      "exitCode": 0,
+      "durationMs": 184376,
+      "stdout": "[WebServer] [backend] [WebServer] $ tsx watch server/src/main.ts\n[WebServer] [frontend] [WebServer] $ vite\n[WebServer] [frontend] \n[WebServer] [frontend]   VITE v7.3.6  ready in 467 ms\n[WebServer] [frontend] \n[WebServer] [frontend]   ➜  Local:   http://localhost:5199/\n[WebServer] [frontend]   ➜  Network: http://10.0.0.243:5199/\n[WebServer] [frontend]   ➜  Network: http://172.18.160.1:5199/\n[WebServer] [backend] [clave] banco em C:\\dev\\playapps\\aioson-crave-2\\test-results\\app-data\\data\\clave.db (schema v3)\n[WebServer] [backend] [clave] api do app clave escutando em http://localhost:3399\n\nRunning 66 tests using 1 worker\n\n  ok  1 [chromium] › tests\\e2e\\attachments.spec.ts:24:1 › AC-clave-26 — anexar arquivo copia para a pasta de mídia e guarda caminho relativo (3.9s)\n  ok  2 [chromium] › tests\\e2e\\attachments.spec.ts:60:1 › AC-clave-24 — telaCheia toma a tela capturada; sem ela, abre no painel privado (2.7s)\n  ok  3 [chromium] › tests\\e2e\\attachments.spec.ts:106:1 › AC-clave-23 — cada tipo de anexo tem a ação certa e a cópia é confirmada (2.1s)\n  ok  4 [chromium] › tests\\e2e\\attachments.spec.ts:134:1 › AC-clave-25 — anexo de vídeo aceita URL do YouTube e a falha é nomeada (2.8s)\n  ok  5 [chromium] › tests\\e2e\\attachments.spec.ts:180:1 › AC-clave-26 — arquivo com extensão forjada é recusado com erro na tela (4.0s)\n  ok  6 [chromium] › tests\\e2e\\board.spec.ts:65:1 › AC-clave-07 — a pauta é uma lista só e o resgate fica fora dela (2.5s)\n  ok  7 [chromium] › tests\\e2e\\board.spec.ts:86:1 › AC-clave-08 — a gaveta valida no domínio e mostra o erro inline (1.6s)\n  ok  8 [chromium] › tests\\e2e\\board.spec.ts:116:1 › AC-clave-49 — os pontos do bloco são escritos na gaveta e contados no cartão (3.0s)\n  ok  9 [chromium] › tests\\e2e\\board.spec.ts:158:1 › AC-clave-12 — editar um bloco não vaza valor para o vizinho (2.8s)\n  ok 10 [chromium] › tests\\e2e\\board.spec.ts:180:1 › AC-clave-09 — mandar para a reserva tira da pauta e voltar recoloca no fim (3.4s)\n  ok 11 [chromium] › tests\\e2e\\board.spec.ts:207:1 › AC-clave-10 — arrastar reordena, sobrevive ao reload e oferece Desfazer (3.2s)\n  ok 12 [chromium] › tests\\e2e\\board.spec.ts:228:1 › AC-clave-10 — existe caminho por teclado, anunciado em live region (2.1s)\n  ok 13 [chromium] › tests\\e2e\\board.spec.ts:247:1 › AC-clave-11 — excluir bloco confirma pelo modal do design system (2.8s)\n  ok 14 [chromium] › tests\\e2e\\library.spec.ts:9:1 › AC-clave-31 — guardar um bloco no acervo pela gaveta da Bancada (2.5s)\n  ok 15 [chromium] › tests\\e2e\\library.spec.ts:31:1 › AC-clave-32 — trazer cópia p\n\n[... 4159 bytes omitted (criteria:RG-smoke) ...]\n\nauta com execução em aberto e oferece as duas saídas (4.1s)\n  ok 48 [chromium] › tests\\e2e\\rundowns.spec.ts:199:1 › AC-clave-05 — sem nenhuma pauta, o boot cai no empty state que leva à criação (17.2s)\n  ok 49 [chromium] › tests\\e2e\\scenography.spec.ts:26:1 › AC-clave-36 — a mesma etiqueta mostra o mesmo metal nas seis superfícies (2.8s)\n  ok 50 [chromium] › tests\\e2e\\scenography.spec.ts:67:1 › AC-clave-37 — nada do Palco fica abaixo do piso de legibilidade (2.4s)\n  ok 51 [chromium] › tests\\e2e\\scenography.spec.ts:104:1 › AC-clave-38 — com reduced-motion tudo fica estático (1.9s)\n  ok 52 [chromium] › tests\\e2e\\scenography.spec.ts:131:1 › AC-clave-39 — a entrada do bloco é a única coreografia (2.4s)\n  ok 53 [chromium] › tests\\e2e\\scenography.spec.ts:151:1 › AC-clave-46 — a interface recompõe em 900px, 360px e em janela baixa (2.7s)\n  ok 54 [chromium] › tests\\e2e\\stage.spec.ts:9:1 › AC-clave-15 — entrar no ar é um gate, e o anexo local quebrado é nomeado antes (2.2s)\n  ok 55 [chromium] › tests\\e2e\\stage.spec.ts:39:1 › AC-clave-16 — o Palco monta as quatro faixas com o bloco no ar (2.2s)\n  ok 56 [chromium] › tests\\e2e\\stage.spec.ts:57:1 › AC-clave-16 — o título gigante é pintado com os espaços entre as palavras (2.0s)\n  ok 57 [chromium] › tests\\e2e\\stage.spec.ts:75:1 › AC-clave-16 — a tela capturada não carrega aviso da Bancada (2.4s)\n  ok 58 [chromium] › tests\\e2e\\stage.spec.ts:93:1 › AC-clave-17 — a nota privada só existe no DOM enquanto N está pressionada (2.0s)\n  ok 59 [chromium] › tests\\e2e\\stage.spec.ts:147:1 › AC-clave-18 — atalhos conduzem a live e têm controle clicável equivalente (3.1s)\n  ok 60 [chromium] › tests\\e2e\\stage.spec.ts:174:1 › AC-clave-50 e AC-clave-51 — os pontos aparecem um a um e só então a live troca de bloco (3.0s)\n  ok 61 [chromium] › tests\\e2e\\stage.spec.ts:227:1 › AC-clave-51 — avanços em sequência rápida não se perdem esperando a gravação (2.5s)\n  ok 62 [chromium] › tests\\e2e\\stage.spec.ts:257:1 › AC-clave-52 — o Palco diz quanto falta para fechar a pauta (2.7s)\n  ok 63 [chromium] › tests\\e2e\\stage.spec.ts:278:1 › AC-clave-53 — entrar no ar começa a live com o checklist limpo (2.9s)\n  ok 64 [chromium] › tests\\e2e\\stage.spec.ts:306:1 › AC-clave-19 — os dois cronômetros correm e o estouro é sinalizado sem esconder o timecode (1.8s)\n  ok 65 [chromium] › tests\\e2e\\stage.spec.ts:336:1 › AC-clave-20 — sair mantém a execução em aberto; encerrar exige modal (3.0s)\n  ok 66 [chromium] › tests\\e2e\\vocabulary.spec.ts:24:1 › as telas do produto falam o vocabulário canônico (2.9s)\n\n  66 passed (3.1m)\n",
+      "stderr": "[WebServer] $ concurrently --names backend,frontend --prefix-colors blue,magenta \"pnpm:dev:server\" \"pnpm:dev:web\"\n",
+      "timedOut": false,
+      "ok": true,
+      "signature": null
+    }
+  ],
+  "static_checks": []
+}

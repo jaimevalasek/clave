@@ -39,3 +39,12 @@ aioson-models.json
 mappings/
 researchs/
 squad-searches/
+
+# Clave — build, deps e dados locais do app
+node_modules/
+dist/
+server/dist/
+data/
+test-results/
+playwright-report/
+.aioson/preview.json

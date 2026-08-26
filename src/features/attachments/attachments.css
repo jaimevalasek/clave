@@ -1,0 +1,159 @@
+/* Anexos no Palco: chips de ação, tomada de tela e painel privado */
+.anexos-palco {
+  display: flex;
+  gap: var(--e-3);
+  margin-top: 26px;
+  flex-wrap: wrap;
+}
+
+.chip-anexo {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  background: var(--tinta-2);
+  border: 1px solid var(--linha);
+  border-radius: 4px;
+  padding: 7px var(--e-2) 7px var(--e-3);
+  font-size: 14px;
+}
+
+.chip-anexo .acao-anexo {
+  background: var(--tinta-3);
+  border-radius: 4px;
+  padding: 5px var(--e-3);
+  font: 500 12px var(--font-dados);
+}
+
+.chip-anexo .acao-anexo:hover {
+  color: var(--ouro);
+}
+
+.chip-anexo.quebrado {
+  border-color: var(--erro);
+  color: var(--erro);
+}
+
+.chip-anexo .tc {
+  font: 500 10px var(--font-dados);
+  color: var(--fumaca);
+  letter-spacing: 0.08em;
+}
+
+.chip-anexo .tc.privado-rotulo {
+  color: var(--ouro);
+}
+
+/* Tomada de tela: camada própria, acima de tudo no Palco */
+.tomada {
+  position: fixed;
+  inset: 0;
+  background: #070604;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: var(--e-6);
+}
+
+.tomada .player {
+  width: min(76vw, 900px);
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 1px solid var(--linha);
+  border-radius: var(--r-controle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.midia-real {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border: 0;
+}
+
+.tomada .legenda {
+  font: 600 19px var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.tomada .origem {
+  color: var(--fumaca);
+  font-size: 12.5px;
+}
+
+.abrir-externo {
+  color: var(--ouro);
+  font-weight: 500;
+  padding: var(--e-4);
+  text-align: center;
+}
+
+/* Camada privada do apresentador: nunca renderizada na camada pública */
+.painel-so-voce {
+  position: fixed;
+  right: var(--e-8);
+  top: 90px;
+  width: 340px;
+  background: var(--tinta-2);
+  border: 1px solid var(--ouro);
+  border-radius: var(--r-controle);
+  padding: var(--e-4);
+  z-index: 70;
+}
+
+.painel-so-voce .rot {
+  color: var(--ouro);
+  font: 500 11px var(--font-dados);
+  letter-spacing: 0.18em;
+  margin-bottom: var(--e-2);
+}
+
+.previa-privada {
+  aspect-ratio: 16 / 9;
+  background: var(--tinta-3);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--e-3);
+}
+
+.painel-so-voce .caminho-anexo {
+  color: var(--fumaca);
+  font-size: 12px;
+  margin: 6px 0 var(--e-3);
+  overflow-wrap: anywhere;
+}
+
+/* Falha ao abrir nunca é silenciosa: o anexo é nomeado no lugar da mídia */
+.erro-midia {
+  border: 1px solid var(--erro);
+  border-radius: var(--r-controle);
+  background: rgba(226, 93, 93, 0.08);
+  color: var(--erro);
+  padding: 14px 18px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Enquanto há mídia em tela cheia, a poeira não anima: o vídeo tem a máquina */
+.palco.com-tomada .poeira {
+  animation: none;
+  opacity: 0.35;
+}
+
+@media (max-width: 900px) {
+  .painel-so-voce {
+    left: var(--e-4);
+    right: var(--e-4);
+    width: auto;
+  }
+}

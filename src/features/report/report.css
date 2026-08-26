@@ -1,0 +1,87 @@
+/* Relatório — uma pergunta só: quanto cada assunto levou contra o previsto */
+.pagina-relatorio {
+  max-width: 940px;
+}
+
+.pagina-relatorio .voltar {
+  margin-bottom: var(--e-3);
+}
+
+
+.rel-tabela {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rel-tabela th {
+  font: 500 10.5px var(--font-dados);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fumaca);
+  text-align: left;
+  padding: var(--e-2) var(--e-3);
+  border-bottom: 1px solid var(--linha-2);
+}
+
+.rel-tabela td {
+  padding: var(--e-3);
+  border-bottom: 1px solid var(--linha);
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.rel-tabela .mono {
+  font-size: 13px;
+}
+
+.rel-tabela .inicio {
+  color: var(--fumaca);
+}
+
+/* A cor do tipo aparece também na linha do relatório */
+.rel-tabela .tipo-linha {
+  font: 500 10.5px var(--font-dados);
+  letter-spacing: 0.14em;
+}
+
+.barra-comp {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 130px;
+}
+
+.barra-comp i {
+  height: 5px;
+  display: block;
+}
+
+.barra-comp .prev-b {
+  background: var(--tinta-3);
+}
+
+.delta-mais {
+  color: var(--perigo);
+  font-weight: 600;
+}
+
+.delta-menos {
+  color: var(--resgate);
+  font-weight: 600;
+}
+
+.selo-res {
+  background: rgba(110, 198, 162, 0.15);
+  color: var(--resgate);
+  border-radius: 4px;
+  padding: 2px var(--e-2);
+  font: 600 10.5px var(--font-dados);
+}
+
+/* A ressalva do tempo relativo fala na voz humana, não na da máquina */
+.nota-relatorio {
+  font: italic 500 13px/1.6 var(--voz-humana);
+  color: var(--fumaca);
+  max-width: 560px;
+  margin: var(--e-6) 0 var(--e-4);
+}

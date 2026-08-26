@@ -1,0 +1,5 @@
+# better-sqlite3 é módulo nativo: precisa rodar o script de build para compilar/baixar o binding.
+# esbuild é dependência do Vite/Vitest e também instala binário próprio.
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true

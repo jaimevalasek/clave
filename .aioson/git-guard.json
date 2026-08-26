@@ -3,7 +3,43 @@
   "description": "Project-specific overrides for aioson git:guard. allowPaths affects path rules only; contentAllowPaths is a legacy whole-file bypass; prefer scoped contentAllowRules with an audit reason.",
   "allowPaths": [],
   "contentAllowPaths": [],
-  "contentAllowRules": [],
+  "contentAllowRules": [
+    {
+      "path": ".aioson/docs/integrations/aioson-endpoint-protocol.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "confirmed false positive via commit:prepare"
+    },
+    {
+      "path": ".aioson/docs/integrations/auth-integration-gaps.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "confirmed false positive via commit:prepare"
+    },
+    {
+      "path": ".aioson/docs/integrations/farmacia-implementation-review.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "confirmed false positive via commit:prepare"
+    },
+    {
+      "path": ".aioson/docs/integrations/platform-architecture.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "confirmed false positive via commit:prepare"
+    },
+    {
+      "path": "src/ui/typeColors.ts",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "o campo `token` do mapa tipo->metal guarda uma referencia a custom property CSS (`var(--tema)`), nao um segredo; arquivo inspecionado inteiro em 2026-08-25"
+    }
+  ],
   "blockPaths": [
     "node_modules/**",
     "aioson-logs/**"

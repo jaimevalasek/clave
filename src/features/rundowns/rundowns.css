@@ -1,0 +1,105 @@
+/* Lista de pautas — editorial: linhas de pauta, nunca uma grade de caixas */
+.acoes-topo {
+  margin-bottom: 20px;
+}
+
+.lista-pautas {
+  border-top: 1px solid var(--linha);
+}
+
+.linha-pauta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px var(--e-1);
+  border-bottom: 1px solid var(--linha);
+  transition: background 0.15s;
+}
+
+.linha-pauta:hover {
+  background: var(--tinta-2);
+}
+
+.num-pauta {
+  font: 500 13px var(--font-dados);
+  color: var(--fumaca);
+  width: 36px;
+  flex: none;
+}
+
+.linha-pauta .info {
+  flex: 1;
+  min-width: 0;
+}
+
+.linha-pauta .nome {
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+
+.linha-pauta .meta {
+  color: var(--fumaca);
+  font: 500 12px var(--font-dados);
+  display: flex;
+  gap: var(--e-4);
+  margin-top: var(--e-1);
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.linha-pauta .acoes {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+
+.linha-pauta:hover .acoes,
+.linha-pauta:focus-within .acoes {
+  opacity: 1;
+}
+
+.linha-pauta .acoes button {
+  padding: 6px var(--e-3);
+  border-radius: 4px;
+  color: var(--giz-2);
+  font: 500 12px var(--font-dados);
+}
+
+.linha-pauta .acoes button:hover {
+  color: var(--giz);
+  background: var(--tinta-3);
+}
+
+.tag-ultima {
+  color: var(--ouro);
+  font: 600 10px var(--font-dados);
+  letter-spacing: 0.12em;
+  margin-left: var(--e-2);
+}
+
+.tag-aberta {
+  color: var(--resgate);
+  font: 600 10px var(--font-dados);
+  letter-spacing: 0.12em;
+  margin-left: var(--e-2);
+}
+
+.linha-pauta .ver-relatorio {
+  color: var(--ouro);
+  font: 600 12px var(--font-dados);
+}
+
+@media (max-width: 900px) {
+  .linha-pauta {
+    flex-wrap: wrap;
+  }
+
+  .linha-pauta .acoes {
+    opacity: 1;
+    width: 100%;
+    padding-left: var(--e-14);
+  }
+}

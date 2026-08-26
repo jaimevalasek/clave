@@ -1,8 +1,13 @@
 {
-  "name": "Clave Prototipe",
-  "origin": "created",
-  "packages": [],
-  "slug": "aioson-crave-2",
-  "systems": [],
-  "version": "0.1.0"
+  "slug": "clave",
+  "name": "Clave",
+  "version": "0.1.0",
+  "runtime": "node",
+  "stack": "split",
+  "has_api": true,
+  "processes": {
+    "frontend": { "port_env": "PORT", "framework": "vite" },
+    "backend": { "port_env": "BACKEND_PORT", "framework": "node" }
+  },
+  "webview_target": "frontend"
 }

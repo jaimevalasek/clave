@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "mode": "project",
+  "classification": "MICRO",
+  "sequence": [
+    "setup",
+    "product",
+    "sheldon",
+    "planner",
+    "dev",
+    "qa"
+  ],
+  "current": null,
+  "next": null,
+  "completed": [
+    "setup",
+    "dev",
+    "qa"
+  ],
+  "skipped": [
+    "product",
+    "sheldon",
+    "planner"
+  ],
+  "featureSlug": null,
+  "detour": null,
+  "updatedAt": "2026-08-18T07:56:21.831Z"
+}

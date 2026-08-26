@@ -1,0 +1,123 @@
+/* Barra superior — chrome mínimo: a pauta é a estrutura, não a navegação */
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--e-6);
+  padding: 0 var(--e-6);
+  height: 56px;
+  border-bottom: 1px solid var(--linha);
+  background: var(--tinta);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+#topbar .logo {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  padding: 9px var(--e-1) 9px 0;
+  font: 600 17px var(--font-display);
+  letter-spacing: 0.08em;
+  transition: color 0.15s;
+}
+
+#topbar .logo:hover {
+  color: var(--ouro);
+}
+
+#topbar nav {
+  display: flex;
+  gap: 2px;
+  align-self: stretch;
+}
+
+#topbar nav button {
+  padding: 0 14px;
+  color: var(--fumaca);
+  font: 500 11.5px var(--font-dados);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+}
+
+#topbar nav button.ativo {
+  color: var(--giz);
+  border-bottom-color: var(--ouro);
+}
+
+#topbar nav button:hover:not([disabled]) {
+  color: var(--giz);
+}
+
+#topbar nav button[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pauta-chip {
+  margin-left: auto;
+  color: var(--fumaca);
+  font: 500 12px var(--font-dados);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pauta-chip b {
+  color: var(--giz-2);
+  font-weight: 500;
+}
+
+main {
+  min-height: calc(100vh - 56px);
+}
+
+.badge-ar {
+  background: var(--resgate);
+  color: var(--tinta);
+  border-radius: 4px;
+  padding: var(--e-1) var(--e-3);
+  font: 600 11px var(--font-dados);
+  letter-spacing: 0.1em;
+  animation: pulso-ar 1.6s ease-in-out infinite;
+}
+
+@media (max-width: 900px) {
+  #topbar {
+    padding: 0 var(--e-3);
+    gap: var(--e-2);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+
+  #topbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  #topbar .logo {
+    flex: none;
+    gap: 0;
+    min-width: 44px;
+    justify-content: center;
+  }
+
+  #topbar .logo .wordmark {
+    display: none;
+  }
+
+  #topbar nav {
+    flex: none;
+  }
+
+  #topbar nav button {
+    padding: 0 var(--e-2);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .pauta-chip {
+    display: none;
+  }
+}
