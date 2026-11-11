@@ -10,6 +10,7 @@ import {
   findRundownSummary,
   insertRundown,
   listRundowns,
+  togglePinRundown,
   touchRundown,
   updateRundown
 } from '../repositories/rundownRepository.js';
@@ -41,13 +42,23 @@ export function create(db: Database, payload: unknown): Rundown {
   return insertRundown(db, result.value, nowIso());
 }
 
-export function rename(db: Database, id: string, payload: unknown): RundownSummary {
+export function update(db: Database, id: string, payload: unknown): RundownSummary {
   const existing = findRundown(db, id);
   if (!existing) throw notFound('Pauta não encontrada.');
   const result = validateRundown(payload);
   if (!result.ok) throw validationFailed(result.errors);
   updateRundown(db, id, result.value, nowIso());
   return getSummary(db, id);
+}
+
+export const rename = update;
+
+export function togglePin(db: Database, id: string): RundownSummary {
+  const existing = findRundown(db, id);
+  if (!existing) throw notFound('Pauta não encontrada.');
+  const summary = togglePinRundown(db, id, nowIso());
+  if (!summary) throw notFound('Pauta não encontrada.');
+  return summary;
 }
 
 export function duplicate(db: Database, id: string): Rundown {

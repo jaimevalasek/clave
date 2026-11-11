@@ -1,6 +1,6 @@
 import { expect, test } from './fixtures';
 import type { Locator, Page } from '@playwright/test';
-import { createBlock, createRundown, goLive } from './helpers';
+import { createBlock, createRundown, goLive, showStageTimers } from './helpers';
 
 /**
  * A cenografia sobrevive à compressão do vídeo: a cor diz o tipo em toda
@@ -37,6 +37,7 @@ test('AC-clave-36 — a mesma etiqueta mostra o mesmo metal nas seis superfície
   await expect(mediaCard).toHaveCSS('border-left-color', NIOBIO);
 
   await goLive(page);
+  await showStageTimers(page);
 
   // 3. Selo do Palco e a palavra viva do título.
   await expect(page.locator('.selo-tipo')).toHaveCSS('color', COBRE);

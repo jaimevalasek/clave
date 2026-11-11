@@ -93,6 +93,21 @@ export const MIGRATIONS: Migration[] = [
       if (columns.some((column) => column.name === 'depth')) return;
       db.exec(`ALTER TABLE beats ADD COLUMN depth INTEGER NOT NULL DEFAULT 0;`);
     }
+  },
+  {
+    // Classificação de tipo (Pauta / Apresentação / Evento) e fixação (pin) de pauta.
+    // Aditiva e idempotente com PRAGMA table_info(rundowns).
+    version: 5,
+    name: 'rundown-kind-and-pinned',
+    apply(db) {
+      const columns = db.all<{ name: string }>('PRAGMA table_info(rundowns)');
+      if (!columns.some((c) => c.name === 'kind')) {
+        db.exec(`ALTER TABLE rundowns ADD COLUMN kind TEXT NOT NULL DEFAULT 'rundown';`);
+      }
+      if (!columns.some((c) => c.name === 'pinned')) {
+        db.exec(`ALTER TABLE rundowns ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0;`);
+      }
+    }
   }
 ];
 

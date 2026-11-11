@@ -1,6 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { startTestServer } from '../helpers/testServer';
 import type { TestServer } from '../helpers/testServer';
 import type { Block, BlockType, PreflightProblem, Run, Rundown } from '../../shared/types';
@@ -86,6 +88,32 @@ describe('AC-clave-15 — a checagem pré-live acontece antes de a execução co
       `/api/rundowns/${rundownId}/preflight`
     );
     expect(body.problems).toHaveLength(0);
+  });
+
+  it('anexo de link file:// existente no disco não vira problema, mas arquivo inexistente vira', async () => {
+    const rundownId = await newRundown('Pauta do anexo de link estatico');
+    const blockId = await addBlock(rundownId, 'Bloco com link local', 'media');
+    const tempFile = path.join(os.tmpdir(), 'clave-test-tutorial-preflight.html');
+    fs.writeFileSync(tempFile, '<h1>Tutorial</h1>');
+    const fileUrl = pathToFileURL(tempFile).href;
+
+    try {
+      await server.request('PUT', `/api/blocks/${blockId}/attachments`, {
+        attachments: [
+          { type: 'link', label: 'Tutorial local', path: fileUrl },
+          { type: 'link', label: 'Tutorial quebrado', path: 'file:///C:/nao-existe-123.html' }
+        ]
+      });
+
+      const { body } = await server.request<{ problems: PreflightProblem[] }>(
+        'GET',
+        `/api/rundowns/${rundownId}/preflight`
+      );
+      expect(body.problems).toHaveLength(1);
+      expect(body.problems[0].attachmentLabel).toBe('Tutorial quebrado');
+    } finally {
+      fs.unlinkSync(tempFile);
+    }
   });
 
   it('a imagem de um ponto entra na mesma checagem que os anexos', async () => {

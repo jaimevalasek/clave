@@ -35,7 +35,7 @@ describe('AC-clave-35 — a interface fala o vocabulário canônico', () => {
     expect(VOCABULARY.library).toBe('Acervo');
   });
 
-  it('nenhum texto de interface usa slide, apresentação, item ou task para os conceitos', () => {
+  it('nenhum texto de interface usa slide, item ou task para os conceitos', () => {
     const files = sourceFiles(path.resolve('src'), ['.tsx']);
     expect(files.length).toBeGreaterThan(10);
 

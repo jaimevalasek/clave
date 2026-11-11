@@ -30,7 +30,7 @@ export function StageTimers({
     : 0;
 
   return (
-    <div className="lateral-palco">
+    <div className="lateral-palco" id="lateral-tempos">
       <div className="cron-bloco" data-testid="cronometro-bloco">
         <div className="rot">neste assunto</div>
         <div className="num mono" data-testid="relogio-bloco">

@@ -1,5 +1,5 @@
 import { expect, test } from './fixtures';
-import { createBlock, createRundown, goLive } from './helpers';
+import { createBlock, createRundown, goLive, showStageTimers } from './helpers';
 
 /**
  * O Palco pelo caminho real: gate de entrada, condução por teclado e por
@@ -45,6 +45,8 @@ test('AC-clave-16 — o Palco monta as quatro faixas com o bloco no ar', async (
   await expect(page.getByTestId('mini-pauta')).toBeVisible();
   await expect(page.getByTestId('relogio-global')).toHaveText(/^\d{2}:\d{2}$/);
   await expect(page.getByTestId('titulo-palco')).toContainText('Abertura do Clave');
+  await expect(page.getByTestId('cronometro-bloco')).toHaveCount(0);
+  await showStageTimers(page);
   await expect(page.getByTestId('cronometro-bloco')).toContainText('previsto 05:00');
   await expect(page.getByTestId('proximo-bloco')).toHaveText('Demo da curva');
   await expect(page.getByTestId('deck-resgate')).toBeVisible();
@@ -298,6 +300,7 @@ test('AC-clave-52 — o Palco diz quanto falta para fechar a pauta', async ({ pa
   await createBlock(page, { lane: 'media', title: 'Demo', duration: 20 });
   await createBlock(page, { lane: 'interaction', title: 'Perguntas', duration: 5 });
   await goLive(page);
+  await showStageTimers(page);
 
   // Nada correu ainda: falta a pauta inteira.
   await expect(page.getByTestId('minutos-restantes')).toContainText('35');
@@ -351,6 +354,7 @@ test('AC-clave-19 — os dois cronômetros correm e o estouro é sinalizado sem 
   await createRundown(page, 'Pauta do estouro');
   await createBlock(page, { lane: 'topic', title: 'Bloco curtíssimo', duration: 1 });
   await goLive(page);
+  await showStageTimers(page);
 
   const global = page.getByTestId('relogio-global');
   const block = page.getByTestId('relogio-bloco');

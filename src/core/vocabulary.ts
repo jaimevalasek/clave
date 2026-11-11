@@ -9,7 +9,7 @@
  */
 
 /** Termos proibidos para os conceitos do produto — o teste de vocabulário varre por eles. */
-export const FORBIDDEN_TERMS = ['slide', 'apresentação', 'apresentacao', 'item', 'task'] as const;
+export const FORBIDDEN_TERMS = ['slide', 'item', 'task'] as const;
 
 export const VOCABULARY = {
   appName: 'Clave',
@@ -50,6 +50,16 @@ export const COPY = {
     rename: 'Renomear',
     duplicate: 'Duplicar',
     remove: 'Apagar',
+    pin: 'Fixar',
+    unpin: 'Desafixar',
+    pinned: 'FIXADO',
+    fieldPinned: 'Fixar no topo',
+    fieldKind: 'Tipo',
+    kinds: {
+      rundown: 'Pauta',
+      presentation: 'Apresentação',
+      event: 'Evento'
+    },
     lastUsed: 'ÚLTIMA USADA',
     openRun: 'EXECUÇÃO EM ABERTO',
     seeReport: 'ver relatório do trajeto',
@@ -71,7 +81,8 @@ export const COPY = {
     deleted: 'Pauta apagada'
   },
   board: {
-    eyebrow: (date: string, planned: string) => `Pauta · ${date} · ${planned} previstos`,
+    eyebrow: (date: string, planned: string, kindLabel = 'Pauta') =>
+      `${kindLabel} · ${date} · ${planned} previstos`,
     emptyTitle: 'Pauta em branco',
     emptyBody:
       'A pauta é uma lista só, de cima para baixo: cada bloco é um assunto, e a ordem visual é a ordem da live. Dentro do bloco você escreve os pontos — as linhas que vão aparecendo no Palco conforme você fala.',

@@ -8,7 +8,8 @@
 }
 
 .bancada-topo {
-  padding: 20px var(--e-6) var(--e-2);
+  padding: 20px var(--e-6) var(--e-4);
+  max-width: 1120px;
 }
 
 .bancada-topo .voltar {
@@ -24,6 +25,23 @@
   letter-spacing: -0.02em;
 }
 
+/* D-02: five staff lines + gold compass under the rundown title */
+.bancada-topo::after {
+  content: '';
+  display: block;
+  height: 33px;
+  margin-top: var(--e-4);
+  background:
+    linear-gradient(var(--ouro), var(--ouro)) 0 0 / 2px 33px no-repeat,
+    repeating-linear-gradient(
+      180deg,
+      var(--linha-fraca) 0,
+      var(--linha-fraca) 1px,
+      transparent 1px,
+      transparent 8px
+    );
+}
+
 .canvas {
   flex: 1;
   min-height: 0;
@@ -36,18 +54,30 @@
   max-width: 560px;
 }
 
+/* Workbench: ordered rundown on the left, rescue deck as a side rail */
+.bancada-mesa {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: var(--e-8);
+  align-items: start;
+  max-width: 1120px;
+}
+
+.pauta-coluna {
+  min-width: 0;
+}
+
 .pauta-lista {
   list-style: none;
-  max-width: 720px;
 }
 
 /* Cada linha carrega a numeração da ordem e o cartão do assunto */
 .linha-bloco {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: var(--e-3);
   padding: 5px 0;
-  border-radius: 6px;
+  border-radius: var(--r-controle);
 }
 
 .linha-bloco.alvo-drop {
@@ -58,19 +88,18 @@
 .linha-bloco .ordem {
   flex: none;
   width: 30px;
-  padding-top: 11px;
   font-size: 11px;
   letter-spacing: 0.1em;
   color: var(--fumaca);
   text-align: right;
 }
 
-/* Reserva: fora da ordem, e por isso separada por linha tracejada */
+/* Rescue rail: off the rundown order, beside it on wide screens */
 .reserva {
-  max-width: 720px;
-  margin-top: var(--e-6);
-  padding-top: var(--e-4);
-  border-top: 1px dashed rgba(110, 198, 162, 0.4);
+  position: sticky;
+  top: var(--e-4);
+  padding-left: var(--e-6);
+  border-left: 1px dashed rgba(110, 198, 162, 0.4);
 }
 
 .reserva h2 {
@@ -90,9 +119,9 @@
 
 .reserva-cartas {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: var(--e-2);
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 .cartao {
@@ -101,7 +130,7 @@
   background: var(--tinta-2);
   border: 1px solid var(--linha);
   border-left: 3px solid var(--fumaca);
-  border-radius: 6px;
+  border-radius: var(--r-cartao);
   padding: 9px var(--e-3) var(--e-2);
   cursor: grab;
   user-select: none;
@@ -109,6 +138,29 @@
   position: relative;
   touch-action: none;
   animation: surge 0.35s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+/* Track cards are editorial rows, not hollow bars */
+.pauta-lista .cartao {
+  display: flex;
+  align-items: center;
+  gap: var(--e-4);
+  padding: 10px var(--e-4);
+}
+
+.pauta-lista .cartao .titulo {
+  flex: 1;
+  min-width: 0;
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pauta-lista .cartao .rodape {
+  margin-top: 0;
+  flex: none;
 }
 
 .cartao:hover {
@@ -177,10 +229,10 @@
   border-left-color: var(--resgate);
 }
 
-/* Na reserva o cartão volta a ser carta: largura própria, fora da lista */
+/* Rescue cards stay cards, stacked in the rail */
 .reserva-cartas .cartao {
   flex: none;
-  width: 190px;
+  width: 100%;
 }
 
 .cartao .alerta-anexo {
@@ -199,14 +251,18 @@
 }
 
 .add-bloco {
+  display: block;
+  width: calc(100% - 42px);
   margin-left: 42px;
-  padding: var(--e-2) var(--e-4);
-  border-radius: 6px;
+  margin-top: var(--e-2);
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--r-controle);
   border: 1px dashed var(--fumaca);
   color: var(--fumaca);
   font: 500 12px var(--font-dados);
   letter-spacing: 0.08em;
   background: var(--tinta);
+  text-align: left;
   transition: color 0.15s, border-color 0.15s;
 }
 
@@ -216,8 +272,9 @@
 }
 
 .add-resgate {
+  width: 100%;
   margin-left: 0;
-  align-self: center;
+  margin-top: 0;
   border-color: rgba(110, 198, 162, 0.5);
   color: var(--resgate);
 }
@@ -367,5 +424,36 @@
 @media (max-width: 900px) {
   .canvas {
     padding: 0 var(--e-3) var(--e-1);
+  }
+
+  .bancada-mesa {
+    grid-template-columns: 1fr;
+    gap: var(--e-6);
+  }
+
+  .reserva {
+    position: static;
+    padding-left: 0;
+    border-left: 0;
+    margin-top: var(--e-2);
+    padding-top: var(--e-4);
+    border-top: 1px dashed rgba(110, 198, 162, 0.4);
+  }
+
+  .pauta-lista .cartao {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .pauta-lista .cartao .titulo {
+    flex: 1 1 100%;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .pauta-lista .cartao .rodape {
+    margin-top: 2px;
   }
 }

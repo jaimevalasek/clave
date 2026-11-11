@@ -18,7 +18,11 @@ rundownRoutes.get('/rundowns/:id', (request, response) => {
 });
 
 rundownRoutes.patch('/rundowns/:id', (request, response) => {
-  response.json({ rundown: rundownService.rename(db(), request.params.id, request.body) });
+  response.json({ rundown: rundownService.update(db(), request.params.id, request.body) });
+});
+
+rundownRoutes.post('/rundowns/:id/toggle-pin', (request, response) => {
+  response.json({ rundown: rundownService.togglePin(db(), request.params.id) });
 });
 
 rundownRoutes.delete('/rundowns/:id', (request, response) => {

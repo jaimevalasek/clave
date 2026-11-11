@@ -6,6 +6,7 @@ import { blockRoutes } from './routes/blocks.js';
 import { platformRoutes } from './routes/platform.js';
 import { libraryRoutes } from './routes/library.js';
 import { mediaRoutes } from './routes/media.js';
+import { openUrlRoutes } from './routes/openUrl.js';
 import { preferenceRoutes } from './routes/preferences.js';
 import { rundownRoutes } from './routes/rundowns.js';
 import { runRoutes } from './routes/runs.js';
@@ -21,7 +22,8 @@ const API_ROUTERS: Router[] = [
   runRoutes,
   mediaRoutes,
   libraryRoutes,
-  preferenceRoutes
+  preferenceRoutes,
+  openUrlRoutes
 ];
 
 export function createApp(): Express {

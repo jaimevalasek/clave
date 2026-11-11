@@ -213,3 +213,90 @@ describe('AC-clave-04 — apagar remove a pauta e preserva o trajeto já gravado
     expect(body.code).toBe('not_found');
   });
 });
+
+describe('Tipos de pauta e fixação (pin)', () => {
+  it('cria pauta com tipo apresentação ou evento e fixada', async () => {
+    const { status, body } = await server.request<{ rundown: Rundown }>('POST', '/api/rundowns', {
+      title: 'Apresentação AIOSON Play',
+      date: '2026-09-18',
+      kind: 'presentation',
+      pinned: true
+    });
+    expect(status).toBe(201);
+    expect(body.rundown.kind).toBe('presentation');
+    expect(body.rundown.pinned).toBe(true);
+  });
+
+  it('rejeita tipo inválido', async () => {
+    const { status, body } = await server.request<{ code: string; fields: { field: string }[] }>(
+      'POST',
+      '/api/rundowns',
+      {
+        title: 'Pauta com tipo desconhecido',
+        kind: 'invalido'
+      }
+    );
+    expect(status).toBe(422);
+    expect(body.fields[0].field).toBe('kind');
+  });
+
+  it('alterna o estado fixado via toggle-pin e atualiza via PATCH', async () => {
+    const created = await createRundown('Pauta para fixar');
+    expect(created.pinned).toBe(false);
+
+    const toggled = await server.request<{ rundown: RundownSummary }>(
+      'POST',
+      `/api/rundowns/${created.id}/toggle-pin`
+    );
+    expect(toggled.status).toBe(200);
+    expect(toggled.body.rundown.pinned).toBe(true);
+
+    const patched = await server.request<{ rundown: RundownSummary }>(
+      'PATCH',
+      `/api/rundowns/${created.id}`,
+      {
+        title: 'Pauta Desafixada',
+        date: '2026-09-18',
+        kind: 'event',
+        pinned: false
+      }
+    );
+    expect(patched.status).toBe(200);
+    expect(patched.body.rundown.kind).toBe('event');
+    expect(patched.body.rundown.pinned).toBe(false);
+  });
+
+  it('pautas fixadas aparecem no topo da listagem independente da data de abertura', async () => {
+    const normal = await createRundown('Normal recente');
+    const pinned = await createRundown('Pitch AIOSON Play Fixo');
+
+    await server.request('POST', `/api/rundowns/${pinned.id}/toggle-pin`);
+    // Abre a normal depois, mas a fixada deve continuar no topo
+    await server.request('POST', `/api/rundowns/${normal.id}/open`);
+
+    const { body } = await server.request<{ rundowns: RundownSummary[] }>('GET', '/api/rundowns');
+    const firstItem = body.rundowns[0];
+    expect(firstItem.id).toBe(pinned.id);
+    expect(firstItem.pinned).toBe(true);
+  });
+
+  it('duplicar preserva o tipo da pauta de origem e nasce desafixada', async () => {
+    const { body: createBody } = await server.request<{ rundown: Rundown }>(
+      'POST',
+      '/api/rundowns',
+      {
+        title: 'Pitch Original',
+        date: '2026-09-18',
+        kind: 'presentation',
+        pinned: true
+      }
+    );
+
+    const { body: dupBody } = await server.request<{ rundown: Rundown }>(
+      'POST',
+      `/api/rundowns/${createBody.rundown.id}/duplicate`
+    );
+    expect(dupBody.rundown.kind).toBe('presentation');
+    expect(dupBody.rundown.pinned).toBe(false);
+  });
+});

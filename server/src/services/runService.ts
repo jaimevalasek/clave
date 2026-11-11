@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { Database } from '../db/database.js';
 import { badRequest, notFound } from '../http/errors.js';
 import { mediaDir } from '../db/paths.js';
@@ -57,6 +58,30 @@ function localMediaExists(relative: string): boolean {
   return Boolean(resolved && fs.existsSync(resolved));
 }
 
+function fileUrlExists(urlStr: string): boolean {
+  try {
+    const filePath = fileURLToPath(urlStr);
+    return fs.existsSync(filePath);
+  } catch {
+    return false;
+  }
+}
+
+function localMediaOrFileExists(targetPath: string, type?: string): boolean {
+  if (localMediaExists(targetPath)) return true;
+  if (/^file:\/\//i.test(targetPath)) {
+    return fileUrlExists(targetPath);
+  }
+  if (type === 'link' && path.isAbsolute(targetPath)) {
+    try {
+      return fs.existsSync(targetPath);
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
 /**
  * Checagem pré-live: toda mídia local inexistente é devolvida para a tela
  * marcar antes de a execução começar. Anexo e imagem de ponto entram na mesma
@@ -69,7 +94,7 @@ export function preflight(db: Database, rundownId: string): PreflightProblem[] {
   for (const block of listBlocks(db, rundownId)) {
     for (const attachment of block.attachments) {
       if (!attachment.path || isWebUrl(attachment.path)) continue;
-      if (localMediaExists(attachment.path)) continue;
+      if (localMediaOrFileExists(attachment.path, attachment.type)) continue;
       problems.push({
         blockId: block.id,
         blockTitle: block.title,

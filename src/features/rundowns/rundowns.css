@@ -87,6 +87,94 @@
   margin-left: var(--e-2);
 }
 
+.tag-tipo {
+  font: 600 10px var(--font-dados);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: var(--e-2);
+}
+
+.tag-tipo-rundown {
+  color: var(--fumaca);
+  background: var(--tinta-3);
+}
+
+.tag-tipo-presentation {
+  color: var(--ouro);
+  background: rgba(232, 186, 82, 0.12);
+  border: 1px solid rgba(232, 186, 82, 0.3);
+}
+
+.tag-tipo-event {
+  color: #B49BD8;
+  background: rgba(180, 155, 216, 0.12);
+  border: 1px solid rgba(180, 155, 216, 0.3);
+}
+
+.tag-fixada {
+  color: var(--ouro);
+  background: rgba(232, 186, 82, 0.16);
+  border: 1px solid rgba(232, 186, 82, 0.4);
+  font: 700 10px var(--font-dados);
+  letter-spacing: 0.12em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: var(--e-2);
+}
+
+.seletor-tipo {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.opcao-tipo {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--tinta-2);
+  border: 1px solid var(--linha);
+  color: var(--giz-2);
+  font: 500 13px var(--font-dados);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.opcao-tipo:hover {
+  background: var(--tinta-3);
+  color: var(--giz);
+}
+
+.opcao-tipo.ativa {
+  background: var(--tinta-3);
+  border-color: var(--ouro);
+  color: var(--ouro);
+  font-weight: 600;
+}
+
+.campo-checkbox {
+  margin-top: 14px;
+}
+
+.rotulo-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font: 500 13px var(--font-dados);
+  color: var(--giz-2);
+}
+
+.rotulo-checkbox input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--ouro);
+  width: 16px;
+  height: 16px;
+}
+
 .linha-pauta .ver-relatorio {
   color: var(--ouro);
   font: 600 12px var(--font-dados);

@@ -172,6 +172,7 @@ export function BoardPage({ rundownId }: { rundownId: string }) {
 
   const plannedMinutes = track.reduce((total, block) => total + block.durationMinutes, 0);
   const editing = drawer.kind === 'edit' ? drawer.block : null;
+  const kindLabel = COPY.rundowns.kinds[rundown.kind || 'rundown'];
 
   return (
     <div className="bancada">
@@ -180,7 +181,7 @@ export function BoardPage({ rundownId }: { rundownId: string }) {
           {COPY.nav.backToRundowns}
         </button>
         <div className="eyebrow batuta">
-          {COPY.board.eyebrow(formatBrDate(rundown.date), formatMinutes(plannedMinutes))}
+          {COPY.board.eyebrow(formatBrDate(rundown.date), formatMinutes(plannedMinutes), kindLabel)}
         </div>
         <h1>{rundown.title}</h1>
         {writeError ? <ErrorBanner action={writeError.action} error={writeError.error} /> : null}

@@ -1,11 +1,15 @@
 import { isIsoDate, invalid, requiredText, valid } from './result.js';
 import type { FieldError, ValidationResult } from './result.js';
+import { RUNDOWN_KINDS } from '../types.js';
+import type { RundownKind } from '../types.js';
 
 export const RUNDOWN_TITLE_MAX_LENGTH = 120;
 
 export interface RundownInput {
   title: string;
   date: string;
+  kind: RundownKind;
+  pinned: boolean;
 }
 
 /** Data de hoje em ISO curto, usada como padrão sugerido na criação. */
@@ -26,6 +30,22 @@ export function validateRundown(raw: unknown): ValidationResult<RundownInput> {
     errors.push({ field: 'date', message: 'Informe uma data válida para a live.' });
   }
 
+  let kind: RundownKind = 'rundown';
+  if (input.kind !== undefined) {
+    if (typeof input.kind === 'string' && (RUNDOWN_KINDS as readonly string[]).includes(input.kind)) {
+      kind = input.kind as RundownKind;
+    } else {
+      errors.push({ field: 'kind', message: 'Tipo de pauta inválido.' });
+    }
+  }
+
+  const pinned = Boolean(input.pinned);
+
   if (errors.length) return invalid(errors);
-  return valid({ title: (title as { value: string }).value, date: rawDate });
+  return valid({
+    title: (title as { value: string }).value,
+    date: rawDate,
+    kind,
+    pinned
+  });
 }

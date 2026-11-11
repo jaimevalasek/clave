@@ -4,12 +4,22 @@ import { COPY } from '../../core/vocabulary';
 import { ErrorBanner } from '../../ui/ErrorBanner';
 import { Modal } from '../../ui/Modal';
 import { RUNDOWN_TITLE_MAX_LENGTH, todayIso } from '../../../shared/validation/rundown';
+import type { RundownKind } from '../../../shared/types';
+
+export interface RundownFormData {
+  title: string;
+  date: string;
+  kind: RundownKind;
+  pinned: boolean;
+}
 
 interface RundownFormProps {
   mode: 'create' | 'rename';
   initialTitle?: string;
   initialDate?: string;
-  onSubmit(input: { title: string; date: string }): Promise<void>;
+  initialKind?: RundownKind;
+  initialPinned?: boolean;
+  onSubmit(input: RundownFormData): Promise<void>;
   onDismiss(): void;
 }
 
@@ -27,6 +37,8 @@ export function RundownForm({
   mode,
   initialTitle = '',
   initialDate,
+  initialKind = 'rundown',
+  initialPinned = false,
   onSubmit,
   onDismiss
 }: RundownFormProps) {
@@ -36,6 +48,8 @@ export function RundownForm({
 
   const [title, setTitle] = useState(initialTitle);
   const [date, setDate] = useState(initialDate || todayIso());
+  const [kind, setKind] = useState<RundownKind>(initialKind);
+  const [pinned, setPinned] = useState<boolean>(initialPinned);
   const [titleError, setTitleError] = useState<string | null>(null);
   const [writeError, setWriteError] = useState<unknown>(null);
   const [saving, setSaving] = useState(false);
@@ -51,7 +65,7 @@ export function RundownForm({
     setTitleError(null);
     setWriteError(null);
     try {
-      await onSubmit({ title: title.trim(), date });
+      await onSubmit({ title: title.trim(), date, kind, pinned });
     } catch (error) {
       // Falha de validação volta no campo; falha de escrita vira faixa dentro do
       // próprio formulário, com o que foi digitado intacto para reenviar.
@@ -88,6 +102,25 @@ export function RundownForm({
         }}
       >
         {writeError ? <ErrorBanner action={ACTION_LABEL[mode]} error={writeError} /> : null}
+        <div className="campo">
+          <label>{COPY.rundowns.fieldKind}</label>
+          <div className="seletor-tipo" role="radiogroup" aria-label={COPY.rundowns.fieldKind}>
+            {(['rundown', 'presentation', 'event'] as const).map((k) => (
+              <button
+                key={k}
+                type="button"
+                role="radio"
+                aria-checked={kind === k}
+                className={`opcao-tipo${kind === k ? ' ativa' : ''}`}
+                data-tipo={k}
+                data-testid={`opcao-tipo-${k}`}
+                onClick={() => setKind(k)}
+              >
+                {COPY.rundowns.kinds[k]}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className={`campo${titleError ? ' invalido' : ''}`}>
           <label htmlFor={titleId}>{COPY.rundowns.fieldTitle}</label>
           <input
@@ -120,6 +153,18 @@ export function RundownForm({
             value={date}
             onChange={(event) => setDate(event.target.value || todayIso())}
           />
+        </div>
+        <div className="campo-checkbox">
+          <label className="rotulo-checkbox">
+            <input
+              type="checkbox"
+              name="pinned"
+              checked={pinned}
+              data-testid="campo-fixado"
+              onChange={(event) => setPinned(event.target.checked)}
+            />
+            <span>{COPY.rundowns.fieldPinned}</span>
+          </label>
         </div>
         {/* Enter no formulário salva; o botão de gate fica no rodapé do modal. */}
         <button type="submit" hidden aria-hidden="true" tabIndex={-1} />

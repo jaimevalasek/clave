@@ -89,6 +89,17 @@ export function RundownListPage() {
               <div className="info">
                 <div className="nome">
                   {rundown.title}
+                  <span
+                    className={`tag-tipo tag-tipo-${rundown.kind || 'rundown'}`}
+                    data-testid={`tipo-${rundown.id}`}
+                  >
+                    {COPY.rundowns.kinds[rundown.kind || 'rundown']}
+                  </span>
+                  {rundown.pinned ? (
+                    <span className="tag-fixada" data-testid={`marca-fixada-${rundown.id}`}>
+                      {COPY.rundowns.pinned}
+                    </span>
+                  ) : null}
                   {rundown.id === currentRundownId ? (
                     <span className="tag-ultima">{COPY.rundowns.lastUsed}</span>
                   ) : null}
@@ -124,6 +135,20 @@ export function RundownListPage() {
                   onClick={() => navigate(routes.board(rundown.id))}
                 >
                   {COPY.rundowns.open}
+                </button>
+                <button
+                  type="button"
+                  data-testid={`acao-fixar-${rundown.id}`}
+                  onClick={() =>
+                    void runWrite(rundown.pinned ? 'desafixar a pauta' : 'fixar a pauta', async () => {
+                      const payload = await api.post<{ rundown: RundownSummary }>(
+                        `/api/rundowns/${rundown.id}/toggle-pin`
+                      );
+                      toast.push(payload.rundown.pinned ? 'Fixada no topo' : 'Desafixada');
+                    })
+                  }
+                >
+                  {rundown.pinned ? COPY.rundowns.unpin : COPY.rundowns.pin}
                 </button>
                 <button type="button" onClick={() => setDialog({ kind: 'rename', rundown })}>
                   {COPY.rundowns.rename}
@@ -177,6 +202,8 @@ export function RundownListPage() {
           mode="rename"
           initialTitle={dialog.rundown.title}
           initialDate={dialog.rundown.date}
+          initialKind={dialog.rundown.kind}
+          initialPinned={dialog.rundown.pinned}
           onDismiss={() => setDialog({ kind: 'none' })}
           onSubmit={async (input) => {
             await api.patch(`/api/rundowns/${dialog.rundown.id}`, input);

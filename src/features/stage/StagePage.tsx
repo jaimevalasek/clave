@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '../../core/api';
 import { COPY, VOCABULARY } from '../../core/vocabulary';
 import { rescueBlocks, trackBlocks, useWorkspace } from '../../core/store';
@@ -9,6 +9,7 @@ import { Modal } from '../../ui/Modal';
 import { useToast } from '../../ui/Toast';
 import { metalOf } from '../../ui/typeColors';
 import type { Attachment, Block, Beat, Run } from '../../../shared/types';
+import { isWebUrl } from '../../../shared/validation/attachment';
 import { AttachmentViewer } from '../attachments/AttachmentViewer';
 import { PrivatePanel } from '../attachments/PrivatePanel';
 import { PrivateNote } from './PrivateNote';
@@ -17,6 +18,8 @@ import { StageTimers } from './StageTimers';
 import { drawRescue, isInRescue, trackIndexToResume, usedRescueIds } from './rescue';
 import { beatToAdvance, beatToRewind, doneCount, remainingSeconds, revealedBeats } from './beats';
 import { StageBeats } from './StageBeats';
+import { StageCarousel } from './StageCarousel';
+import { landingSlideIndex, nextSlideIndex, previousSlideIndex } from './slides';
 import { useRunClock } from './useRunClock';
 import { useStageShortcuts } from './useStageShortcuts';
 import './stage.css';
@@ -68,6 +71,9 @@ export function StagePage({ rundownId, runId, onLeave, onFinished }: StagePagePr
   const [brokenAttachmentIds, setBrokenAttachmentIds] = useState<Set<string>>(() => new Set());
   const [writeError, setWriteError] = useState<{ action: string; error: unknown } | null>(null);
   const [flash, setFlash] = useState('');
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [timersOpen, setTimersOpen] = useState(false);
+  const slideLanding = useRef<'start' | 'end'>('start');
   const toast = useToast();
 
   // O Palco é a tela que o OBS captura: avisos pendentes da Bancada não entram
@@ -126,6 +132,12 @@ export function StagePage({ rundownId, runId, onLeave, onFinished }: StagePagePr
     blocks.find((block) => block.id === currentStep?.blockId) ?? track[trackIndex] ?? null;
   const next = inRescue ? (track[trackIndex] ?? null) : (track[trackIndex + 1] ?? null);
   const clock = useRunClock(run);
+
+  useEffect(() => {
+    const count = current?.attachments.length ?? 0;
+    setSlideIndex(landingSlideIndex(count, slideLanding.current));
+    slideLanding.current = 'start';
+  }, [current?.id]);
 
   const write = useCallback(
     async (action: string, work: () => Promise<{ run: Run }>) => {
@@ -186,14 +198,20 @@ export function StagePage({ rundownId, runId, onLeave, onFinished }: StagePagePr
   }, [runId, write, onFinished]);
 
   const advance = useCallback(() => {
-    // O avanço percorre primeiro os pontos do bloco no ar; só quando eles
-    // acabam a live troca de bloco.
+    // O avanço percorre primeiro os pontos do bloco no ar; em seguida as
+    // páginas de anexo; só quando elas acabam a live troca de bloco.
     const nextBeat = beatToAdvance(current);
     if (nextBeat) {
       void setBeatDone(nextBeat, true);
       return;
     }
+    const nextSlide = nextSlideIndex(slideIndex, current?.attachments.length ?? 0);
+    if (nextSlide !== null) {
+      setSlideIndex(nextSlide);
+      return;
+    }
     // Sair do resgate devolve ao ponto exato da pauta, sem passo manual.
+    slideLanding.current = 'start';
     if (inRescue) {
       const back = track[trackIndex];
       if (back) {
@@ -208,14 +226,20 @@ export function StagePage({ rundownId, runId, onLeave, onFinished }: StagePagePr
       return;
     }
     void goToBlock(following);
-  }, [current, setBeatDone, inRescue, track, trackIndex, goToBlock]);
+  }, [current, setBeatDone, slideIndex, inRescue, track, trackIndex, goToBlock]);
 
   const back = useCallback(() => {
+    const prevSlide = previousSlideIndex(slideIndex);
+    if (prevSlide !== null) {
+      setSlideIndex(prevSlide);
+      return;
+    }
     const lastBeat = beatToRewind(current);
     if (lastBeat) {
       void setBeatDone(lastBeat, false);
       return;
     }
+    slideLanding.current = 'end';
     if (inRescue) {
       const target = track[trackIndex];
       if (target) void goToBlock(target);
@@ -223,7 +247,7 @@ export function StagePage({ rundownId, runId, onLeave, onFinished }: StagePagePr
     }
     const previous = track[trackIndex - 1];
     if (previous) void goToBlock(previous);
-  }, [current, setBeatDone, inRescue, track, trackIndex, goToBlock]);
+  }, [current, setBeatDone, slideIndex, inRescue, track, trackIndex, goToBlock]);
 
   const draw = useCallback(
     (card?: Block) => {
@@ -245,7 +269,8 @@ export function StagePage({ rundownId, runId, onLeave, onFinished }: StagePagePr
 
   /**
    * Ação por tipo: vídeo, imagem, link e arquivo abrem; código e chat copiam,
-   * com confirmação visível da cópia.
+   * com confirmação visível da cópia. Link (e arquivo cuja origem já é web)
+   * abre no navegador do sistema — o webview do Play não segue target=_blank.
    */
   const openAttachment = useCallback(
     async (attachment: Attachment) => {
@@ -255,6 +280,15 @@ export function StagePage({ rundownId, runId, onLeave, onFinished }: StagePagePr
           setFlash(`"${attachment.label}" copiado para a área de transferência`);
         } catch {
           setFlash(`Não foi possível copiar "${attachment.label}" automaticamente`);
+        }
+        return;
+      }
+      if (attachment.type === 'link' || (attachment.type === 'file' && isWebUrl(attachment.path))) {
+        try {
+          await api.post('/api/open-url', { url: attachment.path });
+          setFlash(`"${attachment.label}" aberto no navegador`);
+        } catch {
+          setFlash(`Não foi possível abrir "${attachment.label}" no navegador`);
         }
         return;
       }
@@ -343,6 +377,16 @@ export function StagePage({ rundownId, runId, onLeave, onFinished }: StagePagePr
         </div>
 
         <div className="relogio-wrap">
+          <button
+            type="button"
+            className="mostrar-tempos"
+            data-testid="acao-mostrar-tempos"
+            aria-expanded={timersOpen}
+            aria-controls="lateral-tempos"
+            onClick={() => setTimersOpen((open) => !open)}
+          >
+            {timersOpen ? 'esconder' : 'tempos'}
+          </button>
           <span className="no-ar">no ar</span>
           <div className="relogio-global mono" data-testid="relogio-global">
             {formatTimecode(clock.elapsedSeconds)}
@@ -350,7 +394,7 @@ export function StagePage({ rundownId, runId, onLeave, onFinished }: StagePagePr
         </div>
       </div>
 
-      <div className="palco-centro">
+      <div className={`palco-centro${timersOpen ? ' com-tempos' : ''}`}>
         <div className="bloco-atual" data-testid="palco-bloco-atual">
           {inRescue ? <span className="selo-resgate">RESGATE</span> : null}
           <div className="selo-tipo batuta" style={{ color: metal.token }}>
@@ -366,48 +410,36 @@ export function StagePage({ rundownId, runId, onLeave, onFinished }: StagePagePr
           />
 
           {current.attachments.length ? (
-            <div className="anexos-palco" data-testid="anexos-palco">
-              {current.attachments.map((attachment) => {
-                const textual = attachment.type === 'code' || attachment.type === 'chat';
-                const broken = brokenAttachmentIds.has(attachment.id);
-                const web = /^https?:\/\//i.test(attachment.path);
-                return (
-                  <span
-                    className={`chip-anexo${broken ? ' quebrado' : ''}`}
-                    key={attachment.id}
-                    data-testid={`anexo-${attachment.id}`}
-                  >
-                    {attachment.label}
-                    {broken ? <b> · arquivo não encontrado</b> : null}
-                    {!broken && attachment.fullscreen ? (
-                      <span className="tc">{web ? 'WEB · ' : ''}TELA CHEIA</span>
-                    ) : null}
-                    {!broken && !attachment.fullscreen && !textual ? (
-                      <span className="tc privado-rotulo">SÓ VOCÊ</span>
-                    ) : null}
-                    <button
-                      type="button"
-                      className="acao-anexo"
-                      data-testid={`acao-anexo-${attachment.id}`}
-                      onClick={() => void openAttachment(attachment)}
-                    >
-                      {textual ? 'copiar' : 'abrir'}
-                    </button>
-                  </span>
-                );
-              })}
-            </div>
+            <StageCarousel
+              attachments={current.attachments}
+              index={slideIndex}
+              brokenIds={brokenAttachmentIds}
+              onPrev={() => {
+                const prev = previousSlideIndex(slideIndex);
+                if (prev !== null) setSlideIndex(prev);
+              }}
+              onNext={() => {
+                const nextPage = nextSlideIndex(slideIndex, current.attachments.length);
+                if (nextPage !== null) setSlideIndex(nextPage);
+              }}
+              onOpen={(attachment) => void openAttachment(attachment)}
+              onCopy={(attachment) => {
+                setFlash(`Link de "${attachment.label}" copiado para a área de transferência`);
+              }}
+            />
           ) : null}
 
         </div>
 
-        <StageTimers
-          clock={clock}
-          currentType={current.type}
-          next={next}
-          inRescue={inRescue}
-          remainingSeconds={remaining}
-        />
+        {timersOpen ? (
+          <StageTimers
+            clock={clock}
+            currentType={current.type}
+            next={next}
+            inRescue={inRescue}
+            remainingSeconds={remaining}
+          />
+        ) : null}
       </div>
 
       <div className="palco-rodape">

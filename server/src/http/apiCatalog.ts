@@ -62,7 +62,9 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
     description: 'Cria uma pauta.',
     params: [
       bodyParam('title', true, 'Título da live, até 120 caracteres.'),
-      bodyParam('date', false, 'Data da live em AAAA-MM-DD; padrão é hoje.')
+      bodyParam('date', false, 'Data da live em AAAA-MM-DD; padrão é hoje.'),
+      bodyParam('kind', false, 'Tipo da pauta: rundown, presentation ou event; padrão é rundown.'),
+      bodyParam('pinned', false, 'Se a pauta está fixada no topo; padrão é false.')
     ],
     auth: false
   },
@@ -76,11 +78,13 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   {
     path: '/api/rundowns/:id',
     method: 'PATCH',
-    description: 'Renomeia a pauta e ajusta a data.',
+    description: 'Renomeia a pauta e ajusta a data, tipo ou fixação.',
     params: [
       pathParam('id', 'Id da pauta.'),
       bodyParam('title', true, 'Novo título, até 120 caracteres.'),
-      bodyParam('date', false, 'Nova data em AAAA-MM-DD.')
+      bodyParam('date', false, 'Nova data em AAAA-MM-DD.'),
+      bodyParam('kind', false, 'Tipo da pauta: rundown, presentation ou event.'),
+      bodyParam('pinned', false, 'Se a pauta está fixada no topo.')
     ],
     auth: false
   },
@@ -96,6 +100,13 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
     method: 'POST',
     description: 'Duplica a pauta com cópia dos blocos e anexos, sem alterar a original.',
     params: [pathParam('id', 'Id da pauta de origem.')],
+    auth: false
+  },
+  {
+    path: '/api/rundowns/:id/toggle-pin',
+    method: 'POST',
+    description: 'Alterna a fixação da pauta no topo da listagem.',
+    params: [pathParam('id', 'Id da pauta.')],
     auth: false
   },
   {
@@ -307,6 +318,14 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
     description:
       'Serve um arquivo da pasta de mídia do app, com suporte a Range para vídeo. Caminho fora da pasta é recusado.',
     params: [pathParam('relativePath', 'Caminho relativo dentro da pasta de mídia.')],
+    auth: false
+  },
+  {
+    path: '/api/open-url',
+    method: 'POST',
+    description:
+      'Abre uma URL http(s) de anexo no navegador do sistema. O webview do Play não segue target=_blank.',
+    params: [bodyParam('url', true, 'URL http ou https do anexo, sem credenciais, até 2048 caracteres.')],
     auth: false
   },
   {

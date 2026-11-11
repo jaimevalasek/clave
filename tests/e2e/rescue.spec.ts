@@ -1,5 +1,5 @@
 import { expect, test } from './fixtures';
-import { createBlock, createRundown, goLive } from './helpers';
+import { createBlock, createRundown, goLive, showStageTimers } from './helpers';
 
 /**
  * O deck fica sempre à mão, saca sem repetir carta e devolve a live ao ponto
@@ -22,6 +22,7 @@ test('AC-clave-21 — sacar do meio da pauta por clique e voltar ao mesmo ponto'
   await page.locator('.carta-resgate', { hasText: 'História do minuto 3' }).click();
   await expect(page.locator('.selo-resgate')).toHaveText('RESGATE');
   await expect(page.getByTestId('titulo-palco')).toContainText('História do minuto 3');
+  await showStageTimers(page);
   // A lateral já anuncia para onde a live volta.
   await expect(page.locator('.a-seguir .rot')).toHaveText('de volta à pauta');
   await expect(page.getByTestId('proximo-bloco')).toHaveText('Bloco do meio');
@@ -83,9 +84,16 @@ test('AC-clave-22 — pauta sem resgates mostra o deck em estado vazio explícit
 
   const deck = page.getByTestId('deck-resgate');
   await expect(deck).toBeVisible();
-  await expect(page.getByTestId('estado-deck-vazio')).toContainText('Deck vazio');
-  await expect(page.getByTestId('estado-deck-vazio')).toContainText(
-    'Crie resgates na reserva da Bancada'
-  );
+  const empty = page.getByTestId('estado-deck-vazio');
+  await expect(empty).toContainText('Deck vazio');
+  await expect(empty).toContainText('Crie resgates na reserva da Bancada');
   await expect(page.locator('.carta-resgate')).toHaveCount(0);
+
+  const labelBox = await deck.locator('.rot-deck').boundingBox();
+  const emptyBox = await empty.boundingBox();
+  expect(labelBox, 'rótulo DECK visível').toBeTruthy();
+  expect(emptyBox, 'texto vazio visível').toBeTruthy();
+  const labelMid = (labelBox?.y ?? 0) + (labelBox?.height ?? 0) / 2;
+  const emptyMid = (emptyBox?.y ?? 0) + (emptyBox?.height ?? 0) / 2;
+  expect(Math.abs(labelMid - emptyMid)).toBeLessThan(6);
 });

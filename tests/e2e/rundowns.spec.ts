@@ -196,6 +196,30 @@ test('AC-clave-06 — a lista marca a pauta com execução em aberto e oferece a
   await expect(page.getByTestId('tabela-trajeto')).toContainText('Bloco que entra no ar');
 });
 
+test('tipos de pauta e fixação no topo', async ({ page }) => {
+  await page.goto('/#/rundowns');
+  await page.getByTestId('acao-criar-pauta').click();
+  await page.getByTestId('opcao-tipo-presentation').click();
+  await page.getByLabel('Título da live').fill('Pitch AIOSON Play');
+  await page.getByTestId('campo-fixado').check();
+  await page.getByRole('button', { name: 'Criar', exact: true }).click();
+
+  // Abre a Bancada da Apresentação
+  await expect(page).toHaveURL(/#\/board\//);
+  await expect(page.locator('.bancada-topo .eyebrow')).toContainText('Apresentação');
+
+  // Volta para a lista de pautas
+  await page.goto('/#/rundowns');
+  const row = page.locator('.linha-pauta', { hasText: 'Pitch AIOSON Play' });
+  await expect(row).toBeVisible();
+  await expect(row.locator('.tag-tipo')).toContainText('Apresentação');
+  await expect(row.locator('.tag-fixada')).toContainText('FIXADO');
+
+  // Desafixa
+  await row.getByRole('button', { name: 'Desafixar' }).click();
+  await expect(row.locator('.tag-fixada')).toHaveCount(0);
+});
+
 test('AC-clave-05 — sem nenhuma pauta, o boot cai no empty state que leva à criação', async ({
   page
 }) => {

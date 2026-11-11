@@ -99,3 +99,10 @@ export async function goLive(page: Page, { expectProblems = false } = {}): Promi
   }
   await expect(page.getByTestId('palco')).toBeVisible();
 }
+
+/** Reabre a coluna de tempos do Palco, recolhida por padrão na captura. */
+export async function showStageTimers(page: Page): Promise<void> {
+  if (await page.getByTestId('cronometro-bloco').count()) return;
+  await page.getByTestId('acao-mostrar-tempos').click();
+  await expect(page.getByTestId('cronometro-bloco')).toBeVisible();
+}

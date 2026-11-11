@@ -83,6 +83,30 @@ test('AC-clave-07 — a pauta é uma lista só e o resgate fica fora dela', asyn
   await expect(reserva.locator('.cartao', { hasText: 'Carta de resgate' })).toBeVisible();
 });
 
+test('em tela larga a reserva fica ao lado da pauta, não no vazio abaixo', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openNewRundown(page, 'Pauta da mesa larga');
+  await createBlock(page, 'topic', 'Assunto da mesa');
+
+  const list = page.getByTestId('pauta-lista');
+  const reserva = page.getByTestId('reserva');
+  const listBox = await list.boundingBox();
+  const reservaBox = await reserva.boundingBox();
+  expect(listBox && reservaBox).toBeTruthy();
+  expect(reservaBox!.x).toBeGreaterThan(listBox!.x + listBox!.width);
+});
+
+test('em coluna estreita a reserva desce para baixo da pauta', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await openNewRundown(page, 'Pauta da mesa estreita');
+  await createBlock(page, 'topic', 'Assunto estreito');
+
+  const listBox = await page.getByTestId('pauta-lista').boundingBox();
+  const reservaBox = await page.getByTestId('reserva').boundingBox();
+  expect(listBox && reservaBox).toBeTruthy();
+  expect(reservaBox!.y).toBeGreaterThan(listBox!.y + listBox!.height);
+});
+
 test('AC-clave-08 — a gaveta valida no domínio e mostra o erro inline', async ({ page }) => {
   await openNewRundown(page, 'Pauta da validação da gaveta');
   await page.getByTestId('criar-primeiro-bloco').click();

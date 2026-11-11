@@ -84,8 +84,26 @@
 
 .relogio-wrap {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 14px;
+}
+
+.mostrar-tempos {
+  color: var(--fumaca);
+  font: 500 11px var(--font-dados);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--linha);
+  border-radius: 4px;
+  padding: var(--e-2) var(--e-3);
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.mostrar-tempos:hover,
+.mostrar-tempos[aria-expanded='true'] {
+  color: var(--giz-2);
+  border-color: var(--linha-2);
 }
 
 .no-ar {
@@ -115,11 +133,15 @@
    pode pintar por cima do rodapé (gotcha palco-transborda-em-janela-baixa). */
 .palco-centro {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr;
   gap: var(--e-8);
   padding: var(--e-2) var(--e-8);
   min-height: 0;
   overflow: hidden;
+}
+
+.palco-centro.com-tempos {
+  grid-template-columns: 1fr 300px;
 }
 
 .bloco-atual {
@@ -129,10 +151,12 @@
   justify-content: center;
   min-width: 0;
   min-height: 0;
+  height: 100%;
   overflow: auto;
 }
 
 .selo-tipo {
+  flex: none;
   font: 500 12px var(--font-dados);
   letter-spacing: 0.28em;
   text-transform: uppercase;
@@ -142,6 +166,7 @@
 /* O título responde à altura também: numa janela larga e baixa, `5.6vw` sozinho
    ficaria enorme justamente onde não cabe. */
 .titulo-gigante {
+  flex: none;
   font: 800 clamp(30px, min(5.6vw, 11.5vh), 78px) / 0.98 var(--font-display);
   max-width: 100%;
   letter-spacing: -0.025em;
@@ -273,15 +298,21 @@
   font: 500 12px var(--font-dados);
 }
 
-/* Com pontos na tela, o título cede altura para eles: a live está no ponto,
-   não mais no nome do bloco. */
-.bloco-atual:has(.pontos-palco) {
+/* Com pontos ou mídia na tela, o título cede altura: a live está no conteúdo,
+   não mais só no nome do bloco. */
+.bloco-atual:has(.pontos-palco),
+.bloco-atual:has(.carrossel-palco) {
   justify-content: flex-start;
   padding-top: var(--e-4);
 }
 
-.bloco-atual:has(.pontos-palco) .titulo-gigante {
+.bloco-atual:has(.pontos-palco) .titulo-gigante,
+.bloco-atual:has(.carrossel-palco) .titulo-gigante {
   font-size: clamp(24px, min(3.4vw, 6.4vh), 46px);
+}
+
+.bloco-atual:has(.carrossel-palco) {
+  overflow: hidden;
 }
 
 .selo-resgate {
@@ -428,10 +459,14 @@
   padding: var(--e-3) var(--e-8) var(--e-4);
 }
 
-/* D-02 · Pauta — cinco linhas de 1px a cada 8px, compasso no metal do bloco */
+/* D-02 · Pauta — five 1px lines every 8px, barline in the block metal.
+   The staff is centered on the row so the label, empty copy, and cards rest on it. */
 .deck-pauta {
   position: relative;
-  padding: var(--e-4) 0;
+  display: flex;
+  align-items: center;
+  min-height: 33px;
+  padding: var(--e-2) 0;
 }
 
 .deck-pauta::before {
@@ -439,8 +474,9 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
+  top: 50%;
   height: 33px;
+  transform: translateY(-50%);
   background: repeating-linear-gradient(
     180deg,
     var(--linha-fraca) 0,
@@ -455,9 +491,10 @@
   content: '';
   position: absolute;
   left: 0;
-  top: 0;
+  top: 50%;
   height: 33px;
   width: 2px;
+  transform: translateY(-50%);
   background: var(--compasso, var(--ouro));
   opacity: 0.8;
   pointer-events: none;
@@ -466,18 +503,20 @@
 .deck-pauta .deck {
   position: relative;
   z-index: 1;
+  width: 100%;
 }
 
 .deck {
   display: flex;
   gap: var(--e-3);
-  align-items: stretch;
+  align-items: center;
+  min-height: 33px;
   overflow-x: auto;
 }
 
 .deck .rot-deck {
-  font: 500 11px var(--font-dados);
-  letter-spacing: 0.18em;
+  font: 500 11px/1 var(--font-dados);
+  letter-spacing: 0.08em;
   color: var(--resgate);
   text-transform: uppercase;
   writing-mode: vertical-rl;
@@ -522,8 +561,8 @@
 .deck-vazio {
   color: var(--giz-2);
   font-size: 13px;
-  align-self: center;
-  padding: var(--e-2) 0;
+  line-height: 1.3;
+  padding: 0;
 }
 
 .rodape-linha {
@@ -595,10 +634,14 @@
   }
   .deck-pauta {
     padding: var(--e-2) 0;
+    min-height: 24px;
   }
   .deck-pauta::before,
   .deck-pauta::after {
     height: 24px;
+  }
+  .deck {
+    min-height: 24px;
   }
   .carta-resgate {
     width: 164px;
@@ -613,7 +656,8 @@
 }
 
 @media (max-width: 900px) {
-  .palco-centro {
+  .palco-centro,
+  .palco-centro.com-tempos {
     grid-template-columns: 1fr;
     gap: 14px;
     overflow: auto;

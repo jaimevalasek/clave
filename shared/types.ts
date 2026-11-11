@@ -65,9 +65,14 @@ export interface Block {
   beats: Beat[];
 }
 
+export const RUNDOWN_KINDS = ['rundown', 'presentation', 'event'] as const;
+export type RundownKind = (typeof RUNDOWN_KINDS)[number];
+
 export interface Rundown {
   id: string;
   title: string;
+  kind: RundownKind;
+  pinned: boolean;
   /** Data da live em ISO curto (`AAAA-MM-DD`). */
   date: string;
   createdAt: string;

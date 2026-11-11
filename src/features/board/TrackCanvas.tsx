@@ -40,7 +40,8 @@ function TrackRow({
 /**
  * A pauta é uma lista só, de cima para baixo: a ordem visual é a ordem da live.
  * A etiqueta de cor viaja na borda do cartão — ela informa o tipo do assunto,
- * não organiza a tela. A reserva de resgates fica embaixo, fora da ordem.
+ * não organiza a tela. A reserva fica ao lado da pauta (embaixo em coluna
+ * estreita), sempre fora da ordem da live.
  */
 export function TrackCanvas({
   track,
@@ -50,27 +51,29 @@ export function TrackCanvas({
   onEdit
 }: TrackCanvasProps) {
   return (
-    <>
-      <ol className="pauta-lista" data-testid="pauta-lista">
-        {track.map((block, index) => (
-          <TrackRow index={index} key={block.id}>
-            <BlockCard
-              block={block}
-              broken={brokenBlockIds.has(block.id)}
-              onEdit={() => onEdit(block)}
-            />
-          </TrackRow>
-        ))}
-      </ol>
+    <div className="bancada-mesa" data-testid="bancada-mesa">
+      <div className="pauta-coluna">
+        <ol className="pauta-lista" data-testid="pauta-lista">
+          {track.map((block, index) => (
+            <TrackRow index={index} key={block.id}>
+              <BlockCard
+                block={block}
+                broken={brokenBlockIds.has(block.id)}
+                onEdit={() => onEdit(block)}
+              />
+            </TrackRow>
+          ))}
+        </ol>
 
-      <button
-        type="button"
-        className="add-bloco"
-        data-testid="novo-bloco"
-        onClick={() => onCreate('topic')}
-      >
-        + {COPY.board.addBlock}
-      </button>
+        <button
+          type="button"
+          className="add-bloco"
+          data-testid="novo-bloco"
+          onClick={() => onCreate('topic')}
+        >
+          + {COPY.board.addBlock}
+        </button>
+      </div>
 
       <section className="reserva" data-testid="reserva" aria-label={COPY.board.rescueHeading}>
         <h2 className="batuta">{COPY.board.rescueHeading}</h2>
@@ -94,6 +97,6 @@ export function TrackCanvas({
           </button>
         </div>
       </section>
-    </>
+    </div>
   );
 }
