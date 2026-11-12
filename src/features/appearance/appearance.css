@@ -1,0 +1,293 @@
+/* Appearance panel (prototype `renderPainel`): an opaque side panel over any
+   screen, depth by its 1px edge only. */
+.appearance-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  width: min(100%, 380px);
+  display: flex;
+  flex-direction: column;
+  background: var(--solid);
+  border-left: 1px solid var(--line-2);
+  animation: panel-in 220ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+@keyframes panel-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .appearance-panel {
+    animation: none;
+  }
+}
+
+.appearance-panel > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.appearance-panel h2 {
+  font: 600 19px/1.2 var(--font-ui);
+}
+
+.appearance-panel .panel-body {
+  overflow: auto;
+  padding: 8px 20px 28px;
+}
+
+.appearance-panel section {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.appearance-panel h3 {
+  margin-bottom: 12px;
+  font: 500 11px/1 var(--font-machine);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+/* ---------- themes ---------- */
+.themes {
+  display: grid;
+  gap: 8px;
+}
+
+.theme {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 12px;
+  align-items: center;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-block);
+  text-align: left;
+  transition: border-color var(--t);
+}
+
+.theme:hover {
+  border-color: var(--line-2);
+}
+
+.theme[aria-checked='true'] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.swatch {
+  position: relative;
+  height: 44px;
+  border-radius: 6px;
+  border: 1px solid rgba(128, 128, 128, 0.25);
+  overflow: hidden;
+}
+
+.swatch::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 12px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--swatch-ink);
+  box-shadow:
+    0 8px 0 var(--swatch-ink),
+    0 16px 0 var(--swatch-accent);
+}
+
+.theme b {
+  display: block;
+  font: 600 14px/1.3 var(--font-ui);
+}
+
+.theme small {
+  font-size: 12px;
+  color: var(--smoke);
+}
+
+/* ---------- colors ---------- */
+.color-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.color-row input[type='color'] {
+  width: 44px;
+  height: var(--target);
+  padding: 3px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-control);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.color-row .hex {
+  font-size: 13px;
+}
+
+.appearance-panel .notice {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--danger);
+}
+
+.appearance-panel .notice.ok {
+  color: var(--ok);
+}
+
+/* ---------- background ---------- */
+.segments {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+  overflow: hidden;
+}
+
+.segments button {
+  min-height: var(--target);
+  font-size: 12.5px;
+  color: var(--ink-2);
+  border-right: 1px solid var(--line);
+}
+
+.segments button:last-child {
+  border-right: 0;
+}
+
+.segments button[aria-checked='true'] {
+  background: var(--surface-2);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.gradients {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.gradients button {
+  height: 48px;
+  border-radius: var(--r-control);
+  border: 1px solid var(--line);
+}
+
+.gradients button[aria-checked='true'] {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.file-button {
+  cursor: pointer;
+}
+
+.file-button:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.mono-note {
+  margin-top: 12px;
+  font: 500 11px/1.5 var(--font-machine);
+  letter-spacing: 0.06em;
+  color: var(--smoke);
+}
+
+/* ---------- image framing: the small image and the part on screen ---------- */
+.frame-picker {
+  margin-top: 16px;
+}
+
+.frame-picker h4 {
+  margin-bottom: 10px;
+  font: 500 11px/1 var(--font-machine);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.frame-box {
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-control);
+  background: var(--surface);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.frame-box:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.frame-box img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+/* The part that shows on the screen; the rest of the image is dimmed. */
+.frame-window {
+  position: absolute;
+  border: 2px solid var(--accent);
+  border-radius: 3px;
+  box-shadow: 0 0 0 999px color-mix(in srgb, #000 55%, transparent);
+  pointer-events: none;
+}
+
+.frame-box:active {
+  cursor: grabbing;
+}
+
+.slider-row {
+  display: grid;
+  grid-template-columns: auto 1fr 48px;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.slider-row input[type='range'] {
+  width: 100%;
+  min-height: var(--target);
+  accent-color: var(--accent);
+}
+
+.slider-row output {
+  font-size: 13px;
+  text-align: right;
+  color: var(--ink);
+}
+
+/* ---------- veil of the sheet over the background ---------- */
+.veil-control {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.veil-control .slider-row {
+  margin-top: 0;
+}

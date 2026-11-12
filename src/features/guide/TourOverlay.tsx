@@ -1,143 +1,136 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { GUIDE_COPY, TOUR_STEPS } from './guideContent';
+import { useCallback, useId, useLayoutEffect, useRef, useState } from 'react';
+import type { CSSProperties, RefObject } from 'react';
+import { COPY } from '../../core/vocabulary';
+import { useFocusTrap } from '../../ui/useFocusTrap';
+import { TOUR_STEPS } from './guideContent';
+import type { TourStep } from './guideContent';
 import { richText } from './richText';
 
-interface Spotlight {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  /** Caixa acima ou abaixo do recorte, para não cobrir o que está sendo explicado. */
-  placement: 'no-topo' | 'na-base' | '';
+/** Room around the framed control, and the card's distance to it and to the window edge. */
+const PAD = 8;
+const GAP = 16;
+const EDGE = 12;
+const TALL_TARGET = 0.6;
+const TALL_CARD_TOP = 72;
+
+interface Layout {
+  /** `null` when the anchor is not on screen: the card shows centered over the veil. */
+  spotlight: CSSProperties | null;
+  card: CSSProperties | null;
+}
+
+function anchorOf(step: TourStep): HTMLElement | null {
+  return document.querySelector<HTMLElement>(`[data-aioson-tour="${step.anchor}"]`);
+}
+
+/**
+ * The spotlight frames the real control, and the card sits below it when it
+ * fits, above it otherwise. A target taller than most of the window (the
+ * sheet) keeps the card mid-height, on its right side.
+ */
+function layoutFor(target: HTMLElement, card: HTMLElement): Layout {
+  const rect = target.getBoundingClientRect();
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const top = Math.max(PAD, rect.top - PAD);
+  const spotlight = {
+    left: rect.left - PAD,
+    top,
+    width: rect.width + PAD * 2,
+    height: Math.max(0, Math.min(height - top - PAD, rect.height + PAD * 2))
+  };
+
+  const cardWidth = card.offsetWidth;
+  const cardHeight = card.offsetHeight;
+  let x = Math.min(width - cardWidth - EDGE, Math.max(EDGE, rect.left));
+  let y = rect.bottom + GAP + cardHeight < height ? rect.bottom + GAP : Math.max(EDGE, rect.top - cardHeight - GAP);
+  if (rect.height > height * TALL_TARGET) {
+    y = Math.max(TALL_CARD_TOP, height / 2 - cardHeight / 2);
+    x = Math.max(EDGE, Math.min(width - cardWidth - EDGE, rect.right - cardWidth - GAP));
+  }
+  return { spotlight, card: { left: x, top: y } };
+}
+
+/** Measures again when the window, the scroll or the fonts move the anchor. */
+function useStepLayout(step: TourStep, cardRef: RefObject<HTMLDivElement | null>): Layout {
+  const [layout, setLayout] = useState<Layout>({ spotlight: null, card: null });
+
+  const measure = useCallback(() => {
+    const target = anchorOf(step);
+    const card = cardRef.current;
+    setLayout(target && card ? layoutFor(target, card) : { spotlight: null, card: null });
+  }, [step, cardRef]);
+
+  useLayoutEffect(() => {
+    anchorOf(step)?.scrollIntoView({ block: 'nearest' });
+    measure();
+    let alive = true;
+    void document.fonts?.ready.then(() => {
+      if (alive) measure();
+    });
+    window.addEventListener('resize', measure);
+    window.addEventListener('scroll', measure, true);
+    return () => {
+      alive = false;
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('scroll', measure, true);
+    };
+  }, [step, measure]);
+
+  return layout;
 }
 
 interface TourOverlayProps {
   step: number;
   onStep(next: number): void;
-  onFinish(): void;
-  onOpenGuide(): void;
-}
-
-const MARGIN = 8;
-
-function measure(anchor: string | null): Spotlight | null {
-  if (!anchor) return null;
-  const target = document.querySelector(`[data-testid="${anchor}"]`);
-  if (!target) return null;
-
-  target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-  const rect = target.getBoundingClientRect();
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-
-  const left = Math.max(MARGIN, rect.left);
-  const top = Math.max(MARGIN, rect.top);
-  const width = Math.max(0, Math.min(rect.right, viewportWidth - MARGIN) - left);
-  const height = Math.max(0, Math.min(rect.bottom, viewportHeight - MARGIN) - top);
-  if (width === 0 || height === 0) return null;
-
-  const placement =
-    height < viewportHeight * 0.65
-      ? top + height / 2 > viewportHeight * 0.52
-        ? 'no-topo'
-        : 'na-base'
-      : '';
-
-  return { left, top, width, height, placement };
+  onClose(): void;
 }
 
 /**
- * Tour de 5 passos. O holofote é um recorte no escuro (`box-shadow` gigante):
- * nada da aplicação muda de camada, então a região explicada continua sendo o
- * elemento real da tela e não uma cópia desenhada por cima.
+ * The 5-step tour (AC-pauta-revelavel-50). The spotlight is a hole in the veil
+ * (a huge `box-shadow`), so what it explains is the real control on screen.
+ * The veil takes the clicks, the card keeps the focus (AC-pauta-revelavel-53)
+ * and Esc closes it.
  */
-export function TourOverlay({ step, onStep, onFinish, onOpenGuide }: TourOverlayProps) {
-  const current = TOUR_STEPS[step];
-  const [spotlight, setSpotlight] = useState<Spotlight | null>(null);
-  const primaryRef = useRef<HTMLButtonElement>(null);
-
-  useLayoutEffect(() => {
-    if (!current) return undefined;
-    const update = () => setSpotlight(measure(current.anchor));
-    update();
-    window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
-    return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update, true);
-    };
-  }, [current]);
-
-  useEffect(() => {
-    primaryRef.current?.focus();
-  }, [step]);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      event.stopPropagation();
-      onFinish();
-    };
-    document.addEventListener('keydown', onKeyDown, true);
-    return () => document.removeEventListener('keydown', onKeyDown, true);
-  }, [onFinish]);
-
-  if (!current) return null;
-  const last = step === TOUR_STEPS.length - 1;
+export function TourOverlay({ step, onStep, onClose }: TourOverlayProps) {
+  const current = TOUR_STEPS[step] ?? TOUR_STEPS[0];
+  const last = step >= TOUR_STEPS.length - 1;
+  const titleId = useId();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const layout = useStepLayout(current, cardRef);
+  useFocusTrap(cardRef, onClose);
 
   return (
-    <>
-      <div className={`tour-fundo${spotlight ? '' : ' sem-alvo'}`} data-testid="tour-fundo">
-        {spotlight ? (
-          <div
-            className="tour-foco"
-            data-testid="tour-foco"
-            style={{
-              left: spotlight.left,
-              top: spotlight.top,
-              width: spotlight.width,
-              height: spotlight.height
-            }}
-          />
-        ) : null}
+    <div className={`tour-veil${layout.spotlight ? '' : ' no-target'}`} data-aioson-tour="overlay" data-testid="tour">
+      {layout.spotlight ? <div className="tour-spotlight" data-testid="tour-spotlight" style={layout.spotlight} /> : null}
+      <div
+        ref={cardRef}
+        className={`tour-card${layout.card ? '' : ' centered'}`}
+        style={layout.card ?? undefined}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        data-step={current.anchor}
+        data-testid="tour-card"
+      >
+        <div className="tour-step">{COPY.tour.stepCounter(step + 1, TOUR_STEPS.length)}</div>
+        <h2 id={titleId}>{current.title}</h2>
+        <p>{richText(current.body)}</p>
+        <footer>
+          <button type="button" className="btn" data-testid="tour-skip" onClick={onClose}>
+            {COPY.tour.skip}
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            data-autofocus="true"
+            data-testid="tour-next"
+            onClick={() => (last ? onClose() : onStep(step + 1))}
+          >
+            {last ? COPY.tour.start : COPY.tour.next}
+          </button>
+        </footer>
       </div>
-
-      <div className={`tour-caixa-wrap ${spotlight?.placement ?? ''}`}>
-        <div
-          className="tour-caixa"
-          role="dialog"
-          aria-modal="true"
-          aria-label={GUIDE_COPY.dialogLabel}
-          data-testid="tour"
-        >
-          <div className="passo-num">{GUIDE_COPY.stepCounter(step + 1, TOUR_STEPS.length)}</div>
-          <h2>
-            {current.title} <em>{current.emphasis}</em>
-          </h2>
-          {current.paragraphs.map((paragraph, index) => (
-            <p key={index}>{richText(paragraph)}</p>
-          ))}
-          <div className="acoes-modal">
-            <div className="acoes-secundarias">
-              <button type="button" className="btn btn-fantasma" onClick={onFinish}>
-                {GUIDE_COPY.skipTour}
-              </button>
-              <button type="button" className="btn btn-fantasma" onClick={onOpenGuide}>
-                {GUIDE_COPY.fullGuide}
-              </button>
-            </div>
-            <button
-              type="button"
-              className="btn btn-ar"
-              ref={primaryRef}
-              data-testid="tour-avancar"
-              onClick={() => (last ? onFinish() : onStep(step + 1))}
-            >
-              {last ? GUIDE_COPY.start : GUIDE_COPY.next}
-            </button>
-          </div>
-        </div>
-      </div>
-    </>
+    </div>
   );
 }

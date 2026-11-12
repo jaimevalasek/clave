@@ -1,51 +1,37 @@
-/* Tokens — AIOSON Design-DNA v1 "Tinta & Ouro", porte do bloco `:root` do
-   protótipo aprovado (.aioson/briefings/clave/prototype.html) e de identity.md.
-   Registro estético: Constructed — a tipografia é a composição, profundidade só
-   por linhas, movimento mecânico curto. Ouro = marca / ação primária / gate.
-   Cor codifica tipo de bloco: nenhum tipo toma o ouro para si. */
+/* Tokens of the revealable sheet — identity "Tinta & Ouro" adapted for the
+   sheet (.aioson/briefings/pauta-revelavel/identity.md). Ruled paper in warm
+   ink; gold is reserved for the brand, the primary action and gates; depth
+   comes only from 1px lines. */
 :root {
-  --tinta: #0b0a08;
-  --tinta-2: #161310;
-  --tinta-3: #1d1914;
-  --solido: #242019;
-  --giz: #f5f1e8;
-  --giz-2: #cdc5b4;
-  --fumaca: #8f8674;
-  --linha: rgba(224, 203, 163, 0.14);
-  --linha-2: rgba(233, 214, 177, 0.28);
-  --linha-fraca: rgba(224, 203, 163, 0.09);
-  --ouro: #e8ba52;
+  /* Colors: every palette role (--bg, --sheet, --surface, --surface-2, --solid,
+     --ink, --ink-2, --smoke, --rule, --line, --line-2, --accent, --accent-ink,
+     --ok, --danger, --copper, --margin-line) and the six text colors
+     (--color-text, --color-accent, --color-red, --color-green, --color-copper,
+     --color-lilac) are written on :root by applyAppearance from the theme
+     palettes in src/features/appearance/themes.ts, the single source of
+     identity.md. Nothing here repeats them. */
+  --on-danger: #ffffff;
 
-  /* Mapa tipo→metal (fonte única em src/ui/typeColors.ts) */
-  --tema: #d8895b;
-  --midia: #b49bd8;
-  --interacao: #c9697a;
-  --convidado: #b3c2d6;
-  --resgate: #6ec6a2;
+  --font-ui: 'Inter', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --font-voice: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+  --font-machine: 'JetBrains Mono', 'Cascadia Code', ui-monospace, monospace;
 
-  --perigo: #e25d5d;
-  --erro: #e25d5d;
-  --ok: #6ec6a2;
+  /* The ruled paper: one line every 44px, the text line height of a block. */
+  --step: 44px;
+  --t: 150ms ease;
 
-  --font-display: Inter, 'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif;
-  --font-corpo: Inter, 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
-  --voz-humana: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
-  --font-dados: 'JetBrains Mono', 'Cascadia Code', monospace;
+  --r-control: 8px;
+  --r-block: 10px;
+  --r-panel: 16px;
+  --r-chip: 99px;
+  --r-mini: 4px;
 
-  /* Escala de espaçamento: unidade base 4px */
-  --e-1: 4px;
-  --e-2: 8px;
-  --e-3: 12px;
-  --e-4: 16px;
-  --e-6: 24px;
-  --e-8: 32px;
-  --e-14: 56px;
+  --target: 34px;
+  --indent: 56px;
+  --shadow-lift: 0 18px 40px -16px rgba(0, 0, 0, 0.55);
+  --shadow-toast: 0 12px 30px -18px rgba(0, 0, 0, 0.6);
+  --veil: rgba(5, 4, 3, 0.62);
 
-  /* Escada de raio */
-  --r-controle: 8px;
-  --r-cartao: 10px;
-  --r-painel: 16px;
-  --r-pilula: 99px;
 }
 
 * {
@@ -55,16 +41,51 @@
 }
 
 html,
-body,
-#root {
-  height: 100%;
+body {
+  min-height: 100%;
 }
 
 body {
-  background: var(--tinta);
-  color: var(--giz);
-  font: 400 15px/1.62 var(--font-corpo);
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 15px/1.55 var(--font-ui);
   -webkit-font-smoothing: antialiased;
+  background-attachment: fixed;
+}
+
+/* A free background (color, gradient or image from Appearance) paints only the
+   desk; the sheet keeps its veil (sheet.css). */
+body.free-backdrop {
+  background: var(--backdrop) center / cover no-repeat fixed;
+}
+
+/* An image has its own fixed layer behind everything: the presenter frames
+   it in Appearance. The x % y % point of the image stays on the same point of
+   the screen, and the zoom grows the image around it. */
+body.image-backdrop {
+  background: var(--bg);
+}
+
+body.image-backdrop::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--backdrop) var(--backdrop-x, 50%) var(--backdrop-y, 50%) / cover no-repeat;
+  transform: scale(var(--backdrop-zoom, 1));
+  transform-origin: var(--backdrop-x, 50%) var(--backdrop-y, 50%);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
 button {
@@ -79,226 +100,165 @@ input,
 select,
 textarea {
   font: inherit;
-  color: var(--giz);
-  background: var(--tinta);
-  border: 1px solid var(--linha);
-  border-radius: 6px;
-  padding: var(--e-2) var(--e-3);
-  width: 100%;
+  color: inherit;
 }
 
-input:focus,
-select:focus,
-textarea:focus,
-button:focus-visible,
-a:focus-visible,
-[tabindex]:focus-visible {
-  outline: 2px solid var(--ouro);
-  outline-offset: 1px;
-}
-
-::placeholder {
-  color: var(--fumaca);
+svg {
+  display: block;
 }
 
 a {
-  color: var(--ouro);
+  color: var(--accent);
 }
 
-/* Voz da máquina: mono, caixa alta e tracking — nunca negrito como textura */
 .mono {
-  font-family: var(--font-dados);
+  font-family: var(--font-machine);
 }
 
-.termo,
-b,
-strong {
-  color: var(--giz);
-  font-weight: 500;
+.voice {
+  font-family: var(--font-voice);
+  font-style: italic;
 }
 
-.tecla {
-  display: inline-block;
-  border: 1px solid var(--linha-2);
-  border-radius: 4px;
-  padding: 1px 7px;
-  font: 500 12px var(--font-dados);
-  color: var(--giz);
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
   white-space: nowrap;
 }
 
 .eyebrow {
-  font: 500 11px var(--font-dados);
-  letter-spacing: 0.22em;
-  color: var(--ouro);
+  font: 500 11px/1 var(--font-machine);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  margin-bottom: var(--e-3);
+  color: var(--accent);
 }
 
-/* D-01 · Batuta — o traço do eyebrow surge do nada e acelera */
-.batuta::before {
-  content: '';
-  display: inline-block;
-  width: 26px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, currentColor);
-  margin-right: var(--e-2);
-  vertical-align: middle;
-}
-
-.voltar {
+/* ---------- buttons ---------- */
+.btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--e-2);
-  color: var(--fumaca);
-  font: 500 11px var(--font-dados);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 2px 0;
-  transition: color 0.15s;
-}
-
-.voltar:hover {
-  color: var(--ouro);
-}
-
-.btn {
-  border-radius: 6px;
-  padding: var(--e-2) var(--e-4);
-  font-weight: 500;
-  transition: filter 0.15s, border-color 0.15s;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--target);
+  padding: 0 12px;
+  border-radius: var(--r-control);
+  border: 1px solid var(--line);
+  font: 500 13px/1 var(--font-ui);
+  color: var(--ink-2);
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background var(--t),
+    color var(--t),
+    border-color var(--t);
 }
 
 .btn:hover {
-  filter: brightness(1.1);
+  background: var(--surface-2);
+  color: var(--ink);
+  border-color: var(--line-2);
 }
 
-/* Ação primária e gate: o ouro é a batuta */
-.btn-ar {
-  font-weight: 600;
-  background-color: #e8ba52;
-  background-image: linear-gradient(110deg, #e8ba52 0%, #f6d98a 45%, #e8ba52 62%);
-  background-size: 220% 100%;
-  background-position: 0% 0;
-  color: var(--tinta);
-  box-shadow: inset 0 0 0 1px rgba(11, 10, 8, 0.25);
-  transition: background-position 0.45s ease, filter 0.15s;
-}
-
-.btn-ar:hover {
-  background-position: 95% 0;
-  filter: none;
-}
-
-.btn-ar:hover,
-.btn-ar:focus-visible {
-  color: var(--tinta);
-}
-
-.btn-ar[disabled] {
+.btn:disabled {
   opacity: 0.4;
-  cursor: not-allowed;
-  filter: none;
+  cursor: default;
 }
 
-.btn-fantasma {
-  border: 1px solid var(--linha);
-  color: var(--giz);
+.btn[aria-pressed='true'] {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 55%, transparent);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
 }
 
-.btn-fantasma:hover {
-  border-color: var(--linha-2);
-  filter: none;
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
 }
 
-.btn-perigo {
-  background: var(--perigo);
-  color: var(--tinta);
+.btn-primary:hover {
+  background: color-mix(in srgb, var(--accent) 86%, var(--ink));
+  color: var(--accent-ink);
+  border-color: transparent;
 }
 
-.btn-suave {
-  background: var(--tinta-3);
-  color: var(--giz);
+.btn-danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--on-danger);
+  font-weight: 600;
 }
 
-.pagina {
-  padding: 36px var(--e-8);
-  max-width: 1040px;
-  margin: 0 auto;
+.btn-danger:hover {
+  background: color-mix(in srgb, var(--danger) 85%, var(--bg));
+  color: var(--on-danger);
 }
 
-.pagina h1 {
-  font: 600 32px/1.08 var(--font-display);
-  letter-spacing: -0.025em;
-  margin-bottom: 6px;
+.btn-icon {
+  width: var(--target);
+  padding: 0;
 }
 
-.sub {
-  color: var(--fumaca);
-  margin-bottom: 28px;
+.kbd {
+  font: 500 10.5px/1 var(--font-machine);
+  letter-spacing: 0.04em;
+  padding: 3px 5px;
+  border-radius: var(--r-mini);
+  border: 1px solid currentColor;
+  opacity: 0.7;
 }
 
-.vazio {
-  border: 1px dashed var(--linha);
-  border-radius: var(--r-controle);
-  padding: var(--e-14) var(--e-8);
-  text-align: center;
-  color: var(--giz-2);
+.btn-primary .kbd {
+  opacity: 0.65;
 }
 
-.vazio h2 {
-  font: 600 22px var(--font-display);
-  letter-spacing: -0.02em;
-  color: var(--giz);
-  margin-bottom: var(--e-2);
-}
-
-.vazio p {
-  max-width: 420px;
-  margin: 0 auto 18px;
-}
-
-.vazio .pauta-vazia-svg {
-  margin: 0 auto 18px;
-}
-
-.campo {
-  margin-bottom: 14px;
-}
-
-.campo label {
+/* ---------- form fields ---------- */
+.field label {
   display: block;
-  font: 500 11px var(--font-dados);
-  letter-spacing: 0.16em;
+  font: 500 11px/1 var(--font-machine);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--fumaca);
-  margin-bottom: 6px;
+  color: var(--smoke);
+  margin: 16px 0 8px;
 }
 
-.campo .erro-campo {
-  color: var(--erro);
-  font-size: 12px;
-  margin-top: var(--e-1);
+.field input[type='text'] {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: var(--r-control);
+  border: 1px solid var(--line-2);
+  background: var(--surface);
+  font-size: 15px;
 }
 
-.campo.invalido input,
-.campo.invalido select,
-.campo.invalido textarea {
-  border-color: var(--erro);
+.field input[type='text']:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 
-/* Grão de filme: textura de fundo, sem custo de layout */
-#grao {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 45;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+.field input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.field-error {
+  color: var(--danger);
+  font-size: 13px;
+  margin-top: 6px;
 }
 
 @media (max-width: 900px) {
-  .pagina {
-    padding: var(--e-6) var(--e-4);
+  :root {
+    --target: 44px;
+    --indent: 32px;
+  }
+
+  .btn {
+    padding: 0 12px;
+    min-width: 44px;
   }
 }

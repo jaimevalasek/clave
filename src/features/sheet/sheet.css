@@ -1,0 +1,550 @@
+/* The sheet — ruled paper in warm ink (identity.md, prototype `#/pauta/:id`). */
+
+/* ---------- ruler ---------- */
+.ruler .btn[aria-expanded='true'] {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.ruler .ruler-title {
+  min-width: 0;
+  flex: 0 1 auto;
+  max-width: 28ch;
+  height: var(--target);
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  font: 600 15px/1.2 var(--font-ui);
+  color: var(--ink);
+  text-overflow: ellipsis;
+}
+
+.ruler .ruler-title:hover {
+  border-color: var(--line);
+}
+
+.ruler .ruler-title:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.counter {
+  font: 500 11.5px/1 var(--font-machine);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  white-space: nowrap;
+}
+
+.counter b {
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.save-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font: 500 11px/1 var(--font-machine);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  white-space: nowrap;
+}
+
+.save-state i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.save-state[data-state='saving'] i {
+  background: var(--accent);
+  animation: save-pulse 900ms ease-in-out infinite;
+}
+
+.save-state[data-state='error'] {
+  color: var(--danger);
+}
+
+.save-state[data-state='error'] i {
+  background: var(--danger);
+}
+
+/* ---------- preparation strip: never to be recorded (AC-pauta-revelavel-28) ---------- */
+.prep-strip {
+  position: relative;
+  z-index: 29;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 20px;
+  color: var(--ink);
+  background: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--danger) 20%, var(--bg)) 0 10px,
+    color-mix(in srgb, var(--danger) 13%, var(--bg)) 10px 20px
+  );
+  border-bottom: 1px solid var(--danger);
+  font-size: 14px;
+}
+
+.prep-strip strong {
+  font: 600 11px/1 var(--font-machine);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--danger);
+  white-space: nowrap;
+}
+
+/* ---------- desk and ruled sheet ---------- */
+.desk {
+  display: flex;
+  justify-content: center;
+  padding: 36px 20px 0;
+}
+
+.sheet-column {
+  position: relative;
+  width: min(100%, 900px);
+  min-height: calc(100vh - 92px);
+  padding: var(--step) 56px 45vh 96px;
+  /* The veil over the background: Appearance → "Transparência da folha". */
+  background-color: color-mix(in srgb, var(--sheet) var(--sheet-veil, 90%), transparent);
+  background-image:
+    linear-gradient(to right, transparent 71px, var(--margin-line) 71px, var(--margin-line) 73px, transparent 73px),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(var(--step) - 1px),
+      var(--rule) calc(var(--step) - 1px),
+      var(--rule) var(--step)
+    );
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: var(--r-panel) var(--r-panel) 0 0;
+}
+
+.block {
+  --level: 0;
+  position: relative;
+  margin: 0 0 var(--step) calc(var(--indent) * var(--level));
+  border-radius: var(--r-control);
+  /* The sheet follows a revealed block without hiding it under the ruler. */
+  scroll-margin-top: 112px;
+  scroll-margin-bottom: 24px;
+}
+
+.block.ghost > .content {
+  opacity: 0.4;
+}
+
+.block.ghost::after {
+  content: '';
+  position: absolute;
+  inset: -8px -12px;
+  border: 1px dashed var(--line-2);
+  border-radius: 10px;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0 8px,
+    color-mix(in srgb, var(--ink) 5%, transparent) 8px 9px
+  );
+}
+
+/* ---------- gutter: block controls, shown on focus or pointer ---------- */
+.gutter {
+  position: absolute;
+  left: calc(-88px - var(--indent) * var(--level));
+  top: 2px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--t);
+}
+
+.block:hover .gutter,
+.block:focus-within .gutter,
+.block.lifted .gutter,
+.sheet-column.preparing .block.selected .gutter {
+  opacity: 1;
+}
+
+.gutter button {
+  width: 28px;
+  height: 40px;
+  border-radius: 7px;
+  color: var(--smoke);
+  display: grid;
+  place-items: center;
+}
+
+.gutter button:hover,
+.gutter button:focus-visible {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.gutter .handle {
+  cursor: grab;
+  touch-action: none;
+}
+
+/* ---------- preparation: plan of the take and collapse (AC-pauta-revelavel-28, -43) ---------- */
+.prep-actions {
+  position: absolute;
+  right: 0;
+  top: -30px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.planned {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: italic 15px/1 var(--font-voice);
+  color: var(--copper);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.planned:hover {
+  background: var(--surface-2);
+}
+
+.planned[data-planned='visible'] {
+  color: var(--ok);
+}
+
+.collapse {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font: 500 11px/1 var(--font-machine);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.collapse:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.collapse svg {
+  transition: transform var(--t);
+}
+
+.collapse[aria-expanded='false'] svg {
+  transform: rotate(-90deg);
+}
+
+.collapsed-note {
+  --level: 1;
+  margin: calc(var(--step) * -1 + 8px) 0 var(--step) calc(var(--indent) * var(--level));
+  font: italic 16px/28px var(--font-voice);
+  color: var(--copper);
+}
+
+/* ---------- drag: lifted block and drop mark ---------- */
+.block.lifted {
+  z-index: 5;
+  box-shadow: var(--shadow-lift);
+  background: var(--surface);
+  opacity: 0.96;
+}
+
+.block.lifted .handle {
+  cursor: grabbing;
+}
+
+.block.carried {
+  opacity: 0.5;
+}
+
+.block.drop-before::before,
+.end-hint.drop-before::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -23px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  pointer-events: none;
+}
+
+/* ---------- sub-items: marker and guide line (AC-pauta-revelavel-41) ---------- */
+.bullet {
+  position: absolute;
+  left: -30px;
+  top: 0;
+  width: 20px;
+  height: var(--step);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 26px/1 var(--font-ui);
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.block[data-size='title'] .bullet {
+  top: 6px;
+  height: calc(var(--block-font, 52px) * 1.12);
+}
+
+.guide {
+  position: absolute;
+  left: calc(var(--indent) * -1 + 12px);
+  top: calc(var(--step) * -1);
+  bottom: 0;
+  width: 1px;
+  background: var(--line-2);
+  pointer-events: none;
+}
+
+/* A list reads as a list: a sub-item sits on the line right under the one
+   above, with no blank line. The preparation view keeps the blank line for
+   the controls of each block. */
+.sheet-column:not(.preparing) .block:not([data-depth='0']) {
+  margin-top: calc(var(--step) * -1);
+}
+
+.sheet-column:not(.preparing) .block:not([data-depth='0']) .guide {
+  top: 0;
+}
+
+.sheet-column:not(.preparing) .block.drop-before:not([data-depth='0'])::before {
+  top: -1px;
+}
+
+/* ---------- text ---------- */
+.text {
+  display: block;
+  width: 100%;
+  min-height: var(--step);
+  font: 500 var(--font-size, 30px) / var(--step) var(--font-ui);
+  letter-spacing: -0.008em;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  outline: none;
+  padding: 0;
+  caret-color: var(--accent);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.text.size-large {
+  letter-spacing: -0.012em;
+}
+
+.text.size-title {
+  line-height: 1.12;
+  padding: 6px 0;
+  font-weight: 700;
+  letter-spacing: -0.022em;
+}
+
+.text b {
+  font-weight: 700;
+}
+
+.text.size-title b {
+  font-weight: 800;
+}
+
+.text.is-empty::before {
+  content: attr(data-placeholder);
+  color: var(--smoke);
+  font-family: var(--font-voice);
+  font-style: italic;
+  font-weight: 400;
+  pointer-events: none;
+}
+
+.text [data-color='text'] {
+  color: var(--color-text);
+}
+
+.text [data-color='accent'] {
+  color: var(--color-accent);
+}
+
+.text [data-color='red'] {
+  color: var(--color-red);
+}
+
+.text [data-color='green'] {
+  color: var(--color-green);
+}
+
+.text [data-color='copper'] {
+  color: var(--color-copper);
+}
+
+.text [data-color='lilac'] {
+  color: var(--color-lilac);
+}
+
+/* ---------- end of the column ---------- */
+.sheet-end {
+  margin-top: calc(var(--step) * -1);
+  height: var(--step);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 11px/1 var(--font-machine);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ok);
+}
+
+.sheet-end::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+}
+
+.end-hint {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: var(--step);
+  text-align: left;
+  font: italic 20px / var(--step) var(--font-voice);
+  color: var(--smoke);
+  opacity: 0;
+  transition: opacity var(--t);
+  border-radius: 6px;
+}
+
+.end-hint:hover,
+.end-hint:focus-visible,
+.sheet-column:has(.sheet-empty) .end-hint {
+  opacity: 1;
+}
+
+.sheet-empty {
+  padding: 0 0 var(--step);
+}
+
+.sheet-empty-title {
+  font: italic 400 44px / calc(var(--step) * 2) var(--font-voice);
+  color: var(--ink);
+}
+
+.sheet-empty p {
+  font-size: 19px;
+  line-height: var(--step);
+  color: var(--ink-2);
+  max-width: 40ch;
+}
+
+.sheet-empty-shortcuts {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: var(--step);
+  font: 500 11.5px / var(--step) var(--font-machine);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+/* ---------- small screens ---------- */
+@media (max-width: 900px) {
+  .ruler .ruler-title {
+    flex: 1 1 calc(100% - 96px);
+    max-width: none;
+    height: 44px;
+  }
+
+  .ruler .counter {
+    order: 3;
+    flex: 1 1 auto;
+  }
+
+  .counter .on-screen {
+    display: none;
+  }
+
+  .ruler .save-state span {
+    display: none;
+  }
+
+  .desk {
+    padding: 16px 8px 0;
+  }
+
+  .sheet-column {
+    padding: var(--step) 16px 45vh 52px;
+    background-image:
+      linear-gradient(to right, transparent 41px, var(--margin-line) 41px, var(--margin-line) 43px, transparent 43px),
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--step) - 1px),
+        var(--rule) calc(var(--step) - 1px),
+        var(--rule) var(--step)
+      );
+  }
+
+  .text {
+    font-size: calc(var(--font-size, 30px) * 0.8);
+  }
+
+  .gutter {
+    left: calc(-52px - var(--indent) * var(--level));
+    top: 0;
+    flex-direction: column;
+  }
+
+  .gutter button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .gutter .remove {
+    display: none;
+  }
+
+  .prep-actions {
+    top: -44px;
+  }
+
+  .planned,
+  .collapse {
+    min-height: 44px;
+  }
+
+  .prep-strip {
+    font-size: 13px;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .bullet {
+    left: -24px;
+    width: 16px;
+    font-size: 22px;
+  }
+
+  .sheet-empty-title {
+    font-size: 34px;
+  }
+}

@@ -52,7 +52,7 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   {
     path: '/api/rundowns',
     method: 'GET',
-    description: 'Lista as pautas com contagem de blocos, minutos previstos e execução em aberto.',
+    description: 'Lista as pautas com contagem de blocos, quantos começam na tela e o selo das pautas da versão anterior.',
     params: [],
     auth: false
   },
@@ -61,18 +61,11 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
     method: 'POST',
     description: 'Cria uma pauta.',
     params: [
-      bodyParam('title', true, 'Título da live, até 120 caracteres.'),
-      bodyParam('date', false, 'Data da live em AAAA-MM-DD; padrão é hoje.'),
+      bodyParam('title', true, 'Nome da pauta, até 120 caracteres.'),
+      bodyParam('date', false, 'Data da pauta em AAAA-MM-DD; padrão é hoje.'),
       bodyParam('kind', false, 'Tipo da pauta: rundown, presentation ou event; padrão é rundown.'),
       bodyParam('pinned', false, 'Se a pauta está fixada no topo; padrão é false.')
     ],
-    auth: false
-  },
-  {
-    path: '/api/rundowns/:id',
-    method: 'GET',
-    description: 'Devolve a pauta com seus blocos e anexos.',
-    params: [pathParam('id', 'Id da pauta.')],
     auth: false
   },
   {
@@ -91,14 +84,14 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   {
     path: '/api/rundowns/:id',
     method: 'DELETE',
-    description: 'Apaga a pauta e seus blocos; relatórios de trajeto já gravados são preservados.',
+    description: 'Apaga a pauta, os blocos dela e os arquivos de mídia que só ela usava.',
     params: [pathParam('id', 'Id da pauta.')],
     auth: false
   },
   {
     path: '/api/rundowns/:id/duplicate',
     method: 'POST',
-    description: 'Duplica a pauta com cópia dos blocos e anexos, sem alterar a original.',
+    description: 'Duplica a pauta com cópia da folha e a tomada zerada, sem alterar a original.',
     params: [pathParam('id', 'Id da pauta de origem.')],
     auth: false
   },
@@ -117,183 +110,24 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
     auth: false
   },
   {
-    path: '/api/rundowns/:id/track/reorder',
-    method: 'POST',
+    path: '/api/rundowns/:id/sheet',
+    method: 'GET',
+    description: 'Devolve a folha da pauta: os blocos na ordem, com nível, tamanho, marcas, planejado e progresso da tomada.',
+    params: [pathParam('id', 'Id da pauta.')],
+    auth: false
+  },
+  {
+    path: '/api/rundowns/:id/sheet',
+    method: 'PUT',
     description:
-      'Aplica a ordem completa da pauta e recompacta as posições; é idempotente e serve também ao "Desfazer".',
+      'Grava a folha inteira numa transação (salvamento automático). Ids novos são gerados no servidor e devolvidos por chave.',
     params: [
       pathParam('id', 'Id da pauta.'),
-      bodyParam('blockIds', true, 'Lista completa e ordenada dos ids dos blocos da pauta.')
-    ],
-    auth: false
-  },
-  {
-    path: '/api/blocks',
-    method: 'POST',
-    description: 'Cria um bloco no fim da pauta, ou na reserva quando a etiqueta é rescue.',
-    params: [
-      bodyParam('rundownId', true, 'Id da pauta.'),
-      bodyParam('type', true, 'Etiqueta do bloco: topic, media, interaction, guest ou rescue.'),
-      bodyParam('title', true, 'Título do bloco, até 140 caracteres.'),
-      bodyParam('durationMinutes', true, 'Duração prevista de 1 a 600 minutos.'),
-      bodyParam('note', false, 'Nota privada do apresentador.'),
-      bodyParam('attachments', false, 'Lista completa de anexos, gravada na mesma transação.'),
-      bodyParam('beats', false, 'Lista completa de pontos do bloco, gravada na mesma transação.')
-    ],
-    auth: false
-  },
-  {
-    path: '/api/blocks/:id',
-    method: 'PATCH',
-    description: 'Edita o bloco; mandar para a reserva ou tirar dela recalcula a ordem da pauta.',
-    params: [
-      pathParam('id', 'Id do bloco.'),
-      bodyParam('type', true, 'Etiqueta do bloco.'),
-      bodyParam('title', true, 'Título do bloco, até 140 caracteres.'),
-      bodyParam('durationMinutes', true, 'Duração prevista de 1 a 600 minutos.'),
-      bodyParam('note', false, 'Nota privada do apresentador.'),
-      bodyParam('attachments', false, 'Lista completa de anexos, gravada na mesma transação.'),
-      bodyParam('beats', false, 'Lista completa de pontos do bloco, gravada na mesma transação.')
-    ],
-    auth: false
-  },
-  {
-    path: '/api/blocks/:id',
-    method: 'DELETE',
-    description: 'Exclui o bloco com os pontos dele e recompacta a pauta; passos já gravados no trajeto não mudam.',
-    params: [pathParam('id', 'Id do bloco.')],
-    auth: false
-  },
-  {
-    path: '/api/beats/:id',
-    method: 'PATCH',
-    description:
-      'Marca ou desmarca um ponto como falado. É a escrita que o Palco faz a cada avanço.',
-    params: [
-      pathParam('id', 'Id do ponto.'),
-      bodyParam('done', true, 'true marca o ponto como falado; false desmarca.')
-    ],
-    auth: false
-  },
-  {
-    path: '/api/blocks/:id/attachments',
-    method: 'PUT',
-    description: 'Reescreve a lista de anexos do bloco preservando o id dos que já existiam.',
-    params: [
-      pathParam('id', 'Id do bloco.'),
-      bodyParam('attachments', true, 'Lista completa de anexos do bloco.')
-    ],
-    auth: false
-  },
-  {
-    path: '/api/rundowns/:id/preflight',
-    method: 'GET',
-    description:
-      'Checagem pré-live: devolve os blocos cuja mídia local (anexo ou imagem de ponto) não existe mais no disco.',
-    params: [pathParam('id', 'Id da pauta.')],
-    auth: false
-  },
-  {
-    path: '/api/rundowns/:id/open-run',
-    method: 'GET',
-    description: 'Devolve a execução em aberto da pauta, ou nulo quando não há nenhuma.',
-    params: [pathParam('id', 'Id da pauta.')],
-    auth: false
-  },
-  {
-    path: '/api/runs',
-    method: 'POST',
-    description: 'Entrar no ar: abre a execução, grava o primeiro passo e desmarca os pontos da pauta.',
-    params: [bodyParam('rundownId', true, 'Id da pauta que entra no ar.')],
-    auth: false
-  },
-  {
-    path: '/api/runs/:id',
-    method: 'GET',
-    description: 'Devolve a execução com o trajeto e os trechos marcados.',
-    params: [pathParam('id', 'Id da execução.')],
-    auth: false
-  },
-  {
-    path: '/api/runs/:id/steps',
-    method: 'POST',
-    description:
-      'Registra o passo do trajeto: fecha o anterior com a duração real e abre o do bloco informado.',
-    params: [
-      pathParam('id', 'Id da execução.'),
-      bodyParam('blockId', true, 'Bloco que entra no ar agora.')
-    ],
-    auth: false
-  },
-  {
-    path: '/api/runs/:id/finish',
-    method: 'POST',
-    description:
-      'Encerra a execução fechando o passo aberto; com `retroactive`, encerra no último passo registrado.',
-    params: [
-      pathParam('id', 'Id da execução.'),
-      bodyParam('retroactive', false, 'Quando verdadeiro, encerra no último passo gravado.')
-    ],
-    auth: false
-  },
-  {
-    path: '/api/runs/:id/report',
-    method: 'GET',
-    description:
-      'Relatório do trajeto: planejado × tocado por bloco e no total.',
-    params: [pathParam('id', 'Id da execução.')],
-    auth: false
-  },
-  {
-    path: '/api/library',
-    method: 'GET',
-    description:
-      'Lista os itens do acervo com vezes no ar e a data da última vez em que foram ao ar.',
-    params: [],
-    auth: false
-  },
-  {
-    path: '/api/library',
-    method: 'POST',
-    description: 'Guarda um bloco no acervo, copiando título, tipo e anexos.',
-    params: [bodyParam('blockId', true, 'Id do bloco promovido.')],
-    auth: false
-  },
-  {
-    path: '/api/library/:id',
-    method: 'PATCH',
-    description: 'Renomeia o item do acervo; o tipo é imutável depois da promoção.',
-    params: [
-      pathParam('id', 'Id do item do acervo.'),
-      bodyParam('title', true, 'Novo título, até 140 caracteres.')
-    ],
-    auth: false
-  },
-  {
-    path: '/api/library/:id/attachments',
-    method: 'PUT',
-    description: 'Reescreve a lista de anexos do item do acervo.',
-    params: [
-      pathParam('id', 'Id do item do acervo.'),
-      bodyParam('attachments', true, 'Lista completa de anexos do item.')
-    ],
-    auth: false
-  },
-  {
-    path: '/api/library/:id',
-    method: 'DELETE',
-    description: 'Remove o item do acervo; blocos já copiados continuam nas pautas.',
-    params: [pathParam('id', 'Id do item do acervo.')],
-    auth: false
-  },
-  {
-    path: '/api/library/:id/copy-to/:rundownId',
-    method: 'POST',
-    description:
-      'Traz uma cópia independente do item para a pauta, guardando a origem no bloco criado.',
-    params: [
-      pathParam('id', 'Id do item do acervo.'),
-      pathParam('rundownId', 'Id da pauta que recebe a cópia.')
+      bodyParam(
+        'blocks',
+        true,
+        'Lista completa e ordenada: key, id?, kind, depth, content, mediaPath, mediaName, size, fontPx, plannedVisible, takeVisible, revealStep, collapsed.'
+      )
     ],
     auth: false
   },
@@ -321,17 +155,9 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
     auth: false
   },
   {
-    path: '/api/open-url',
-    method: 'POST',
-    description:
-      'Abre uma URL http(s) de anexo no navegador do sistema. O webview do Play não segue target=_blank.',
-    params: [bodyParam('url', true, 'URL http ou https do anexo, sem credenciais, até 2048 caracteres.')],
-    auth: false
-  },
-  {
     path: '/api/preferences',
     method: 'GET',
-    description: 'Preferências de interface gravadas em disco, como o tour de primeira abertura.',
+    description: 'Preferências de interface gravadas em disco: o tour de primeira abertura e a aparência (tema, destaque, fundo e cobertura da folha).',
     params: [],
     auth: false
   },
@@ -339,7 +165,13 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
     path: '/api/preferences',
     method: 'PUT',
     description: 'Grava as preferências de interface enviadas; chaves ausentes ficam como estavam.',
-    params: [bodyParam('tourSeen', false, 'Marca o tour de primeira abertura como já visto.')],
+    params: [
+      bodyParam('tourSeen', false, 'Marca o tour de primeira abertura como já visto.'),
+      bodyParam('theme', false, 'Tema do app: ink-gold, porcelain, notebook, slate ou high-contrast.'),
+      bodyParam('accent', false, 'Cor de destaque livre em #RRGGBB, ou null para usar a do tema.'),
+      bodyParam('background', false, 'Fundo: { kind: theme } | { kind: color, value: #RRGGBB } | { kind: gradient, value: dusk|halo|grove } | { kind: image, value: caminho na pasta de mídia, frame?: { x: 0-100, y: 0-100, zoom: 100-300 } }.'),
+      bodyParam('sheetOpacity', false, 'Quanto a folha cobre o fundo, inteiro de 0 a 100 (padrão 90); a Aparência mostra 100 − isso como transparência.')
+    ],
     auth: false
   }
 ];

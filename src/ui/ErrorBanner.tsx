@@ -2,7 +2,7 @@ import { ApiError } from '../core/api';
 import { COPY } from '../core/vocabulary';
 
 interface ErrorBannerProps {
-  /** A ação que falhou, no infinitivo: "salvar a pauta", "apagar o bloco". */
+  /** The action that failed, in the infinitive: "abrir a pauta", "carregar as pautas". */
   action: string;
   error: unknown;
   onRetry?: () => void;
@@ -13,27 +13,21 @@ function describe(error: unknown): string {
     if (error.isUnreachable) return COPY.errors.backendDown;
     return error.message;
   }
-  return 'Erro inesperado. Tente de novo.';
+  return COPY.errors.unexpected;
 }
 
-/**
- * Faixa de erro de escrita: nomeia a ação que falhou e o que fazer. Nada é dado
- * como salvo sem confirmação da gravação, e o que o criador digitou continua
- * no formulário.
- */
+/** Error banner: names the action that failed and what to do (AC-pauta-revelavel-57). */
 export function ErrorBanner({ action, error, onRetry }: ErrorBannerProps) {
   if (!error) return null;
   return (
-    <div className="faixa-erro" role="alert" data-testid="faixa-erro">
+    <div className="error-banner" role="alert" data-testid="error-banner">
       <div>
-        <div className="rot">Não foi possível {action}</div>
-        <p>
-          {describe(error)} {COPY.errors.keepTyped}
-        </p>
+        <div className="error-label">Não foi possível {action}</div>
+        <p>{describe(error)}</p>
       </div>
       {onRetry ? (
-        <button type="button" className="btn btn-fantasma" onClick={onRetry}>
-          Tentar de novo
+        <button type="button" className="btn" onClick={onRetry}>
+          {COPY.common.retry}
         </button>
       ) : null}
     </div>

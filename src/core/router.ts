@@ -1,52 +1,47 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Roteador por hash — o mesmo do protótipo aprovado. Rotas em inglês
- * (`source-code-language-convention.md`); o vocabulário do produto vive nas
- * strings de interface.
+ * Hash router. Two screens: the rundown list and one rundown's sheet. Any
+ * other hash (the retired board, stage, library and report included) is not a
+ * route and leads to the list (AC-pauta-revelavel-12).
  */
-export type RouteName = 'rundowns' | 'board' | 'stage' | 'library' | 'report';
+export type RouteName = 'rundowns' | 'rundown';
 
 export interface Route {
   name: RouteName;
   arg: string | null;
-  /** Parâmetros de consulta da rota — o Palco carrega o id da execução aqui. */
-  params: Record<string, string>;
 }
-
-const KNOWN: RouteName[] = ['rundowns', 'board', 'stage', 'library', 'report'];
 
 export function parseHash(hash: string): Route | null {
-  const cleaned = hash.replace(/^#\/?/, '');
+  const cleaned = hash.replace(/^#\/?/, '').split('?')[0];
   if (!cleaned) return null;
-  const [path, query = ''] = cleaned.split('?');
-  const [name, arg] = path.split('/');
-  if (!KNOWN.includes(name as RouteName)) return null;
-
-  const params: Record<string, string> = {};
-  for (const [key, value] of new URLSearchParams(query)) params[key] = value;
-
-  return { name: name as RouteName, arg: arg || null, params };
+  const [name, arg, ...rest] = cleaned.split('/');
+  if (name === 'rundowns' && !arg) return { name: 'rundowns', arg: null };
+  if (name === 'rundown' && arg && !rest.length) return { name: 'rundown', arg: decodeURIComponent(arg) };
+  return null;
 }
 
-export function navigate(path: string): void {
-  window.location.hash = path.startsWith('/') ? path : `/${path}`;
+export function navigate(path: string, { replace = false } = {}): void {
+  const hash = `#${path.startsWith('/') ? path : `/${path}`}`;
+  if (replace) {
+    window.history.replaceState(null, '', hash);
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    return;
+  }
+  window.location.hash = hash;
 }
 
-export function useRoute(): Route | null {
-  const [route, setRoute] = useState<Route | null>(() => parseHash(window.location.hash));
+export function useHash(): string {
+  const [hash, setHash] = useState(() => window.location.hash);
   useEffect(() => {
-    const onChange = () => setRoute(parseHash(window.location.hash));
+    const onChange = () => setHash(window.location.hash);
     window.addEventListener('hashchange', onChange);
     return () => window.removeEventListener('hashchange', onChange);
   }, []);
-  return route;
+  return hash;
 }
 
 export const routes = {
   rundowns: () => '/rundowns',
-  board: (rundownId: string) => `/board/${rundownId}`,
-  stage: (rundownId: string) => `/stage/${rundownId}`,
-  library: () => '/library',
-  report: (runId: string) => `/report/${runId}`
+  rundown: (rundownId: string) => `/rundown/${encodeURIComponent(rundownId)}`
 };

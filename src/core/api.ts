@@ -50,14 +50,24 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
     throw new ApiError(
       503,
       'backend_unreachable',
-      'O Clave não conseguiu falar com o próprio servidor.'
+      'O app não conseguiu falar com o próprio servidor.'
     );
   }
 
   if (response.status === 204) return undefined as T;
 
   const text = await response.text();
-  const payload = text ? (JSON.parse(text) as unknown) : null;
+  let payload: unknown = null;
+  try {
+    payload = text ? (JSON.parse(text) as unknown) : null;
+  } catch {
+    // A non-JSON answer comes from the dev proxy when the backend is down.
+    throw new ApiError(
+      response.status >= 500 ? 503 : response.status,
+      response.status >= 500 ? 'backend_unreachable' : 'request_failed',
+      'O app não conseguiu falar com o próprio servidor.'
+    );
+  }
 
   if (!response.ok) {
     const error = (payload ?? {}) as ErrorBody;
@@ -72,10 +82,75 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   return payload as T;
 }
 
+/** Address of a file of the media folder, served by `GET /api/media/*`. */
+export function mediaUrl(path: string): string {
+  return `/api/media/${path.split('/').map(encodeURIComponent).join('/')}`;
+}
+
+/** A file written to the media folder: its path relative to that folder. */
+export interface StoredMedia {
+  path: string;
+  bytes: number;
+}
+
+function uploadError(xhr: XMLHttpRequest): ApiError {
+  let body: ErrorBody = {};
+  try {
+    body = JSON.parse(xhr.responseText) as ErrorBody;
+  } catch {
+    // A non-JSON answer: the backend is down behind the dev proxy.
+  }
+  if (!body.code && (xhr.status === 0 || xhr.status >= 500)) {
+    return new ApiError(503, 'backend_unreachable', 'O app não conseguiu falar com o próprio servidor.');
+  }
+  return new ApiError(xhr.status, body.code ?? 'request_failed', body.message ?? 'A gravação da mídia falhou.', body.fields ?? []);
+}
+
+/**
+ * Streams one file to `POST /api/media`. `fetch` cannot report upload
+ * progress, so this goes through `XMLHttpRequest`; `onProgress` receives 0..1.
+ * The server checks the extension, the signature and the 512 MB ceiling and
+ * answers a typed error (`unsupported_media`, `media_too_large`,
+ * `media_signature_mismatch`). Aborting through `signal` rejects with
+ * `upload_aborted`.
+ */
+function uploadMedia(
+  file: Blob,
+  fileName: string,
+  onProgress: (fraction: number) => void,
+  signal?: AbortSignal
+): Promise<StoredMedia> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/media');
+    xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+    xhr.setRequestHeader('x-clave-filename', encodeURIComponent(fileName));
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && event.total > 0) onProgress(event.loaded / event.total);
+    };
+    xhr.onload = () => {
+      if (xhr.status === 201) {
+        try {
+          resolve((JSON.parse(xhr.responseText) as { media: StoredMedia }).media);
+          return;
+        } catch {
+          // Falls through to the typed error below.
+        }
+      }
+      reject(uploadError(xhr));
+    };
+    xhr.onerror = () => reject(uploadError(xhr));
+    xhr.onabort = () => reject(new ApiError(0, 'upload_aborted', 'A gravação foi cancelada.'));
+    signal?.addEventListener('abort', () => xhr.abort(), { once: true });
+    xhr.send(file);
+  });
+}
+
 export const api = {
   get: <T>(path: string) => request<T>('GET', path),
   post: <T>(path: string, body?: unknown) => request<T>('POST', path, body ?? {}),
   patch: <T>(path: string, body?: unknown) => request<T>('PATCH', path, body ?? {}),
   put: <T>(path: string, body?: unknown) => request<T>('PUT', path, body ?? {}),
-  delete: <T>(path: string) => request<T>('DELETE', path)
+  delete: <T>(path: string) => request<T>('DELETE', path),
+  uploadMedia
 };

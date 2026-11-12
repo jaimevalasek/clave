@@ -1,0 +1,188 @@
+/* Formatting of a text block: the size bar above it and the format bar over a
+   selected passage (prototype `.tamanhos` and `.barra-sel`). */
+/* ---------- size bar: P, M, G, Título and A−/A+ (AC-pauta-revelavel-35, -36) ---------- */
+.size-bar {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 4px);
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(100vw - 96px);
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+  background: var(--solid);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t);
+}
+
+/* A bridge over the 4px gap, so the pointer can travel from the text to the bar. */
+.size-bar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 6px;
+}
+
+/* In a list the line above is the previous item: the bar goes to the right,
+   away from where the item's text starts. */
+.sheet-column:not(.preparing) .block:not([data-depth='0']) .size-bar {
+  left: auto;
+  right: 0;
+}
+
+.block:hover .size-bar,
+.block:focus-within .size-bar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* While a passage is selected, its format bar is the one in charge. */
+body:has(.format-bar) .block .size-bar {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.block.lifted .size-bar,
+.block.carried .size-bar,
+.block.leaving .size-bar {
+  display: none;
+}
+
+.size-bar [role='radiogroup'],
+.size-bar .fine {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.size-bar .fine {
+  padding-left: 4px;
+  margin-left: 0;
+  border-left: 1px solid var(--line);
+}
+
+.size-bar button {
+  height: 28px;
+  min-width: 32px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font: 600 12px/1 var(--font-machine);
+  letter-spacing: 0.04em;
+  color: var(--smoke);
+}
+
+.size-bar button:hover:not(:disabled),
+.size-bar button:focus-visible {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+
+.size-bar button[aria-checked='true'] {
+  background: var(--surface-2);
+  color: var(--accent);
+}
+
+.size-bar button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.size-bar .px {
+  padding: 0 8px 0 4px;
+  font: 500 11px/1 var(--font-machine);
+  letter-spacing: 0.06em;
+  color: var(--smoke);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- format bar over a selected passage (AC-pauta-revelavel-37) ---------- */
+.format-bar {
+  position: fixed;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--r-block);
+  border: 1px solid var(--line-2);
+  background: var(--solid);
+}
+
+.format-bar button {
+  min-width: 34px;
+  height: 34px;
+  border-radius: var(--r-control);
+  display: grid;
+  place-items: center;
+  color: var(--ink-2);
+}
+
+.format-bar button:hover,
+.format-bar button:focus-visible {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.format-bar .bold {
+  font: 700 16px/1 var(--font-ui);
+}
+
+.format-bar .bold[aria-pressed='true'] {
+  background: var(--surface-2);
+  color: var(--accent);
+}
+
+.format-bar .dot i {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--line-2);
+}
+
+.format-bar .separator {
+  width: 1px;
+  height: 22px;
+  margin: 0 4px;
+  background: var(--line);
+}
+
+.format-bar .normal {
+  padding: 0 10px;
+  font: 500 12.5px/1 var(--font-ui);
+}
+
+/* ---------- small screens ---------- */
+@media (max-width: 900px) {
+  /* Bars wrap instead of leaving the screen; every target is 44px (AC-pauta-revelavel-54). */
+  .size-bar button {
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .size-bar .fine {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .format-bar {
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: calc(100vw - 16px);
+  }
+
+  .format-bar button {
+    height: 44px;
+    min-width: 44px;
+  }
+
+  .format-bar .separator {
+    display: none;
+  }
+}

@@ -4,9 +4,11 @@ import path from 'node:path';
 /**
  * O AIOSON Play injeta AIOSON_APP_DIR no spawn. Fora do Play (dev solto, testes)
  * o diretório de trabalho serve de raiz. Nada aqui fixa caminho de máquina.
+ * A raiz sai sempre absoluta: a guarda da pasta de mídia compara caminhos
+ * resolvidos, e uma raiz relativa recusaria todo arquivo.
  */
 export function appDir(): string {
-  return process.env.AIOSON_APP_DIR ?? process.cwd();
+  return path.resolve(process.env.AIOSON_APP_DIR ?? process.cwd());
 }
 
 export function dataDir(): string {

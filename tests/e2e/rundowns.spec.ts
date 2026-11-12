@@ -1,243 +1,189 @@
 import { expect, test } from './fixtures';
-import { createBlock } from './helpers';
+import {
+  blockText,
+  createRundown,
+  deleteAllRundowns,
+  fetchSheet,
+  listRundowns,
+  plain,
+  rundownIdFromUrl,
+  waitSaved,
+  writeNewBlock
+} from './helpers';
 
 /**
- * Caminho real do criador na lista de pautas: formulário de verdade, renomear,
- * duplicar, apagar por confirmar e por cancelar. Nada de estado simulado.
+ * The rundown list through the real form: create, open, rename, duplicate, pin
+ * and delete, always identified by the persisted id.
  */
 
-async function createRundown(page: import('@playwright/test').Page, title: string) {
-  await page.goto('/#/rundowns');
-  await page.getByTestId('acao-criar-pauta').click();
-  await page.getByLabel('Título da live').fill(title);
-  await page.getByRole('button', { name: 'Criar', exact: true }).click();
-  await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
-}
-
-test('AC-clave-02 — criar pauta exige título e abre a Bancada vazia', async ({ page }) => {
-  await page.goto('/#/rundowns');
-  await page.getByTestId('acao-criar-pauta').click();
-
-  // Título vazio bloqueia o salvamento com erro inline.
-  await page.getByRole('button', { name: 'Criar', exact: true }).click();
-  const titleField = page.getByLabel('Título da live');
-  await expect(page.getByText('Dê um título à pauta.')).toBeVisible();
-  await expect(titleField).toHaveAttribute('aria-invalid', 'true');
-  await expect(titleField).toHaveAttribute('maxlength', '120');
-
-  await titleField.fill('Live #44: perguntas e código');
-  // A data usa campo nativo, sem segunda camada de formatação por cima.
-  await expect(page.getByLabel('Data')).toHaveAttribute('type', 'date');
-  await page.getByRole('button', { name: 'Criar', exact: true }).click();
-
-  await expect(page).toHaveURL(/#\/board\//);
-  await expect(page.getByTestId('estado-vazio-bancada')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Pauta em branco' })).toBeVisible();
-});
-
-test('AC-clave-01 — a lista mostra título, data e contagem, e abrir leva à Bancada', async ({
-  page
-}) => {
-  await createRundown(page, 'Live #45: a lista de pautas');
-  await page.goto('/#/rundowns');
-
-  const row = page.locator('.linha-pauta', { hasText: 'Live #45: a lista de pautas' });
-  await expect(row).toBeVisible();
-  await expect(row.locator('.meta')).toContainText('0 blocos na pauta');
-  await expect(row.locator('.meta')).toContainText('0 min previstos');
-
-  await row.getByRole('button', { name: 'Abrir' }).click();
-  await expect(page).toHaveURL(/#\/board\//);
-  await expect(page.getByRole('heading', { level: 1, name: 'Live #45: a lista de pautas' })).toBeVisible();
-});
-
-test('AC-clave-03 — renomear muda só a pauta escolhida e duplicar preserva a original', async ({
-  page
-}) => {
-  await createRundown(page, 'Pauta que vai ser renomeada');
-  await createRundown(page, 'Pauta vizinha');
-  await page.goto('/#/rundowns');
-
-  const target = page.locator('.linha-pauta', { hasText: 'Pauta que vai ser renomeada' });
-  await target.getByRole('button', { name: 'Renomear' }).click();
-  await page.getByLabel('Título da live').fill('Nome novo em folha');
-  await page.getByRole('button', { name: 'Renomear', exact: true }).last().click();
-
-  await expect(page.locator('.linha-pauta', { hasText: 'Nome novo em folha' })).toBeVisible();
-  await expect(page.locator('.linha-pauta', { hasText: 'Pauta vizinha' })).toBeVisible();
-  await expect(page.locator('.linha-pauta', { hasText: 'Pauta que vai ser renomeada' })).toHaveCount(0);
-
-  await page
-    .locator('.linha-pauta', { hasText: 'Pauta vizinha' })
-    .first()
-    .getByRole('button', { name: 'Duplicar' })
-    .click();
-  await expect(page.locator('.linha-pauta', { hasText: 'Pauta vizinha (cópia)' })).toBeVisible();
-  await expect(page.locator('.linha-pauta', { hasText: /^Pauta vizinha$/ })).toBeDefined();
-});
-
-test('AC-clave-55 — duplicar a pauta leva os pontos de cada bloco', async ({ page }) => {
-  await createRundown(page, 'Pauta com pontos para duplicar');
-  await createBlock(page, {
-    lane: 'topic',
-    title: 'Assunto que se repete toda semana',
-    beats: [{ text: 'recado da semana' }, { text: 'agradecer os membros novos' }]
-  });
-
-  await page.goto('/#/rundowns');
-  const row = page.locator('.linha-pauta', { hasText: 'Pauta com pontos para duplicar' });
-  await row.getByRole('button', { name: 'Duplicar' }).click();
-
-  const copy = page.locator('.linha-pauta', {
-    hasText: 'Pauta com pontos para duplicar (cópia)'
-  });
-  await expect(copy).toBeVisible();
-  await copy.getByRole('button', { name: 'Abrir' }).click();
-
-  await expect(
-    page.locator('.cartao', { hasText: 'Assunto que se repete toda semana' })
-  ).toContainText('2 pontos');
-  await page.locator('.cartao', { hasText: 'Assunto que se repete toda semana' }).click();
-  const drawer = page.getByTestId('gaveta-bloco');
-  await expect(drawer.getByLabel('Texto do ponto 1')).toHaveValue('recado da semana');
-  await expect(drawer.getByLabel('Ponto 1 já falado')).not.toBeChecked();
-});
-
-test('AC-clave-04 — apagar passa pelo modal do design system; Esc cancela', async ({ page }) => {
-  await createRundown(page, 'Pauta descartável');
-  await page.goto('/#/rundowns');
-
-  const row = page.locator('.linha-pauta', { hasText: 'Pauta descartável' });
-  await row.getByRole('button', { name: 'Apagar' }).click();
-
-  const modal = page.getByTestId('modal');
-  await expect(modal).toBeVisible();
-  await expect(modal).toContainText('Apagar a pauta "Pauta descartável"?');
-  await expect(modal).toContainText('Esta ação não pode ser desfeita.');
-
-  // Esc cancela e a pauta continua na lista.
-  await page.keyboard.press('Escape');
-  await expect(modal).toBeHidden();
-  await expect(row).toBeVisible();
-
-  await row.getByRole('button', { name: 'Apagar' }).click();
-  await page.getByRole('button', { name: 'Apagar pauta' }).click();
-  await expect(page.locator('.linha-pauta', { hasText: 'Pauta descartável' })).toHaveCount(0);
-});
-
-test('AC-clave-04 — nenhuma confirmação nativa existe no produto', async ({ page }) => {
-  let nativeDialogs = 0;
-  page.on('dialog', async (dialog) => {
-    nativeDialogs += 1;
-    await dialog.dismiss();
-  });
-
-  await createRundown(page, 'Pauta sem confirm nativo');
-  await page.goto('/#/rundowns');
-  const row = page.locator('.linha-pauta', { hasText: 'Pauta sem confirm nativo' });
-  await row.getByRole('button', { name: 'Apagar' }).click();
-  await page.getByRole('button', { name: 'Apagar pauta' }).click();
-  await expect(page.locator('.linha-pauta', { hasText: 'Pauta sem confirm nativo' })).toHaveCount(0);
-
-  expect(nativeDialogs).toBe(0);
-});
-
-test('AC-clave-06 — a lista marca a pauta com execução em aberto e oferece as duas saídas', async ({
-  page
-}) => {
-  await createRundown(page, 'Pauta com execução em aberto');
-  await page.getByTestId('criar-primeiro-bloco').click();
-  await page.getByTestId('gaveta-bloco').getByLabel('Título').fill('Bloco que entra no ar');
-  await page.getByTestId('salvar-bloco').click();
-  await expect(page.getByTestId('gaveta-bloco')).toBeHidden();
-
-  await page.getByTestId('acao-entrar-no-ar').click();
-  await page.getByTestId('modal').getByRole('button', { name: 'Entrar no ar', exact: true }).click();
-  await expect(page.getByTestId('palco')).toBeVisible();
-  await page.getByTestId('acao-sair-palco').click();
-  await page.getByRole('button', { name: 'Deixar para depois' }).click();
-
-  // Uma pauta sem execução serve de controle: a marca é por pauta, não global.
-  await createRundown(page, 'Pauta sem execução nenhuma');
-
-  await page.goto('/#/rundowns');
-  const marked = page.locator('.linha-pauta', { hasText: 'Pauta com execução em aberto' });
-  await expect(marked.getByTestId('marca-execucao-aberta')).toBeVisible();
-  await expect(
-    page
-      .locator('.linha-pauta', { hasText: 'Pauta sem execução nenhuma' })
-      .getByTestId('marca-execucao-aberta')
-  ).toHaveCount(0);
-
-  // Saída 1: retomar no bloco onde parou.
-  await marked.getByRole('button', { name: 'Abrir' }).click();
-  const lifecycle = page.getByTestId('modal');
-  await expect(lifecycle).toContainText('Execução em aberto encontrada');
-  await lifecycle.getByRole('button', { name: 'Retomar de onde parou' }).click();
-  await expect(page.getByTestId('palco')).toBeVisible();
-  await expect(page.getByTestId('titulo-palco')).toContainText('Bloco que entra no ar');
-
-  // Saída 2: encerrar retroativamente, sem descartar o trajeto.
-  await page.getByTestId('acao-sair-palco').click();
-  await page.getByRole('button', { name: 'Encerrar retroativamente' }).click();
-  await expect(page.getByTestId('toast').last()).toContainText(
-    'Execução encerrada com o último passo registrado'
-  );
-
-  await page.goto('/#/rundowns');
-  await expect(
-    page.locator('.linha-pauta', { hasText: 'Pauta com execução em aberto' })
-  ).not.toContainText('EXECUÇÃO EM ABERTO');
-  await page
-    .locator('.linha-pauta', { hasText: 'Pauta com execução em aberto' })
-    .getByRole('button', { name: 'ver relatório do trajeto' })
-    .click();
-  await expect(page).toHaveURL(/#\/report\//);
-  await expect(page.getByTestId('tabela-trajeto')).toContainText('Bloco que entra no ar');
-});
-
-test('tipos de pauta e fixação no topo', async ({ page }) => {
-  await page.goto('/#/rundowns');
-  await page.getByTestId('acao-criar-pauta').click();
-  await page.getByTestId('opcao-tipo-presentation').click();
-  await page.getByLabel('Título da live').fill('Pitch AIOSON Play');
-  await page.getByTestId('campo-fixado').check();
-  await page.getByRole('button', { name: 'Criar', exact: true }).click();
-
-  // Abre a Bancada da Apresentação
-  await expect(page).toHaveURL(/#\/board\//);
-  await expect(page.locator('.bancada-topo .eyebrow')).toContainText('Apresentação');
-
-  // Volta para a lista de pautas
-  await page.goto('/#/rundowns');
-  const row = page.locator('.linha-pauta', { hasText: 'Pitch AIOSON Play' });
-  await expect(row).toBeVisible();
-  await expect(row.locator('.tag-tipo')).toContainText('Apresentação');
-  await expect(row.locator('.tag-fixada')).toContainText('FIXADO');
-
-  // Desafixa
-  await row.getByRole('button', { name: 'Desafixar' }).click();
-  await expect(row.locator('.tag-fixada')).toHaveCount(0);
-});
-
-test('AC-clave-05 — sem nenhuma pauta, o boot cai no empty state que leva à criação', async ({
-  page
-}) => {
-  await page.goto('/#/rundowns');
-  await expect(page.getByTestId('pautas-lista')).toBeVisible();
-
-  // Apaga tudo o que os testes anteriores deixaram, uma linha por vez.
-  const rows = page.locator('.linha-pauta');
-  for (;;) {
-    const remaining = await rows.count();
-    if (remaining === 0) break;
-    await rows.first().getByRole('button', { name: 'Apagar' }).click();
-    await page.getByRole('button', { name: 'Apagar pauta' }).click();
-    await expect(rows).toHaveCount(remaining - 1);
-  }
-
-  await expect(page.getByTestId('estado-vazio-pautas')).toBeVisible();
+test('AC-pauta-revelavel-01 — with no rundown the list shows the empty state', async ({ page, request }) => {
+  await deleteAllRundowns(request);
   await page.goto('/');
-  await expect(page).toHaveURL(/#\/rundowns/);
+  await expect(page).toHaveURL(/#\/rundowns$/);
+  await expect(page.getByText('Nenhuma pauta ainda.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Criar a primeira pauta' })).toBeVisible();
+});
+
+test('AC-pauta-revelavel-01 — opening the app reopens the last rundown opened, even with another one pinned', async ({
+  page,
+  request
+}) => {
+  const pinned = await createRundown(page, 'Pauta fixada antiga');
+  await request.post(`/api/rundowns/${pinned}/toggle-pin`);
+  const latest = await createRundown(page, 'Pauta aberta por último');
+
+  await page.goto('about:blank');
+  await page.goto('/');
+  await expect(page).toHaveURL(new RegExp(`#/rundown/${latest}$`));
+  await expect(page.getByLabel('Nome da pauta')).toHaveValue('Pauta aberta por último');
+
+  await page.goto('/#/rundowns');
+  const rows = page.locator('.rundown-row');
+  await expect(rows.first()).toHaveAttribute('data-testid', `rundown-${pinned}`);
+});
+
+test('AC-pauta-revelavel-02 — "Nova pauta" asks for a name, refuses an empty one and opens a blank sheet', async ({
+  page,
+  request
+}) => {
+  const before = (await listRundowns(request)).length;
+  await page.goto('/#/rundowns');
+  await page.getByRole('button', { name: 'Nova pauta', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Nova pauta' });
+  await expect(dialog).toBeVisible();
+
+  await dialog.getByRole('button', { name: 'Criar pauta' }).click();
+  const field = dialog.getByLabel('Nome da pauta');
+  await expect(dialog.getByText('Dê um nome à pauta, por exemplo "Episódio 12: filas".')).toBeVisible();
+  await expect(field).toHaveAttribute('aria-invalid', 'true');
+  expect((await listRundowns(request)).length).toBe(before);
+
+  await field.fill('Episódio 12: filas');
+  await field.press('Enter');
+  await expect(page).toHaveURL(/#\/rundown\//);
+  await expect(page.getByText('Folha em branco.')).toBeVisible();
+});
+
+test('AC-pauta-revelavel-03 — renaming from the list changes only that row and survives a restart', async ({ page }) => {
+  const target = await createRundown(page, 'Pauta a renomear pela lista');
+  const neighbour = await createRundown(page, 'Pauta vizinha da lista');
+  await page.goto('/#/rundowns');
+
+  await page.getByTestId(`rundown-${target}`).getByRole('button', { name: 'Renomear', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Renomear pauta' });
+  await dialog.getByLabel('Nome da pauta').fill('Nome trocado pela lista');
+  await dialog.getByRole('button', { name: 'Salvar nome' }).click();
+  await expect(page.getByTestId(`rundown-${target}`)).toContainText('Nome trocado pela lista');
+
+  await page.reload();
+  await expect(page.getByTestId(`rundown-${target}`)).toContainText('Nome trocado pela lista');
+  await expect(page.getByTestId(`rundown-${neighbour}`)).toContainText('Pauta vizinha da lista');
+});
+
+test('AC-pauta-revelavel-04 — "Duplicar" creates "{nome} (cópia)" right below with every block', async ({
+  page,
+  request
+}) => {
+  const source = await createRundown(page, 'Roteiro para copiar');
+  await writeNewBlock(page, 'Bloco copiado');
+  await waitSaved(page);
+  await page.goto('/#/rundowns');
+
+  await page.getByTestId(`rundown-${source}`).getByRole('button', { name: 'Duplicar', exact: true }).click();
+  await expect(page.getByText('Cópia criada. Ela começa do zero: tudo como planejado.')).toBeVisible();
+  const sourceRow = page.getByTestId(`rundown-${source}`);
+  const copyRow = sourceRow.locator('xpath=following-sibling::div[1]');
+  await expect(copyRow).toContainText('Roteiro para copiar (cópia)');
+
+  await copyRow.getByRole('button', { name: 'Roteiro para copiar (cópia)', exact: true }).click();
+  // The take of the copy starts from the plan: the block, planned hidden, is not on screen until revealed.
+  await expect(page.getByTestId('sheet-counter')).toHaveText(/0\s+de\s+1\s+na tela/);
+  await page.keyboard.press('PageDown');
+  await expect(blockText(page, 0)).toHaveText('Bloco copiado');
+  const copyId = rundownIdFromUrl(page);
+  const copy = await fetchSheet(request, copyId);
+  expect(plain(copy)).toEqual(['Bloco copiado']);
+  expect(copy.blocks[0].plannedVisible).toBe(false);
+});
+
+test('AC-pauta-revelavel-05 — deleting asks "Apagar pauta?"; Cancel and Esc keep it, confirming removes it', async ({
+  page
+}) => {
+  const id = await createRundown(page, 'Pauta descartável');
+  await page.goto('/#/rundowns');
+  const row = page.getByTestId(`rundown-${id}`);
+
+  await row.getByRole('button', { name: 'Apagar Pauta descartável' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Apagar pauta?' });
+  await expect(dialog).toContainText('Não dá para desfazer.');
+  await dialog.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(row).toBeVisible();
+
+  await row.getByRole('button', { name: 'Apagar Pauta descartável' }).click();
+  await expect(dialog).toBeVisible();
+  // Focus stays inside the modal while it is open (AC-pauta-revelavel-53).
+  for (let step = 0; step < 4; step += 1) {
+    await page.keyboard.press('Tab');
+    expect(await dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true);
+  }
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(row).toBeVisible();
+
+  await row.getByRole('button', { name: 'Apagar Pauta descartável' }).click();
+  await dialog.getByRole('button', { name: 'Apagar pauta' }).click();
+  await expect(page.getByText('Pauta apagada.')).toBeVisible();
+  await expect(row).toHaveCount(0);
+});
+
+test('AC-pauta-revelavel-06 — each row shows blocks, "na tela no início", "editada há…", the pin control and pinned rows first', async ({
+  page,
+  request
+}) => {
+  const id = await createRundown(page, 'Pauta com contagem');
+  await writeNewBlock(page, 'um');
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Enter');
+  await page.keyboard.type('dois');
+  await waitSaved(page);
+  await page.goto('/#/rundowns');
+
+  const row = page.getByTestId(`rundown-${id}`);
+  await expect(row).toContainText('2 blocos');
+  await expect(row).toContainText('0 na tela no início');
+  await expect(row).toContainText(/editada (agora|há)/);
+
+  await row.getByRole('button', { name: 'Fixar', exact: true }).click();
+  await expect(page.getByText('Pauta fixada no topo.')).toBeVisible();
+  await expect(page.locator('.rundown-row').first()).toHaveAttribute('data-testid', `rundown-${id}`);
+  await expect(row.getByRole('button', { name: 'Desafixar', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await row.getByRole('button', { name: 'Desafixar', exact: true }).click();
+  await expect(row.getByRole('button', { name: 'Fixar', exact: true })).toBeVisible();
+  expect((await listRundowns(request)).find((rundown) => rundown.id === id)?.pinned).toBe(false);
+});
+
+test('AC-pauta-revelavel-57 — the list shows the skeleton while loading and "Tentar de novo" when the server is down', async ({
+  page
+}) => {
+  let release: () => void = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route('**/api/rundowns', async (route) => {
+    await gate;
+    await route.continue();
+  });
+  await page.goto('/#/rundowns');
+  await expect(page.getByTestId('loading-skeleton')).toBeVisible();
+  release();
+  await expect(page.getByRole('heading', { level: 1, name: 'Pautas' })).toBeVisible();
+  await page.unroute('**/api/rundowns');
+
+  await page.route('**/api/**', (route) => route.abort());
+  await page.goto('/');
+  await expect(page.getByTestId('error-banner')).toBeVisible();
+  await page.unroute('**/api/**');
+  await page.getByRole('button', { name: 'Tentar de novo' }).click();
+  await expect(page).toHaveURL(/#\/(rundowns|rundown\/)/);
 });

@@ -1,8 +1,11 @@
 import type { Database } from '../db/database.js';
+import { nowIso } from './clock.js';
 import { notFound, validationFailed } from '../http/errors.js';
-import { validateRundown } from '../../../shared/validation/rundown.js';
-import type { Block, Rundown, RundownSummary } from '../../../shared/types.js';
-import { listBlocks } from '../repositories/blockRepository.js';
+import { todayIso, validateRundown } from '../../../shared/validation/rundown.js';
+import type { Rundown, RundownSummary } from '../../../shared/types.js';
+import { isMediaReferenced, listLegacyMediaPaths } from '../repositories/mediaReferenceRepository.js';
+import { listSheetMediaPaths } from '../repositories/sheetRepository.js';
+import { removeUnreferencedMedia } from './mediaService.js';
 import {
   deleteRundown,
   duplicateRundown,
@@ -15,8 +18,6 @@ import {
   updateRundown
 } from '../repositories/rundownRepository.js';
 
-const nowIso = () => new Date().toISOString();
-
 export function listAll(db: Database): RundownSummary[] {
   return listRundowns(db);
 }
@@ -27,19 +28,10 @@ export function getSummary(db: Database, id: string): RundownSummary {
   return summary;
 }
 
-export interface RundownWithBlocks {
-  rundown: RundownSummary;
-  blocks: Block[];
-}
-
-export function getRundownWithBlocks(db: Database, id: string): RundownWithBlocks {
-  return { rundown: getSummary(db, id), blocks: listBlocks(db, id) };
-}
-
 export function create(db: Database, payload: unknown): Rundown {
   const result = validateRundown(payload);
   if (!result.ok) throw validationFailed(result.errors);
-  return insertRundown(db, result.value, nowIso());
+  return insertRundown(db, { ...result.value, date: result.value.date ?? todayIso() }, nowIso());
 }
 
 export function update(db: Database, id: string, payload: unknown): RundownSummary {
@@ -68,10 +60,21 @@ export function duplicate(db: Database, id: string): Rundown {
   return db.transaction(() => duplicateRundown(db, source, title, nowIso()))();
 }
 
+/**
+ * Deletes the rundown and then the media files only it used
+ * (AC-pauta-revelavel-05). The row goes first, inside a transaction; files are
+ * removed afterwards and only when nothing else references them, so a file
+ * shared with a copy stays in the media folder.
+ */
 export function remove(db: Database, id: string): void {
   const existing = findRundown(db, id);
   if (!existing) throw notFound('Pauta não encontrada.');
-  deleteRundown(db, id);
+  const paths = db.transaction(() => {
+    const collected = [...listSheetMediaPaths(db, id), ...listLegacyMediaPaths(db, id)];
+    deleteRundown(db, id);
+    return collected;
+  })();
+  removeUnreferencedMedia(paths, (path) => isMediaReferenced(db, path));
 }
 
 /** Abrir a pauta marca a última usada: é o que o boot reabre. */

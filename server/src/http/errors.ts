@@ -54,6 +54,24 @@ export function errorHandler(
     });
     return;
   }
+  // Body parser failures (malformed JSON, body over the limit) carry a 4xx
+  // status of their own: answer with it instead of a generic 500.
+  const parserStatus = (error as { status?: unknown; type?: unknown } | null)?.status;
+  if (
+    typeof parserStatus === 'number' &&
+    parserStatus >= 400 &&
+    parserStatus < 500 &&
+    typeof (error as { type?: unknown }).type === 'string'
+  ) {
+    const tooLarge = parserStatus === 413;
+    response.status(parserStatus).json({
+      status: parserStatus,
+      code: tooLarge ? 'payload_too_large' : 'bad_request',
+      message: tooLarge ? 'O conteúdo enviado passou do limite.' : 'Corpo da requisição inválido.',
+      fields: []
+    });
+    return;
+  }
   const message = error instanceof Error ? error.message : 'Erro inesperado no servidor.';
   process.stderr.write(`[clave] erro não tratado: ${message}\n`);
   response.status(500).json({ status: 500, code: 'internal_error', message, fields: [] });

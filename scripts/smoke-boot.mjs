@@ -1,6 +1,6 @@
-// RG-boot — sobe o backend real numa porta livre, com um AIOSON_APP_DIR
-// descartável, e confere o caminho de produção: health, catálogo de rotas e a
-// gravação de uma pauta que sobrevive à reabertura do processo.
+// RG-boot — starts the real backend on a free port with a throwaway
+// AIOSON_APP_DIR and checks the production path: health, the route catalog, and
+// a rundown with its sheet (content and take progress) that survives a restart.
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import net from 'node:net';
@@ -51,6 +51,38 @@ function startBackend(port) {
   return child;
 }
 
+/** Writes a sheet with content, levels, marks, plan and take progress; returns what was saved. */
+async function saveSampleSheet(sheetUrl) {
+  const block = (key, text, extra = {}) => ({
+    key,
+    kind: 'text',
+    depth: 0,
+    content: [{ text }],
+    mediaPath: '',
+    mediaName: '',
+    size: 'medium',
+    fontPx: 30,
+    plannedVisible: false,
+    takeVisible: false,
+    revealStep: null,
+    collapsed: false,
+    ...extra
+  });
+  const saved = await fetch(sheetUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      blocks: [
+        block('a', 'Abertura do smoke', { plannedVisible: true, takeVisible: true }),
+        block('b', 'Sub-item revelado', { depth: 1, size: 'small', fontPx: 22, takeVisible: true, revealStep: 1 }),
+        block('c', 'Ainda oculto', { content: [{ text: 'Ainda ' }, { text: 'oculto', bold: true, color: 'red' }] })
+      ]
+    })
+  });
+  if (saved.status !== 200) throw new Error(`PUT /sheet respondeu ${saved.status}`);
+  return JSON.stringify((await saved.json()).blocks);
+}
+
 async function run() {
   const port = await freePort();
   const baseUrl = `http://127.0.0.1:${port}`;
@@ -84,6 +116,9 @@ async function run() {
   ).json();
   if (!created.rundown?.id) throw new Error('POST /api/rundowns não devolveu a pauta criada');
 
+  const sheetUrl = `${baseUrl}/api/rundowns/${created.rundown.id}/sheet`;
+  const expectedSheet = await saveSampleSheet(sheetUrl);
+
   // Fechar e reabrir o processo: os dados vivem em disco, não em memória.
   backend.kill();
   await new Promise((resolve) => backend.once('exit', resolve));
@@ -92,16 +127,19 @@ async function run() {
   await waitForHealth(baseUrl);
   const listed = await (await fetch(`${baseUrl}/api/rundowns`)).json();
   const survived = listed.rundowns.some((rundown) => rundown.id === created.rundown.id);
+  const reread = await (await fetch(sheetUrl)).json();
+  const sheetSurvived = JSON.stringify(reread.blocks) === expectedSheet;
   backend.kill();
   await new Promise((resolve) => backend.once('exit', resolve));
 
   if (!survived) throw new Error('a pauta criada não sobreviveu ao restart do backend');
+  if (!sheetSurvived) throw new Error('a folha (conteúdo e progresso) não voltou igual depois do restart');
 
   const dbFile = path.join(appDir, 'data', 'clave.db');
   if (!fs.existsSync(dbFile)) throw new Error(`banco não encontrado em ${dbFile}`);
 
   process.stdout.write(
-    `smoke-boot OK — porta ${port}, ${catalog.endpoints.length} rotas no catálogo, pauta persistida em ${dbFile}\n`
+    `smoke-boot OK — porta ${port}, ${catalog.endpoints.length} rotas no catálogo, pauta e folha persistidas em ${dbFile}\n`
   );
 }
 

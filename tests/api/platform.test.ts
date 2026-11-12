@@ -18,8 +18,13 @@ afterAll(async () => {
   await server.close();
 });
 
-describe('AC-clave-41 — manifest.json descreve o app real', () => {
-  it('declara runtime node, split-stack com port_env dos dois processos e nenhum requires_services', () => {
+const entries = (routes: { method: string; path: string }[]) => routes.map((route) => `${route.method} ${route.path}`);
+
+/** The live-show surface the previous version exposed (execution, report, library, old blocks, open-url). */
+const RETIRED_ROUTE = /\/api\/(runs|library|blocks|beats|open-url)\b|\/(preflight|open-run|report|track\/reorder)\b/;
+
+describe('AC-pauta-revelavel-51 — the app runs on the ports the Play injects', () => {
+  it('manifest.json declares a node split stack with PORT for the frontend and BACKEND_PORT for the backend', () => {
     expect(manifest.slug).toBe('clave');
     expect(manifest.runtime).toBe('node');
     expect(manifest.stack).toBe('split');
@@ -30,28 +35,25 @@ describe('AC-clave-41 — manifest.json descreve o app real', () => {
     expect(Object.keys(manifest.processes)).toContain(manifest.webview_target);
     expect(manifest.requires_services).toBeUndefined();
   });
-});
 
-describe('AC-clave-42 — nenhuma porta fixada no código', () => {
-  it('backend e frontend leem a porta do ambiente injetado pelo Play', () => {
+  it('backend and frontend read their ports from the environment, never from a literal', () => {
     const serverMain = fs.readFileSync(path.resolve('server/src/main.ts'), 'utf8');
     const viteConfig = fs.readFileSync(path.resolve('vite.config.ts'), 'utf8');
     expect(serverMain).toContain('process.env.BACKEND_PORT');
     expect(viteConfig).toContain('process.env.PORT');
     expect(viteConfig).toContain('process.env.BACKEND_PORT');
-    // `listen` só recebe a variável, nunca um literal.
     expect(serverMain).not.toMatch(/listen\(\s*\d{4}/);
   });
 });
 
-describe('AC-clave-43 — GET /api/aioson-play lista apenas rotas que existem', () => {
-  it('responde com o schema de capabilities e o mesmo slug do manifesto', async () => {
+describe('AC-pauta-revelavel-51 — GET /api/aioson-play lists only routes that exist', () => {
+  it('answers the capabilities schema with the slug, name and version of the manifest', async () => {
     const { status, body } = await server.request<{
       slug: string;
       name: string;
       version: string;
       api_base_url: string;
-      endpoints: unknown[];
+      endpoints: { method: string; path: string }[];
       events: unknown[];
     }>('GET', '/api/aioson-play');
 
@@ -60,57 +62,111 @@ describe('AC-clave-43 — GET /api/aioson-play lista apenas rotas que existem', 
     expect(body.name).toBe(manifest.name);
     expect(body.version).toBe(manifest.version);
     expect(body.api_base_url).toMatch(/^http:\/\/localhost:/);
-    expect(body.endpoints.length).toBeGreaterThan(0);
+    expect(entries(body.endpoints)).toEqual(entries(API_ENDPOINTS));
     expect(body.events).toEqual([]);
   });
 
-  it('toda rota anunciada está registrada no Express', () => {
-    const registered = registeredApiRoutes().map((route) => `${route.method} ${route.path}`);
-    const announced = API_ENDPOINTS.map((endpoint) => `${endpoint.method} ${endpoint.path}`);
-    const invented = announced.filter((entry) => !registered.includes(entry));
-    expect(invented).toEqual([]);
+  it('every announced route is registered in Express', () => {
+    const registered = entries(registeredApiRoutes());
+    expect(entries(API_ENDPOINTS).filter((entry) => !registered.includes(entry))).toEqual([]);
   });
 
-  it('nenhuma rota registrada fica fora do catálogo', () => {
-    const registered = registeredApiRoutes().map((route) => `${route.method} ${route.path}`);
-    const announced = API_ENDPOINTS.map((endpoint) => `${endpoint.method} ${endpoint.path}`);
-    const hidden = registered.filter((entry) => !announced.includes(entry));
-    expect(hidden).toEqual([]);
+  it('no registered route is left out of the catalog', () => {
+    const announced = entries(API_ENDPOINTS);
+    expect(entries(registeredApiRoutes()).filter((entry) => !announced.includes(entry))).toEqual([]);
   });
 
-  it('cada rota GET sem parâmetro anunciada responde de verdade', async () => {
-    // Rotas com parâmetro (`:id`) ou curinga (`{*resto}`) precisam de um alvo
-    // real e são exercidas pelas suítes de cada capacidade.
+  it('announces exactly the sheet, rundown, media and preference routes', () => {
+    expect(entries(API_ENDPOINTS).sort()).toEqual(
+      [
+        'GET /api/health',
+        'GET /api/aioson-play',
+        'GET /api/rundowns',
+        'POST /api/rundowns',
+        'PATCH /api/rundowns/:id',
+        'DELETE /api/rundowns/:id',
+        'POST /api/rundowns/:id/duplicate',
+        'POST /api/rundowns/:id/toggle-pin',
+        'POST /api/rundowns/:id/open',
+        'GET /api/rundowns/:id/sheet',
+        'PUT /api/rundowns/:id/sheet',
+        'POST /api/media',
+        'GET /api/media/{*relativePath}',
+        'GET /api/preferences',
+        'PUT /api/preferences'
+      ].sort()
+    );
+  });
+
+  it('carries no execution, report, library, old block or open-url route, and no GET /api/rundowns/:id', () => {
+    const announced = entries(API_ENDPOINTS);
+    const registered = entries(registeredApiRoutes());
+    expect(announced.filter((entry) => RETIRED_ROUTE.test(entry))).toEqual([]);
+    expect(registered.filter((entry) => RETIRED_ROUTE.test(entry))).toEqual([]);
+    expect(announced).not.toContain('GET /api/rundowns/:id');
+    expect(registered).not.toContain('GET /api/rundowns/:id');
+  });
+
+  it('the retired routes answer the typed 404 of the app', async () => {
+    const created = await server.request<{ rundown: { id: string } }>('POST', '/api/rundowns', { title: 'Catálogo' });
+    const id = created.body.rundown.id;
+    const probes: [string, string][] = [
+      ['GET', `/api/rundowns/${id}`],
+      ['GET', `/api/rundowns/${id}/preflight`],
+      ['GET', `/api/rundowns/${id}/open-run`],
+      ['POST', '/api/runs'],
+      ['GET', '/api/library'],
+      ['POST', '/api/blocks'],
+      ['POST', '/api/open-url']
+    ];
+    for (const [method, route] of probes) {
+      const { status, body } = await server.request<{ code: string }>(method, route, method === 'GET' ? undefined : {});
+      expect(status, `${method} ${route}`).toBe(404);
+      expect(body.code).toBe('not_found');
+    }
+  });
+
+  it('every announced GET without a parameter answers 200', async () => {
+    // Routes with a parameter (`:id`) or a wildcard need a real target and are
+    // driven by the suite of each capability.
     const parameterized = /[:{*]/;
     for (const endpoint of API_ENDPOINTS) {
       if (endpoint.method !== 'GET' || parameterized.test(endpoint.path)) continue;
       const { status } = await server.request('GET', endpoint.path);
-      expect(status, `rota anunciada ${endpoint.path}`).toBe(200);
+      expect(status, `announced route ${endpoint.path}`).toBe(200);
+    }
+  });
+
+  it('the rundown summary keeps the sheet counts and drops the live-show fields', async () => {
+    await server.request('POST', '/api/rundowns', { title: 'Resumo' });
+    const { body } = await server.request<{ rundowns: Record<string, unknown>[] }>('GET', '/api/rundowns');
+    const summary = body.rundowns[0];
+    expect(summary).toHaveProperty('blockCount');
+    expect(summary).toHaveProperty('initiallyVisibleCount');
+    for (const field of ['trackBlockCount', 'rescueBlockCount', 'plannedMinutes', 'openRunId', 'lastFinishedRunId']) {
+      expect(summary, field).not.toHaveProperty(field);
     }
   });
 });
 
-describe('GET /api/health — probe leve para o Play', () => {
-  it('responde ok com slug e versão', async () => {
-    const { status, body } = await server.request<{ ok: boolean; slug: string; version: string }>(
-      'GET',
-      '/api/health'
-    );
+describe('GET /api/health — light probe for the Play', () => {
+  it('answers ok with the slug and the version', async () => {
+    const { status, body } = await server.request<{ ok: boolean; slug: string; version: string }>('GET', '/api/health');
     expect(status).toBe(200);
     expect(body).toEqual({ ok: true, slug: manifest.slug, version: manifest.version });
   });
 });
 
-describe('AC-clave-44 — o app abre direto no produto', () => {
-  it('não existe rota de autenticação nem de configuração de binding', () => {
+describe('AC-pauta-revelavel-01 — the app opens straight on the product', () => {
+  it('has no authentication or binding route, and the manifest declares no auth', () => {
     const paths = registeredApiRoutes().map((route) => route.path);
     expect(paths.some((entry) => entry.includes('auth'))).toBe(false);
     expect(paths.some((entry) => entry.includes('binding'))).toBe(false);
     expect(manifest.auth).toBeUndefined();
   });
 
-  it('rota inexistente sob /api devolve o erro tipado, não uma página', async () => {
-    const { status, body } = await server.request<{ code: string }>('GET', '/api/nao-existe');
+  it('an unknown route under /api answers the typed error, not a page', async () => {
+    const { status, body } = await server.request<{ code: string }>('GET', '/api/does-not-exist');
     expect(status).toBe(404);
     expect(body.code).toBe('not_found');
   });

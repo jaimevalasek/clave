@@ -1,5 +1,6 @@
-/* As duas famílias são servidas pelo próprio app, de `public/fonts/`.
-   Nenhuma requisição a host externo: o Palco continua legível offline. */
+/* Both families are served by the app itself, from `public/fonts/`: no
+   request to an external host, and the sheet reads the same offline
+   (AC-pauta-revelavel-56). */
 
 @font-face {
   font-family: 'Inter';

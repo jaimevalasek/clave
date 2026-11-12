@@ -1,123 +1,69 @@
-/* Barra superior — chrome mínimo: a pauta é a estrutura, não a navegação */
-#topbar {
-  display: flex;
-  align-items: center;
-  gap: var(--e-6);
-  padding: 0 var(--e-6);
-  height: 56px;
-  border-bottom: 1px solid var(--linha);
-  background: var(--tinta);
+/* Page chrome shared by the list and the sheet: a thin ruler at the top and the
+   page base. There is no navigation bar: the sheet is the product. */
+.top {
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 30;
 }
 
-#topbar .logo {
+.ruler {
+  position: relative;
+  z-index: 30;
   display: flex;
   align-items: center;
-  gap: var(--e-3);
-  padding: 9px var(--e-1) 9px 0;
-  font: 600 17px var(--font-display);
-  letter-spacing: 0.08em;
-  transition: color 0.15s;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 16px;
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  border-bottom: 1px solid var(--line);
 }
 
-#topbar .logo:hover {
-  color: var(--ouro);
+.ruler .spacer {
+  flex: 1;
 }
 
-#topbar nav {
+.ruler .group {
   display: flex;
-  gap: 2px;
-  align-self: stretch;
+  gap: 6px;
+  align-items: center;
 }
 
-#topbar nav button {
-  padding: 0 14px;
-  color: var(--fumaca);
-  font: 500 11.5px var(--font-dados);
-  letter-spacing: 0.16em;
+.chip {
+  font: 500 10.5px/1 var(--font-machine);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  border-bottom: 2px solid transparent;
-}
-
-#topbar nav button.ativo {
-  color: var(--giz);
-  border-bottom-color: var(--ouro);
-}
-
-#topbar nav button:hover:not([disabled]) {
-  color: var(--giz);
-}
-
-#topbar nav button[disabled] {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.pauta-chip {
-  margin-left: auto;
-  color: var(--fumaca);
-  font: 500 12px var(--font-dados);
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--copper);
+  border: 1px solid color-mix(in srgb, var(--copper) 45%, transparent);
+  padding: 5px 7px;
+  border-radius: var(--r-chip);
   white-space: nowrap;
 }
 
-.pauta-chip b {
-  color: var(--giz-2);
-  font-weight: 500;
-}
-
-main {
-  min-height: calc(100vh - 56px);
-}
-
-.badge-ar {
-  background: var(--resgate);
-  color: var(--tinta);
-  border-radius: 4px;
-  padding: var(--e-1) var(--e-3);
-  font: 600 11px var(--font-dados);
-  letter-spacing: 0.1em;
-  animation: pulso-ar 1.6s ease-in-out infinite;
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 56px 24px 96px;
 }
 
 @media (max-width: 900px) {
-  #topbar {
-    padding: 0 var(--e-3);
-    gap: var(--e-2);
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: none;
+  .ruler {
+    gap: 6px;
+    padding: 8px 10px;
+    flex-wrap: wrap;
+    row-gap: 8px;
   }
 
-  #topbar::-webkit-scrollbar {
+  .ruler .label,
+  .ruler .kbd,
+  .ruler .chip {
     display: none;
   }
 
-  #topbar .logo {
-    flex: none;
-    gap: 0;
-    min-width: 44px;
-    justify-content: center;
-  }
-
-  #topbar .logo .wordmark {
+  .ruler .spacer {
     display: none;
   }
 
-  #topbar nav {
-    flex: none;
-  }
-
-  #topbar nav button {
-    padding: 0 var(--e-2);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-  }
-
-  .pauta-chip {
-    display: none;
+  .page {
+    padding: 32px 16px 72px;
   }
 }

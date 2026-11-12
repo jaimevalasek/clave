@@ -1,18 +1,18 @@
-/** Formatações de apresentação da lista de pautas — locale pt-BR. */
-
-export function formatBrDate(iso: string): string {
-  const [year, month, day] = iso.split('-');
-  return `${day}/${month}/${year}`;
+/** Relative edit time of the rundown list ("editada há…"), pt-BR. */
+export function editedAgo(iso: string, now: Date = new Date()): string {
+  const minutes = Math.round((now.getTime() - new Date(iso).getTime()) / 60_000);
+  if (!Number.isFinite(minutes) || minutes < 2) return 'agora';
+  if (minutes < 60) return `há ${minutes} min`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `há ${hours} h`;
+  const days = Math.round(hours / 24);
+  return `há ${days} ${days === 1 ? 'dia' : 'dias'}`;
 }
 
-export function formatMinutes(minutes: number): string {
-  if (minutes >= 60) {
-    return `${Math.floor(minutes / 60)}h${String(minutes % 60).padStart(2, '0')}`;
-  }
-  return `${minutes} min`;
-}
-
-export function daysSince(iso: string, now: Date = new Date()): number {
-  const target = new Date(`${iso}T12:00:00`).getTime();
-  return Math.max(0, Math.floor((now.getTime() - target) / 86_400_000));
+/** Most recently opened rundown: the one the app reopens (AC-pauta-revelavel-01). */
+export function lastOpened<T extends { lastOpenedAt: string }>(rundowns: T[]): T | null {
+  return rundowns.reduce<T | null>(
+    (latest, rundown) => (!latest || rundown.lastOpenedAt > latest.lastOpenedAt ? rundown : latest),
+    null
+  );
 }

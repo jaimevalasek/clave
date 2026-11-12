@@ -1,11 +1,11 @@
 import { test as base } from '@playwright/test';
 
 /**
- * As suítes do produto testam o Clave de quem já usa o Clave: o tour de
- * primeira abertura já foi visto. Isto não é um atalho de teste — é a mesma
- * preferência que o usuário grava ao fechar o tour, escrita pela mesma rota
- * real (`PUT /api/preferences`), e o estado de primeira abertura continua
- * coberto de verdade em `onboarding.spec.ts`, que a zera antes de carregar.
+ * The product suites test the app as someone who already uses it: the
+ * first-open tour was seen. This is not a test shortcut — it is the same
+ * preference the app writes when the tour closes, through the same real route
+ * (`PUT /api/preferences`). The first open itself is covered in
+ * `tour.spec.ts`, which clears the preference before loading the page.
  */
 export const test = base.extend<{ tourAlreadySeen: void }>({
   tourAlreadySeen: [

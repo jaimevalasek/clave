@@ -1,64 +1,65 @@
-/* Movimento — identity.md §Motion.
-   Uma única coreografia: a entrada do bloco no Palco, palavra a palavra (35ms),
-   com a última palavra em serif itálico no metal do tipo (D-03 · Palavra viva).
-   Todo o resto é transição funcional de 150ms. */
+/* Motion — identity.md §Motion. Functional transitions are 150ms; the only
+   movement with personality is the block reveal ("tinta assentando"), styled
+   with the sheet. */
 
-@keyframes surge {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-}
-
-@keyframes palavra-entra {
-  from {
-    opacity: 0;
-    transform: translateY(0.35em);
-  }
-}
-
-@keyframes modal-entra {
+@keyframes modal-enter {
   from {
     transform: translateY(10px);
     opacity: 0;
   }
 }
 
-@keyframes toast-entra {
+@keyframes toast-enter {
   from {
     transform: translateY(8px);
     opacity: 0;
   }
 }
 
-@keyframes pulso-ar {
-  50% {
-    opacity: 0.6;
-  }
-}
-
-@keyframes brilho-sk {
+@keyframes skeleton-shine {
   to {
     background-position: -200% 0;
   }
 }
 
-@keyframes desenhar-curva {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* D-04 · Poeira de ouro — nebulosa no metal do bloco + fagulha de ouro.
-   Respira em 8s; nunca um campo de estrelas literal. */
-@keyframes poeira-respira {
+@keyframes save-pulse {
   50% {
-    opacity: 0.55;
+    opacity: 0.25;
   }
 }
 
-/* Com reduced-motion tudo fica estático: sem entrada palavra a palavra,
-   poeira congelada e transições em ~0ms. */
+/* "Tinta assentando": a revealed block's content is uncovered left to right
+   and lands on the ruled line. Only the content moves, so the gutter (handle,
+   eye, trash) stays clickable. A hidden block fades out before it leaves. */
+@keyframes ink-settle {
+  from {
+    clip-path: inset(0 100% 0 0);
+    transform: translateY(8px);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: none;
+  }
+}
+
+@keyframes block-leave {
+  to {
+    opacity: 0;
+  }
+}
+
+.block.entering > .content {
+  animation: ink-settle 460ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.block.leaving {
+  animation: block-leave 180ms ease forwards;
+  pointer-events: none;
+}
+
+/* Reduced motion: everything settles at once and scrolling is not smooth
+   (AC-pauta-revelavel-52). */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -67,5 +68,10 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001s !important;
     scroll-behavior: auto !important;
+  }
+
+  .block.entering > .content,
+  .block.leaving {
+    animation: none;
   }
 }

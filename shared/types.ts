@@ -1,70 +1,13 @@
-// Modelo de domínio do Clave, compartilhado entre servidor e interface.
-// Vocabulário do produto (pt-BR) → identificadores (en):
-// Pauta=Rundown · Bloco=Block · Ponto=Beat · Resgate=rescue
-// Execução=Run · Trajeto=RunStep · Acervo=LibraryItem · Anexo=Attachment
+import type { BlockSize } from './blockSize.js';
+import type { TextRun } from './textMarks.js';
 
-/** Etiquetas de cor do bloco. Não são estrutura: a pauta é uma linha só. */
-export const TRACK_LANES = ['topic', 'media', 'interaction', 'guest'] as const;
-export type TrackLane = (typeof TRACK_LANES)[number];
+export type { BlockSize } from './blockSize.js';
+export type { TextColor, TextRun } from './textMarks.js';
 
-/** Todas as etiquetas: as quatro da pauta mais a reserva de resgate. */
-export const BLOCK_TYPES = [...TRACK_LANES, 'rescue'] as const;
-export type BlockType = (typeof BLOCK_TYPES)[number];
+// Shared domain model of the revealable sheet (server and interface).
+// Product vocabulary (pt-BR) → identifiers (en): Pauta=Rundown · Bloco=SheetBlock.
 
-export const ATTACHMENT_TYPES = ['video', 'image', 'link', 'code', 'chat', 'file'] as const;
-export type AttachmentType = (typeof ATTACHMENT_TYPES)[number];
-
-export interface Attachment {
-  id: string;
-  type: AttachmentType;
-  label: string;
-  /** Caminho relativo dentro da pasta de mídia do app, ou URL http(s). Nunca caminho absoluto. */
-  path: string;
-  /** Texto pronto para colar — usado por `code` e `chat`. */
-  content: string;
-  /** Quando verdadeiro, o anexo toma a tela capturada; caso contrário abre no painel privado. */
-  fullscreen: boolean;
-  position: number;
-}
-
-/**
- * Ponto do bloco: uma linha do que você vai falar, que só entra na tela do
- * Palco quando você chega nela. O nome em código é `Beat` porque `RunStep` já é
- * o passo do trajeto gravado — são coisas diferentes.
- */
-export interface Beat {
-  id: string;
-  text: string;
-  /** Imagem que entra junto com o ponto: caminho na pasta de mídia ou URL http(s). Vazio = sem imagem. */
-  imagePath: string;
-  /** Já foi falado. `Entrar no ar` desmarca os pontos da pauta inteira. */
-  done: boolean;
-  /**
-   * Profundidade do sub-ponto: 0 é ponto de topo, 1 e 2 são sub-pontos. A lista
-   * continua plana e ordenada por `position`; o pai de um ponto é o anterior
-   * mais próximo com `depth` menor. É estrutura visual, não regra de fluxo — o
-   * Palco revela e marca um ponto por vez nesta mesma ordem, atravessando níveis.
-   */
-  depth: number;
-  position: number;
-}
-
-export interface Block {
-  id: string;
-  rundownId: string;
-  type: BlockType;
-  title: string;
-  /** Nota privada do apresentador: nunca renderiza na camada pública. */
-  note: string;
-  durationMinutes: number;
-  /** Invariante do domínio: `type === 'rescue'` ⇒ `position === null`. */
-  position: number | null;
-  /** Item do acervo que originou este bloco, quando veio de lá. */
-  libraryItemId: string | null;
-  attachments: Attachment[];
-  beats: Beat[];
-}
-
+/** Kept by the API as an optional field; the interface no longer asks for it. */
 export const RUNDOWN_KINDS = ['rundown', 'presentation', 'event'] as const;
 export type RundownKind = (typeof RUNDOWN_KINDS)[number];
 
@@ -73,7 +16,9 @@ export interface Rundown {
   title: string;
   kind: RundownKind;
   pinned: boolean;
-  /** Data da live em ISO curto (`AAAA-MM-DD`). */
+  /** Created by the previous version of the app and converted by migration v6. */
+  legacyImported: boolean;
+  /** Date of the rundown in short ISO (`YYYY-MM-DD`). */
   date: string;
   createdAt: string;
   updatedAt: string;
@@ -81,67 +26,119 @@ export interface Rundown {
 }
 
 export interface RundownSummary extends Rundown {
-  trackBlockCount: number;
-  rescueBlockCount: number;
-  plannedMinutes: number;
-  openRunId: string | null;
-  lastFinishedRunId: string | null;
-}
-
-export interface RunStep {
-  id: string;
-  runId: string;
-  /** Pode apontar para um bloco já excluído: o trajeto guarda o snapshot (AC-clave-47). */
-  blockId: string | null;
-  blockTitle: string;
-  blockType: BlockType;
-  libraryItemId: string | null;
-  startOffsetSeconds: number;
-  actualSeconds: number | null;
-  plannedSeconds: number;
-  wasRescue: boolean;
-  sequence: number;
-}
-
-export interface Run {
-  id: string;
-  rundownId: string | null;
-  /** Snapshot do título: o relatório sobrevive à exclusão da pauta. */
-  rundownTitle: string;
-  startedAt: string;
-  endedAt: string | null;
-  steps: RunStep[];
-}
-
-export interface LibraryItem {
-  id: string;
-  title: string;
-  /** Imutável depois da promoção: a etiqueta define a cor do item. */
-  type: BlockType;
-  airCount: number;
-  lastAiredOn: string | null;
-  createdAt: string;
-  updatedAt: string;
-  attachments: Attachment[];
-  beats: Beat[];
-}
-
-/** Bloco cujo anexo local não foi encontrado no disco, devolvido pela checagem pré-live. */
-export interface PreflightProblem {
-  blockId: string;
-  blockTitle: string;
-  attachmentId: string;
-  attachmentLabel: string;
-  attachmentPath: string;
+  /** Blocks in the sheet. */
+  blockCount: number;
+  /** Blocks planned to start visible in every take. */
+  initiallyVisibleCount: number;
 }
 
 /**
- * Preferências de interface. Não são dado de produto (pauta, bloco, ponto,
- * anexo, execução, trajeto, acervo), mas moram no mesmo banco em disco:
- * AC-clave-40 proíbe `localStorage`, e o produto não abre exceção nem para
- * preferência.
+ * Interface preferences. They are not product data, but they live in the same
+ * database on disk: nothing is kept in the browser (RULE-pauta-revelavel-08).
  */
 export interface Preferences {
-  /** O tour de primeira abertura já foi visto; a partir daí ele só abre pelo `Como usar`. */
+  /** The first-open tour was seen; from then on it opens only through "Como usar" (AC-pauta-revelavel-50). */
   tourSeen: boolean;
+  /** Appearance of the whole app (RULE-pauta-revelavel-10): one choice for every rundown. */
+  theme: ThemeId;
+  /** Free accent color `#RRGGBB`; `null` uses the accent of the theme. */
+  accent: string | null;
+  background: Background;
+  /**
+   * How much the sheet covers the background, 0 to 100 %: 100 hides it, 0
+   * leaves only the lines and the text over it. Appearance shows it as
+   * "Transparência da folha" (100 − this).
+   */
+  sheetOpacity: number;
+}
+
+export const DEFAULT_SHEET_OPACITY = 90;
+
+/** The five ready themes (AC-pauta-revelavel-46); the first is the default. */
+export const THEME_IDS = ['ink-gold', 'porcelain', 'notebook', 'slate', 'high-contrast'] as const;
+export type ThemeId = (typeof THEME_IDS)[number];
+export const DEFAULT_THEME: ThemeId = 'ink-gold';
+
+/** The three ready gradients of the background. */
+export const GRADIENT_IDS = ['dusk', 'halo', 'grove'] as const;
+export type GradientId = (typeof GRADIENT_IDS)[number];
+
+/**
+ * What paints behind the sheet: the theme background, a color, a gradient or
+ * an image stored in the media folder (path relative to it).
+ */
+export type Background =
+  | { kind: 'theme' }
+  | { kind: 'color'; value: string }
+  | { kind: 'gradient'; value: GradientId }
+  | ImageBackground;
+
+/**
+ * How an image sits behind the sheet: the point of the image (`x`, `y`, 0 to
+ * 100 %) that stays at the same point of the screen, and the zoom over "fill
+ * the screen" (100 to 300 %). Without it the image is centered at 100 %.
+ */
+export interface ImageFrame {
+  x: number;
+  y: number;
+  zoom: number;
+}
+
+export interface ImageBackground {
+  kind: 'image';
+  value: string;
+  frame?: ImageFrame;
+}
+
+export const DEFAULT_IMAGE_FRAME: ImageFrame = { x: 50, y: 50, zoom: 100 };
+export const MIN_IMAGE_ZOOM = 100;
+export const MAX_IMAGE_ZOOM = 300;
+
+export const BACKGROUND_KINDS = ['theme', 'color', 'gradient', 'image'] as const;
+export type BackgroundKind = (typeof BACKGROUND_KINDS)[number];
+
+/** `#RRGGBB`, the only color format the appearance stores. */
+export function isHexColor(value: unknown): value is string {
+  return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
+}
+
+/** Kinds of block in the revealable sheet. */
+export const SHEET_BLOCK_KINDS = ['text', 'image', 'video', 'audio'] as const;
+export type SheetBlockKind = (typeof SHEET_BLOCK_KINDS)[number];
+
+/**
+ * One block of the revealable sheet. The tree lives in the flat list: `depth`
+ * is 0..2 and the parent is the nearest previous block with a smaller depth.
+ * `plannedVisible` is how the block starts in every take; `takeVisible` and
+ * `revealStep` are the progress of the current take.
+ */
+export interface SheetBlock {
+  id: string;
+  kind: SheetBlockKind;
+  depth: number;
+  /** Text runs; always empty for media blocks. */
+  content: TextRun[];
+  /** Path relative to the media folder; empty for text blocks. */
+  mediaPath: string;
+  mediaName: string;
+  size: BlockSize;
+  fontPx: number;
+  plannedVisible: boolean;
+  takeVisible: boolean;
+  revealStep: number | null;
+  /** Collapsed in the preparation view only. */
+  collapsed: boolean;
+  /** Read only: set by the server when the file of a media block left the media folder. */
+  mediaMissing?: boolean;
+}
+
+export interface SheetPayload {
+  rundown: RundownSummary;
+  blocks: SheetBlock[];
+}
+
+export interface SheetSaveResult extends SheetPayload {
+  /** Server id for every client key sent in the request. */
+  ids: Record<string, string>;
+  savedAt: string;
 }

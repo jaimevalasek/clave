@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Database } from './database.js';
+import { importLegacySheets } from './legacySheetImport.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
@@ -108,6 +109,46 @@ export const MIGRATIONS: Migration[] = [
         db.exec(`ALTER TABLE rundowns ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0;`);
       }
     }
+  },
+  {
+    // Revealable sheet: one flat, ordered list of blocks per rundown, with the
+    // planned state kept apart from the take progress. Additive: the legacy
+    // tables stay on disk untouched, and the conversion of legacy rundowns runs
+    // in this same transaction, so a failure rolls the whole version back.
+    version: 6,
+    name: 'revealable-sheet',
+    apply(db) {
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS sheet_blocks (
+          id              TEXT PRIMARY KEY,
+          rundown_id      TEXT NOT NULL REFERENCES rundowns(id) ON DELETE CASCADE,
+          position        INTEGER NOT NULL,
+          depth           INTEGER NOT NULL DEFAULT 0 CHECK (depth BETWEEN 0 AND 2),
+          kind            TEXT NOT NULL CHECK (kind IN ('text', 'image', 'video', 'audio')),
+          content         TEXT NOT NULL DEFAULT '',
+          media_path      TEXT NOT NULL DEFAULT '',
+          media_name      TEXT NOT NULL DEFAULT '',
+          size            TEXT NOT NULL DEFAULT 'medium'
+                          CHECK (size IN ('small', 'medium', 'large', 'title')),
+          font_px         INTEGER NOT NULL DEFAULT 30,
+          planned_visible INTEGER NOT NULL DEFAULT 0,
+          take_visible    INTEGER NOT NULL DEFAULT 0,
+          reveal_step     INTEGER,
+          collapsed       INTEGER NOT NULL DEFAULT 0,
+          created_at      TEXT NOT NULL,
+          updated_at      TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_sheet_blocks_rundown ON sheet_blocks(rundown_id, position);
+        CREATE INDEX IF NOT EXISTS idx_sheet_blocks_media ON sheet_blocks(media_path);
+      `);
+
+      const columns = db.all<{ name: string }>('PRAGMA table_info(rundowns)');
+      const hadSeal = columns.some((column) => column.name === 'legacy_imported_at');
+      if (!hadSeal) db.exec(`ALTER TABLE rundowns ADD COLUMN legacy_imported_at TEXT;`);
+
+      importLegacySheets(db, new Date().toISOString(), { includeEmpty: !hadSeal });
+    }
   }
 ];
 
@@ -153,5 +194,6 @@ export const EXPECTED_TABLES = [
   'runs',
   'run_steps',
   'run_cuts',
-  'preferences'
+  'preferences',
+  'sheet_blocks'
 ] as const;

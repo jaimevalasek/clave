@@ -3,97 +3,85 @@ import { ApiError } from '../../core/api';
 import { COPY } from '../../core/vocabulary';
 import { ErrorBanner } from '../../ui/ErrorBanner';
 import { Modal } from '../../ui/Modal';
-import { RUNDOWN_TITLE_MAX_LENGTH, todayIso } from '../../../shared/validation/rundown';
-import type { RundownKind } from '../../../shared/types';
-
-export interface RundownFormData {
-  title: string;
-  date: string;
-  kind: RundownKind;
-  pinned: boolean;
-}
+import { RUNDOWN_TITLE_MAX_LENGTH, RUNDOWN_TITLE_REQUIRED } from '../../../shared/validation/rundown';
 
 interface RundownFormProps {
   mode: 'create' | 'rename';
   initialTitle?: string;
-  initialDate?: string;
-  initialKind?: RundownKind;
-  initialPinned?: boolean;
-  onSubmit(input: RundownFormData): Promise<void>;
+  onSubmit(title: string): Promise<void>;
   onDismiss(): void;
 }
 
-const ACTION_LABEL: Record<RundownFormProps['mode'], string> = {
-  create: 'criar a pauta',
-  rename: 'renomear a pauta'
-};
+const TEXT = {
+  create: {
+    title: COPY.rundowns.formCreateTitle,
+    text: COPY.rundowns.formCreateText,
+    confirm: COPY.rundowns.formCreateConfirm,
+    action: 'criar a pauta'
+  },
+  rename: {
+    title: COPY.rundowns.formRenameTitle,
+    text: COPY.rundowns.formRenameText,
+    confirm: COPY.rundowns.formRenameConfirm,
+    action: 'renomear a pauta'
+  }
+} as const;
 
 /**
- * Formulário real de pauta. O título é validado no domínio (a rota rejeita antes
- * de escrever) e o erro volta inline com `aria-invalid`/`aria-describedby`. A
- * data usa campo nativo `type="date"`, sem segunda camada de formatação por cima.
+ * The only field of a rundown: its name (AC-pauta-revelavel-02/03). The server
+ * is the gate; the form shows its message inline with `aria-invalid`, and
+ * `noValidate` keeps the browser bubble from hiding it.
  */
-export function RundownForm({
-  mode,
-  initialTitle = '',
-  initialDate,
-  initialKind = 'rundown',
-  initialPinned = false,
-  onSubmit,
-  onDismiss
-}: RundownFormProps) {
-  const titleId = useId();
-  const dateId = useId();
-  const errorId = `${titleId}-erro`;
-
+function useRundownForm(initialTitle: string, inputId: string, onSubmit: (title: string) => Promise<void>) {
   const [title, setTitle] = useState(initialTitle);
-  const [date, setDate] = useState(initialDate || todayIso());
-  const [kind, setKind] = useState<RundownKind>(initialKind);
-  const [pinned, setPinned] = useState<boolean>(initialPinned);
-  const [titleError, setTitleError] = useState<string | null>(null);
+  const [fieldError, setFieldError] = useState<string | null>(null);
   const [writeError, setWriteError] = useState<unknown>(null);
   const [saving, setSaving] = useState(false);
 
   const submit = async () => {
     if (saving) return;
     if (!title.trim()) {
-      setTitleError('Dê um título à pauta.');
-      document.getElementById(titleId)?.focus();
+      setFieldError(RUNDOWN_TITLE_REQUIRED);
+      document.getElementById(inputId)?.focus();
       return;
     }
     setSaving(true);
-    setTitleError(null);
+    setFieldError(null);
     setWriteError(null);
     try {
-      await onSubmit({ title: title.trim(), date, kind, pinned });
+      await onSubmit(title.trim());
     } catch (error) {
-      // Falha de validação volta no campo; falha de escrita vira faixa dentro do
-      // próprio formulário, com o que foi digitado intacto para reenviar.
-      if (error instanceof ApiError && error.isValidation) {
-        setTitleError(error.fieldMessage('title') ?? error.message);
-      } else {
-        setWriteError(error);
-      }
+      if (error instanceof ApiError && error.isValidation) setFieldError(error.fieldMessage('title') ?? error.message);
+      else setWriteError(error);
     } finally {
       setSaving(false);
     }
   };
 
+  const change = (value: string) => {
+    setTitle(value);
+    if (fieldError) setFieldError(null);
+  };
+
+  return { title, change, fieldError, writeError, submit };
+}
+
+export function RundownForm({ mode, initialTitle = '', onSubmit, onDismiss }: RundownFormProps) {
+  const inputId = useId();
+  const errorId = `${inputId}-error`;
+  const { title, change, fieldError, writeError, submit } = useRundownForm(initialTitle, inputId, onSubmit);
+  const text = TEXT[mode];
+
   return (
     <Modal
-      title={mode === 'create' ? COPY.rundowns.formTitleCreate : COPY.rundowns.formTitleRename}
+      title={text.title}
+      text={text.text}
       onDismiss={onDismiss}
       actions={[
         { label: COPY.common.cancel },
-        {
-          label: mode === 'create' ? 'Criar' : COPY.rundowns.rename,
-          intent: 'ouro',
-          keepOpen: true,
-          onSelect: submit
-        }
+        { label: text.confirm, intent: 'primary', keepOpen: true, onSelect: () => void submit() }
       ]}
     >
-      {/* `noValidate`: quem rejeita é a validação de domínio, com erro inline. */}
       <form
         noValidate
         onSubmit={(event) => {
@@ -101,72 +89,26 @@ export function RundownForm({
           void submit();
         }}
       >
-        {writeError ? <ErrorBanner action={ACTION_LABEL[mode]} error={writeError} /> : null}
-        <div className="campo">
-          <label>{COPY.rundowns.fieldKind}</label>
-          <div className="seletor-tipo" role="radiogroup" aria-label={COPY.rundowns.fieldKind}>
-            {(['rundown', 'presentation', 'event'] as const).map((k) => (
-              <button
-                key={k}
-                type="button"
-                role="radio"
-                aria-checked={kind === k}
-                className={`opcao-tipo${kind === k ? ' ativa' : ''}`}
-                data-tipo={k}
-                data-testid={`opcao-tipo-${k}`}
-                onClick={() => setKind(k)}
-              >
-                {COPY.rundowns.kinds[k]}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className={`campo${titleError ? ' invalido' : ''}`}>
-          <label htmlFor={titleId}>{COPY.rundowns.fieldTitle}</label>
+        {writeError ? <ErrorBanner action={text.action} error={writeError} /> : null}
+        <div className="field">
+          <label htmlFor={inputId}>{COPY.rundowns.fieldName}</label>
           <input
-            id={titleId}
+            id={inputId}
             name="title"
             type="text"
             maxLength={RUNDOWN_TITLE_MAX_LENGTH}
             autoComplete="off"
             value={title}
-            aria-invalid={titleError ? true : undefined}
-            aria-describedby={titleError ? errorId : undefined}
-            placeholder={COPY.rundowns.fieldTitlePlaceholder}
-            onChange={(event) => {
-              setTitle(event.target.value);
-              if (titleError) setTitleError(null);
-            }}
+            aria-invalid={fieldError ? true : undefined}
+            aria-describedby={fieldError ? errorId : undefined}
+            onChange={(event) => change(event.target.value)}
           />
-          {titleError ? (
-            <div className="erro-campo" id={errorId}>
-              {titleError}
+          {fieldError ? (
+            <div className="field-error" id={errorId} role="alert">
+              {fieldError}
             </div>
           ) : null}
         </div>
-        <div className="campo">
-          <label htmlFor={dateId}>{COPY.rundowns.fieldDate}</label>
-          <input
-            id={dateId}
-            name="date"
-            type="date"
-            value={date}
-            onChange={(event) => setDate(event.target.value || todayIso())}
-          />
-        </div>
-        <div className="campo-checkbox">
-          <label className="rotulo-checkbox">
-            <input
-              type="checkbox"
-              name="pinned"
-              checked={pinned}
-              data-testid="campo-fixado"
-              onChange={(event) => setPinned(event.target.checked)}
-            />
-            <span>{COPY.rundowns.fieldPinned}</span>
-          </label>
-        </div>
-        {/* Enter no formulário salva; o botão de gate fica no rodapé do modal. */}
         <button type="submit" hidden aria-hidden="true" tabIndex={-1} />
       </form>
     </Modal>

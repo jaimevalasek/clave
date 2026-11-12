@@ -1,7 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 import { startTestServer } from '../helpers/testServer';
 import type { TestServer } from '../helpers/testServer';
-import type { Rundown, RundownSummary } from '../../shared/types';
+import { PNG_BYTES, mediaDraft, textDraft, uploadMedia } from '../helpers/sheetFixtures';
+import type { SheetBlockDraft } from '../helpers/sheetFixtures';
+import type { Rundown, RundownSummary, SheetPayload, SheetSaveResult } from '../../shared/types';
 
 let server: TestServer;
 
@@ -13,290 +17,236 @@ afterAll(async () => {
   await server.close();
 });
 
-async function createRundown(title: string, date = '2026-08-18'): Promise<Rundown> {
+async function createRundown(title: string, extra: Record<string, unknown> = {}): Promise<Rundown> {
   const { status, body } = await server.request<{ rundown: Rundown }>('POST', '/api/rundowns', {
     title,
-    date
+    ...extra
   });
   expect(status).toBe(201);
   return body.rundown;
 }
 
-describe('AC-clave-02 — o título da pauta é validado no domínio', () => {
-  it('rejeita título vazio antes de qualquer escrita', async () => {
-    const before = await server.request<{ rundowns: RundownSummary[] }>('GET', '/api/rundowns');
-    const { status, body } = await server.request<{ code: string; fields: { field: string }[] }>(
+async function listRundowns(): Promise<RundownSummary[]> {
+  const { body } = await server.request<{ rundowns: RundownSummary[] }>('GET', '/api/rundowns');
+  return body.rundowns;
+}
+
+async function saveSheet(rundownId: string, blocks: SheetBlockDraft[]): Promise<SheetSaveResult> {
+  const { status, body } = await server.request<SheetSaveResult>('PUT', `/api/rundowns/${rundownId}/sheet`, {
+    blocks
+  });
+  expect(status).toBe(200);
+  return body;
+}
+
+function mediaFile(relative: string): string {
+  return path.join(process.env.AIOSON_APP_DIR as string, 'data', 'media', relative);
+}
+
+describe('AC-pauta-revelavel-02 — the rundown name is required by the server', () => {
+  it('rejects an empty name with the inline message and creates nothing', async () => {
+    const before = await listRundowns();
+    const { status, body } = await server.request<{ code: string; fields: { field: string; message: string }[] }>(
       'POST',
       '/api/rundowns',
-      { title: '   ', date: '2026-08-18' }
+      { title: '   ' }
     );
 
     expect(status).toBe(422);
     expect(body.code).toBe('validation_failed');
-    expect(body.fields[0].field).toBe('title');
-
-    const after = await server.request<{ rundowns: RundownSummary[] }>('GET', '/api/rundowns');
-    expect(after.body.rundowns).toHaveLength(before.body.rundowns.length);
+    expect(body.fields[0]).toEqual({
+      field: 'title',
+      message: 'Dê um nome à pauta, por exemplo "Episódio 12: filas".'
+    });
+    expect(await listRundowns()).toHaveLength(before.length);
   });
 
-  it('rejeita título acima de 120 caracteres', async () => {
-    const { status } = await server.request('POST', '/api/rundowns', {
-      title: 'a'.repeat(121),
-      date: '2026-08-18'
-    });
+  it('rejects a name over 120 characters', async () => {
+    const { status } = await server.request('POST', '/api/rundowns', { title: 'a'.repeat(121) });
     expect(status).toBe(422);
   });
 
-  it('rejeita data fora do formato de data', async () => {
-    const { status, body } = await server.request<{ fields: { field: string }[] }>(
-      'POST',
-      '/api/rundowns',
-      { title: 'Live com data ruim', date: '18/08/2026' }
-    );
-    expect(status).toBe(422);
-    expect(body.fields[0].field).toBe('date');
-  });
-
-  it('usa a data de hoje quando o campo vem vazio', async () => {
-    const { body } = await server.request<{ rundown: Rundown }>('POST', '/api/rundowns', {
-      title: 'Live sem data'
-    });
-    expect(body.rundown.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-  });
-});
-
-describe('AC-clave-01 — a lista mostra o que a pauta tem e ordena pela última abertura', () => {
-  it('traz título, data, contagem de blocos e minutos previstos', async () => {
-    const created = await createRundown('Live #42: montando o Clave ao vivo');
-    const { body } = await server.request<{ rundowns: RundownSummary[] }>('GET', '/api/rundowns');
-    const listed = body.rundowns.find((rundown) => rundown.id === created.id);
-
-    expect(listed).toBeDefined();
-    expect(listed?.title).toBe('Live #42: montando o Clave ao vivo');
-    expect(listed?.date).toBe('2026-08-18');
-    expect(listed?.trackBlockCount).toBe(0);
-    expect(listed?.rescueBlockCount).toBe(0);
-    expect(listed?.plannedMinutes).toBe(0);
-    expect(listed?.openRunId).toBeNull();
-  });
-
-  it('abrir uma pauta a coloca no topo da lista', async () => {
-    const first = await createRundown('Primeira da ordenação');
-    const second = await createRundown('Segunda da ordenação');
-
-    let listed = await server.request<{ rundowns: RundownSummary[] }>('GET', '/api/rundowns');
-    expect(listed.body.rundowns[0].id).toBe(second.id);
-
-    await server.request('POST', `/api/rundowns/${first.id}/open`);
-    listed = await server.request<{ rundowns: RundownSummary[] }>('GET', '/api/rundowns');
-    expect(listed.body.rundowns[0].id).toBe(first.id);
-  });
-});
-
-describe('AC-clave-03 — renomear atinge só a pauta escolhida; duplicar não altera a original', () => {
-  it('renomeia apenas o alvo', async () => {
-    const target = await createRundown('Alvo do renomear');
-    const bystander = await createRundown('Vizinha intocada');
-
-    const { status } = await server.request('PATCH', `/api/rundowns/${target.id}`, {
-      title: 'Renomeada de verdade',
-      date: target.date
-    });
+  it('creates a rundown from the name alone, with an empty sheet', async () => {
+    const created = await createRundown('Episódio 12: filas');
+    const { status, body } = await server.request<SheetPayload>('GET', `/api/rundowns/${created.id}/sheet`);
     expect(status).toBe(200);
+    expect(body.rundown.title).toBe('Episódio 12: filas');
+    expect(body.blocks).toEqual([]);
+  });
+});
 
-    const detail = await server.request<{ rundown: RundownSummary }>(
-      'GET',
-      `/api/rundowns/${bystander.id}`
+describe('AC-pauta-revelavel-03 — renaming changes only the chosen rundown and keeps the rest', () => {
+  it('renames the target, keeps the neighbour and keeps the pin', async () => {
+    const target = await createRundown('Pauta a renomear', { pinned: true });
+    const neighbour = await createRundown('Pauta vizinha');
+
+    const { status, body } = await server.request<{ rundown: RundownSummary }>(
+      'PATCH',
+      `/api/rundowns/${target.id}`,
+      { title: 'Nome novo' }
     );
-    expect(detail.body.rundown.title).toBe('Vizinha intocada');
+    expect(status).toBe(200);
+    expect(body.rundown.title).toBe('Nome novo');
+    expect(body.rundown.pinned).toBe(true);
+
+    const rows = await listRundowns();
+    expect(rows.find((row) => row.id === target.id)?.title).toBe('Nome novo');
+    expect(rows.find((row) => row.id === neighbour.id)?.title).toBe('Pauta vizinha');
   });
 
-  it('duplica com blocos e anexos, sem tocar a original', async () => {
-    const source = await createRundown('Pauta com conteúdo');
-    const created = await server.request<{ blockId: string }>('POST', '/api/blocks', {
-      rundownId: source.id,
-      type: 'topic',
-      title: 'Abertura',
-      note: 'nota privada',
-      durationMinutes: 7
-    });
-    await server.request('PUT', `/api/blocks/${created.body.blockId}/attachments`, {
-      attachments: [{ type: 'link', label: 'Canal', path: 'https://exemplo.test' }]
-    });
+  it('refuses an empty rename', async () => {
+    const target = await createRundown('Pauta que segue com nome');
+    const { status } = await server.request('PATCH', `/api/rundowns/${target.id}`, { title: '' });
+    expect(status).toBe(422);
+  });
+});
+
+describe('AC-pauta-revelavel-04 — duplicating copies the whole sheet with the take reset', () => {
+  it('copies content, level, size, fine adjustment, marks, plan and media, and resets the take', async () => {
+    const source = await createRundown('Roteiro original');
+    const image = await uploadMedia(server, 'grafico.png', PNG_BYTES);
+    await saveSheet(source.id, [
+      textDraft('a', 'Abertura', {
+        size: 'title',
+        fontPx: 56,
+        plannedVisible: true,
+        takeVisible: true,
+        revealStep: null
+      }),
+      textDraft('b', '', {
+        depth: 1,
+        size: 'small',
+        fontPx: 26,
+        content: [{ text: 'trecho ' }, { text: 'forte', bold: true, color: 'red' }],
+        takeVisible: true,
+        revealStep: 1
+      }),
+      mediaDraft('c', 'image', image, { depth: 1, mediaName: 'grafico.png', takeVisible: true, revealStep: 2 })
+    ]);
 
     const { status, body } = await server.request<{ rundown: Rundown }>(
       'POST',
       `/api/rundowns/${source.id}/duplicate`
     );
     expect(status).toBe(201);
-    expect(body.rundown.title).toBe('Pauta com conteúdo (cópia)');
-    expect(body.rundown.id).not.toBe(source.id);
-    expect(body.rundown.date).toBe(source.date);
+    expect(body.rundown.title).toBe('Roteiro original (cópia)');
 
-    const copy = await server.request<{
-      blocks: { id: string; title: string; note: string; attachments: { id: string }[] }[];
-    }>('GET', `/api/rundowns/${body.rundown.id}`);
-    expect(copy.body.blocks).toHaveLength(1);
-    expect(copy.body.blocks[0]).toMatchObject({ title: 'Abertura', note: 'nota privada' });
-    expect(copy.body.blocks[0].id).not.toBe(created.body.blockId);
-    expect(copy.body.blocks[0].attachments).toHaveLength(1);
+    const original = await server.request<SheetPayload>('GET', `/api/rundowns/${source.id}/sheet`);
+    const copy = await server.request<SheetPayload>('GET', `/api/rundowns/${body.rundown.id}/sheet`);
 
-    // Editar a cópia não alcança a original.
-    await server.request('PATCH', `/api/blocks/${copy.body.blocks[0].id}`, {
-      type: 'topic',
-      title: 'Abertura da cópia',
-      durationMinutes: 1
-    });
-    const original = await server.request<{
-      rundown: RundownSummary;
-      blocks: { id: string; title: string }[];
-    }>('GET', `/api/rundowns/${source.id}`);
-    expect(original.body.rundown.title).toBe('Pauta com conteúdo');
-    expect(original.body.blocks).toHaveLength(1);
-    expect(original.body.blocks[0]).toMatchObject({
-      id: created.body.blockId,
-      title: 'Abertura'
-    });
+    expect(copy.body.blocks).toHaveLength(3);
+    const strip = (blocks: SheetPayload['blocks']) =>
+      blocks.map(({ kind, depth, content, mediaPath, mediaName, size, fontPx, plannedVisible, collapsed }) => ({
+        kind,
+        depth,
+        content,
+        mediaPath,
+        mediaName,
+        size,
+        fontPx,
+        plannedVisible,
+        collapsed
+      }));
+    expect(strip(copy.body.blocks)).toEqual(strip(original.body.blocks));
+
+    // Own ids: editing the copy never reaches the source.
+    const sourceIds = new Set(original.body.blocks.map((block) => block.id));
+    expect(copy.body.blocks.every((block) => !sourceIds.has(block.id))).toBe(true);
+
+    // The take starts from the plan.
+    expect(copy.body.blocks.map((block) => block.takeVisible)).toEqual([true, false, false]);
+    expect(copy.body.blocks.every((block) => block.revealStep === null)).toBe(true);
+    // The source keeps its own progress.
+    expect(original.body.blocks.map((block) => block.takeVisible)).toEqual([true, true, true]);
+  });
+
+  it('lists the copy right below its source, unpinned and without the legacy seal', async () => {
+    const source = await createRundown('Pauta de origem');
+    await server.request('POST', `/api/rundowns/${source.id}/open`);
+    const { body } = await server.request<{ rundown: Rundown }>('POST', `/api/rundowns/${source.id}/duplicate`);
+
+    const rows = (await listRundowns()).filter((row) => !row.pinned);
+    const sourceIndex = rows.findIndex((row) => row.id === source.id);
+    expect(rows[sourceIndex + 1]?.id).toBe(body.rundown.id);
+    expect(rows[sourceIndex + 1]?.legacyImported).toBe(false);
   });
 });
 
-describe('AC-clave-55 — duplicar leva os pontos junto, desmarcados', () => {
-  it('a cópia recebe os mesmos pontos com ids próprios e nada falado', async () => {
-    const source = await createRundown('Pauta com pontos');
-    const created = await server.request<{ blockId: string; blocks: { id: string; beats: { id: string }[] }[] }>(
-      'POST',
-      '/api/blocks',
-      {
-        rundownId: source.id,
-        type: 'topic',
-        title: 'Assunto',
-        durationMinutes: 7,
-        beats: [{ text: 'ponto um' }, { text: 'ponto dois', imagePath: 'foto.png' }]
-      }
-    );
-    const original = created.body.blocks.find((entry) => entry.id === created.body.blockId);
-    await server.request('PATCH', `/api/beats/${original?.beats[0].id}`, { done: true });
+describe('AC-pauta-revelavel-05 — deleting a rundown removes it and the media only it used', () => {
+  it('removes exclusive media and keeps media a copy still uses', async () => {
+    const source = await createRundown('Pauta com mídia');
+    const shared = await uploadMedia(server, 'compartilhada.png', PNG_BYTES);
+    const exclusive = await uploadMedia(server, 'exclusiva.png', PNG_BYTES);
+    await saveSheet(source.id, [mediaDraft('s', 'image', shared)]);
+    const { body } = await server.request<{ rundown: Rundown }>('POST', `/api/rundowns/${source.id}/duplicate`);
+    const copyId = body.rundown.id;
+    await saveSheet(source.id, [mediaDraft('s', 'image', shared), mediaDraft('e', 'image', exclusive)]);
 
-    const { body } = await server.request<{ rundown: Rundown }>(
-      'POST',
-      `/api/rundowns/${source.id}/duplicate`
-    );
-    const copy = await server.request<{
-      blocks: { beats: { id: string; text: string; imagePath: string; done: boolean }[] }[];
-    }>('GET', `/api/rundowns/${body.rundown.id}`);
+    const removed = await server.request('DELETE', `/api/rundowns/${source.id}`);
+    expect(removed.status).toBe(204);
+    expect((await listRundowns()).some((row) => row.id === source.id)).toBe(false);
+    expect(fs.existsSync(mediaFile(exclusive))).toBe(false);
+    expect(fs.existsSync(mediaFile(shared))).toBe(true);
 
-    const beats = copy.body.blocks[0].beats;
-    expect(beats.map((beat) => beat.text)).toEqual(['ponto um', 'ponto dois']);
-    expect(beats[1].imagePath).toBe('foto.png');
-    expect(beats.map((beat) => beat.done)).toEqual([false, false]);
-    expect(beats.map((beat) => beat.id)).not.toContain(original?.beats[0].id);
-  });
-});
-
-describe('AC-clave-04 — apagar remove a pauta e preserva o trajeto já gravado', () => {
-  it('apaga a pauta e seus blocos', async () => {
-    const rundown = await createRundown('Pauta descartável');
-    const remove = await server.request('DELETE', `/api/rundowns/${rundown.id}`);
-    expect(remove.status).toBe(204);
-
-    const detail = await server.request<{ code: string }>('GET', `/api/rundowns/${rundown.id}`);
-    expect(detail.status).toBe(404);
-    expect(detail.body.code).toBe('not_found');
+    await server.request('DELETE', `/api/rundowns/${copyId}`);
+    expect(fs.existsSync(mediaFile(shared))).toBe(false);
   });
 
-  it('apagar pauta inexistente devolve erro tipado', async () => {
-    const { status, body } = await server.request<{ code: string }>(
-      'DELETE',
-      '/api/rundowns/nao-existe'
-    );
+  it('answers a typed 404 for a rundown that does not exist', async () => {
+    const { status, body } = await server.request<{ code: string }>('DELETE', '/api/rundowns/nao-existe');
     expect(status).toBe(404);
     expect(body.code).toBe('not_found');
   });
 });
 
-describe('Tipos de pauta e fixação (pin)', () => {
-  it('cria pauta com tipo apresentação ou evento e fixada', async () => {
-    const { status, body } = await server.request<{ rundown: Rundown }>('POST', '/api/rundowns', {
-      title: 'Apresentação AIOSON Play',
-      date: '2026-09-18',
-      kind: 'presentation',
-      pinned: true
-    });
-    expect(status).toBe(201);
-    expect(body.rundown.kind).toBe('presentation');
-    expect(body.rundown.pinned).toBe(true);
+describe('AC-pauta-revelavel-06 — each list row carries counts, seal and pin', () => {
+  it('counts blocks and the ones that start on screen', async () => {
+    const rundown = await createRundown('Pauta contada');
+    await saveSheet(rundown.id, [
+      textDraft('a', 'um', { plannedVisible: true }),
+      textDraft('b', 'dois'),
+      textDraft('c', 'três', { plannedVisible: true })
+    ]);
+    const row = (await listRundowns()).find((entry) => entry.id === rundown.id);
+    expect(row?.blockCount).toBe(3);
+    expect(row?.initiallyVisibleCount).toBe(2);
+    expect(row?.legacyImported).toBe(false);
+    expect(row?.updatedAt).toEqual(expect.any(String));
   });
 
-  it('rejeita tipo inválido', async () => {
-    const { status, body } = await server.request<{ code: string; fields: { field: string }[] }>(
-      'POST',
-      '/api/rundowns',
-      {
-        title: 'Pauta com tipo desconhecido',
-        kind: 'invalido'
-      }
-    );
-    expect(status).toBe(422);
-    expect(body.fields[0].field).toBe('kind');
-  });
-
-  it('alterna o estado fixado via toggle-pin e atualiza via PATCH', async () => {
-    const created = await createRundown('Pauta para fixar');
-    expect(created.pinned).toBe(false);
-
-    const toggled = await server.request<{ rundown: RundownSummary }>(
-      'POST',
-      `/api/rundowns/${created.id}/toggle-pin`
-    );
-    expect(toggled.status).toBe(200);
-    expect(toggled.body.rundown.pinned).toBe(true);
-
-    const patched = await server.request<{ rundown: RundownSummary }>(
-      'PATCH',
-      `/api/rundowns/${created.id}`,
-      {
-        title: 'Pauta Desafixada',
-        date: '2026-09-18',
-        kind: 'event',
-        pinned: false
-      }
-    );
-    expect(patched.status).toBe(200);
-    expect(patched.body.rundown.kind).toBe('event');
-    expect(patched.body.rundown.pinned).toBe(false);
-  });
-
-  it('pautas fixadas aparecem no topo da listagem independente da data de abertura', async () => {
-    const normal = await createRundown('Normal recente');
-    const pinned = await createRundown('Pitch AIOSON Play Fixo');
-
+  it('lists pinned rundowns first and toggles the pin', async () => {
+    const pinned = await createRundown('Pauta fixada');
     await server.request('POST', `/api/rundowns/${pinned.id}/toggle-pin`);
-    // Abre a normal depois, mas a fixada deve continuar no topo
-    await server.request('POST', `/api/rundowns/${normal.id}/open`);
+    const later = await createRundown('Pauta aberta depois');
+    await server.request('POST', `/api/rundowns/${later.id}/open`);
 
-    const { body } = await server.request<{ rundowns: RundownSummary[] }>('GET', '/api/rundowns');
-    const firstItem = body.rundowns[0];
-    expect(firstItem.id).toBe(pinned.id);
-    expect(firstItem.pinned).toBe(true);
+    const rows = await listRundowns();
+    const firstUnpinned = rows.findIndex((row) => !row.pinned);
+    expect(rows.findIndex((row) => row.id === pinned.id)).toBeLessThan(firstUnpinned);
+
+    const { body } = await server.request<{ rundown: RundownSummary }>(
+      'POST',
+      `/api/rundowns/${pinned.id}/toggle-pin`
+    );
+    expect(body.rundown.pinned).toBe(false);
+  });
+});
+
+describe('AC-pauta-revelavel-01 — opening marks the rundown the app reopens', () => {
+  it('opening a rundown gives it the most recent opening time', async () => {
+    const first = await createRundown('Primeira');
+    const second = await createRundown('Segunda');
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    await server.request('POST', `/api/rundowns/${first.id}/open`);
+
+    const rows = await listRundowns();
+    const latest = [...rows].sort((a, b) => b.lastOpenedAt.localeCompare(a.lastOpenedAt))[0];
+    expect(latest.id).toBe(first.id);
+    expect(rows.some((row) => row.id === second.id)).toBe(true);
   });
 
-  it('duplicar preserva o tipo da pauta de origem e nasce desafixada', async () => {
-    const { body: createBody } = await server.request<{ rundown: Rundown }>(
-      'POST',
-      '/api/rundowns',
-      {
-        title: 'Pitch Original',
-        date: '2026-09-18',
-        kind: 'presentation',
-        pinned: true
-      }
-    );
-
-    const { body: dupBody } = await server.request<{ rundown: Rundown }>(
-      'POST',
-      `/api/rundowns/${createBody.rundown.id}/duplicate`
-    );
-    expect(dupBody.rundown.kind).toBe('presentation');
-    expect(dupBody.rundown.pinned).toBe(false);
+  it('opening a rundown that does not exist answers 404', async () => {
+    const { status } = await server.request('POST', '/api/rundowns/nao-existe/open');
+    expect(status).toBe(404);
   });
 });

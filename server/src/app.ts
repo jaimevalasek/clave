@@ -1,30 +1,19 @@
 import express from 'express';
 import type { Express, Router } from 'express';
 import { errorHandler, notFound } from './http/errors.js';
-import { attachmentRoutes } from './routes/attachments.js';
-import { blockRoutes } from './routes/blocks.js';
-import { platformRoutes } from './routes/platform.js';
-import { libraryRoutes } from './routes/library.js';
 import { mediaRoutes } from './routes/media.js';
-import { openUrlRoutes } from './routes/openUrl.js';
+import { platformRoutes } from './routes/platform.js';
 import { preferenceRoutes } from './routes/preferences.js';
 import { rundownRoutes } from './routes/rundowns.js';
-import { runRoutes } from './routes/runs.js';
 
 const API_PREFIX = '/api';
 
-/** Única lista de routers montados: o catálogo é conferido contra ela. */
-const API_ROUTERS: Router[] = [
-  platformRoutes,
-  rundownRoutes,
-  blockRoutes,
-  attachmentRoutes,
-  runRoutes,
-  mediaRoutes,
-  libraryRoutes,
-  preferenceRoutes,
-  openUrlRoutes
-];
+/**
+ * The only list of mounted routers: the catalog is checked against it. The
+ * live-show routers (blocks, attachments, runs, library, open-url) left with
+ * the previous version of the app.
+ */
+const API_ROUTERS: Router[] = [platformRoutes, rundownRoutes, mediaRoutes, preferenceRoutes];
 
 export function createApp(): Express {
   const app = express();
@@ -48,9 +37,9 @@ interface RouteLayer {
 }
 
 /**
- * Rotas `/api` realmente registradas. `tests/api/platform.test.ts` compara esta
- * lista com `API_ENDPOINTS`: nenhuma rota anunciada sem existir, nenhuma rota
- * existente fora do catálogo.
+ * The `/api` routes actually registered. `tests/api/platform.test.ts` compares
+ * this list with `API_ENDPOINTS`: no route announced without existing, no
+ * existing route left out of the catalog.
  */
 export function registeredApiRoutes(): { method: string; path: string }[] {
   const found: { method: string; path: string }[] = [];

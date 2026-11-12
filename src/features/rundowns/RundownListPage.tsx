@@ -2,15 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../../core/api';
 import { navigate, routes } from '../../core/router';
 import { COPY } from '../../core/vocabulary';
-import { useWorkspace } from '../../core/store';
 import { ErrorBanner } from '../../ui/ErrorBanner';
 import { LoadingSkeleton } from '../../ui/LoadingSkeleton';
 import { Modal } from '../../ui/Modal';
 import { useToast } from '../../ui/Toast';
 import { RundownForm } from './RundownForm';
-import { EmptyStaffMark } from './EmptyStaffMark';
-import { formatBrDate, formatMinutes } from './format';
-import type { RundownSummary } from '../../../shared/types';
+import { RundownRow } from './RundownRow';
+import type { Rundown, RundownSummary } from '../../../shared/types';
 import './rundowns.css';
 
 type Dialog =
@@ -19,13 +17,9 @@ type Dialog =
   | { kind: 'rename'; rundown: RundownSummary }
   | { kind: 'delete'; rundown: RundownSummary };
 
-export function RundownListPage() {
+function useRundownList() {
   const [rundowns, setRundowns] = useState<RundownSummary[] | null>(null);
   const [loadError, setLoadError] = useState<unknown>(null);
-  const [writeError, setWriteError] = useState<{ action: string; error: unknown } | null>(null);
-  const [dialog, setDialog] = useState<Dialog>({ kind: 'none' });
-  const toast = useToast();
-  const currentRundownId = useWorkspace((state) => state.rundown?.id ?? null);
 
   const load = useCallback(async () => {
     try {
@@ -41,198 +35,189 @@ export function RundownListPage() {
     void load();
   }, [load]);
 
+  return { rundowns, loadError, load };
+}
+
+function ListHeader({ onCreate }: { onCreate(): void }) {
+  return (
+    <div className="page-head">
+      <div>
+        <h1>{COPY.rundowns.heading}</h1>
+        <p>{COPY.rundowns.subheading}</p>
+      </div>
+      <button type="button" className="btn btn-primary" onClick={onCreate}>
+        {COPY.rundowns.create}
+      </button>
+    </div>
+  );
+}
+
+function EmptyList({ onCreate }: { onCreate(): void }) {
+  return (
+    <div className="list-empty" data-testid="rundowns-empty">
+      <div className="list-empty-title voice">{COPY.rundowns.emptyTitle}</div>
+      <p>{COPY.rundowns.emptyBody}</p>
+      <button type="button" className="btn btn-primary" onClick={onCreate}>
+        {COPY.rundowns.createFirst}
+      </button>
+    </div>
+  );
+}
+
+interface RundownRowsProps {
+  rundowns: RundownSummary[];
+  runWrite(action: string, work: () => Promise<void>): Promise<void>;
+  onRename(rundown: RundownSummary): void;
+  onDelete(rundown: RundownSummary): void;
+}
+
+function RundownRows({ rundowns, runWrite, onRename, onDelete }: RundownRowsProps) {
+  const toast = useToast();
+  const togglePin = (rundown: RundownSummary) =>
+    void runWrite(rundown.pinned ? 'desafixar a pauta' : 'fixar a pauta', async () => {
+      const payload = await api.post<{ rundown: RundownSummary }>(`/api/rundowns/${rundown.id}/toggle-pin`);
+      toast.push(payload.rundown.pinned ? COPY.rundowns.pinnedToast : COPY.rundowns.unpinnedToast);
+    });
+  const duplicate = (rundown: RundownSummary) =>
+    void runWrite('duplicar a pauta', async () => {
+      await api.post(`/api/rundowns/${rundown.id}/duplicate`);
+      toast.push(COPY.rundowns.duplicated);
+    });
+
+  return (
+    <div className="rundown-rows">
+      {rundowns.map((rundown, index) => (
+        <RundownRow
+          key={rundown.id}
+          rundown={rundown}
+          index={index}
+          onOpen={() => navigate(routes.rundown(rundown.id))}
+          onTogglePin={() => togglePin(rundown)}
+          onRename={() => onRename(rundown)}
+          onDuplicate={() => duplicate(rundown)}
+          onDelete={() => onDelete(rundown)}
+        />
+      ))}
+    </div>
+  );
+}
+
+/** The rundown list (`#/rundowns`): create, open, rename, duplicate, pin and delete. */
+export function RundownListPage() {
+  const { rundowns, loadError, load } = useRundownList();
+  const [writeError, setWriteError] = useState<{ action: string; error: unknown } | null>(null);
+  const [dialog, setDialog] = useState<Dialog>({ kind: 'none' });
+  const toast = useToast();
+  const close = () => setDialog({ kind: 'none' });
+
   const runWrite = async (action: string, work: () => Promise<void>) => {
     try {
       setWriteError(null);
       await work();
-      await load();
     } catch (error) {
       setWriteError({ action, error });
-      throw error;
     }
+    await load();
   };
 
-  if (loadError) {
-    return (
-      <div className="pagina">
-        <ErrorBanner action="carregar as pautas" error={loadError} onRetry={() => void load()} />
+  return (
+    <>
+      <div className="top">
+        <header className="ruler">
+          <span className="eyebrow">{COPY.rundowns.eyebrow}</span>
+          <span className="spacer" />
+        </header>
       </div>
+      <main className="page" data-testid="rundown-list">
+        <ListHeader onCreate={() => setDialog({ kind: 'create' })} />
+        {loadError ? (
+          <ErrorBanner action="carregar as pautas" error={loadError} onRetry={() => void load()} />
+        ) : !rundowns ? (
+          <LoadingSkeleton />
+        ) : (
+          <>
+            {writeError ? <ErrorBanner action={writeError.action} error={writeError.error} /> : null}
+            {rundowns.length ? (
+              <RundownRows
+                rundowns={rundowns}
+                runWrite={runWrite}
+                onRename={(rundown) => setDialog({ kind: 'rename', rundown })}
+                onDelete={(rundown) => setDialog({ kind: 'delete', rundown })}
+              />
+            ) : (
+              <EmptyList onCreate={() => setDialog({ kind: 'create' })} />
+            )}
+          </>
+        )}
+      </main>
+      <ListDialog
+        dialog={dialog}
+        onClose={close}
+        onCreated={(id) => navigate(routes.rundown(id))}
+        onRenamed={() => {
+          toast.push(COPY.rundowns.renamed);
+          void load();
+        }}
+        onDelete={(rundown) =>
+          void runWrite('apagar a pauta', async () => {
+            await api.delete(`/api/rundowns/${rundown.id}`);
+            toast.push(COPY.rundowns.deleted);
+          })
+        }
+      />
+    </>
+  );
+}
+
+interface ListDialogProps {
+  dialog: Dialog;
+  onClose(): void;
+  onCreated(id: string): void;
+  onRenamed(): void;
+  onDelete(rundown: RundownSummary): void;
+}
+
+function ListDialog({ dialog, onClose, onCreated, onRenamed, onDelete }: ListDialogProps) {
+  if (dialog.kind === 'create') {
+    return (
+      <RundownForm
+        mode="create"
+        onDismiss={onClose}
+        onSubmit={async (title) => {
+          const payload = await api.post<{ rundown: Rundown }>('/api/rundowns', { title });
+          onClose();
+          onCreated(payload.rundown.id);
+        }}
+      />
     );
   }
-
-  if (!rundowns) return <LoadingSkeleton />;
-
-  return (
-    <div className="pagina" data-testid="pautas-lista">
-      <div className="eyebrow batuta">{COPY.rundowns.eyebrow}</div>
-      <h1>{COPY.rundowns.heading}</h1>
-      <p className="sub">{COPY.rundowns.subheading}</p>
-
-      {writeError ? <ErrorBanner action={writeError.action} error={writeError.error} /> : null}
-
-      <div className="acoes-topo">
-        <button
-          type="button"
-          className="btn btn-ar"
-          data-testid="acao-criar-pauta"
-          onClick={() => setDialog({ kind: 'create' })}
-        >
-          {COPY.rundowns.create}
-        </button>
-      </div>
-
-      {rundowns.length ? (
-        <div className="lista-pautas">
-          {rundowns.map((rundown, index) => (
-            <div className="linha-pauta" key={rundown.id} data-testid={`pauta-${rundown.id}`}>
-              <span className="num-pauta">{String(index + 1).padStart(2, '0')}</span>
-              <div className="info">
-                <div className="nome">
-                  {rundown.title}
-                  <span
-                    className={`tag-tipo tag-tipo-${rundown.kind || 'rundown'}`}
-                    data-testid={`tipo-${rundown.id}`}
-                  >
-                    {COPY.rundowns.kinds[rundown.kind || 'rundown']}
-                  </span>
-                  {rundown.pinned ? (
-                    <span className="tag-fixada" data-testid={`marca-fixada-${rundown.id}`}>
-                      {COPY.rundowns.pinned}
-                    </span>
-                  ) : null}
-                  {rundown.id === currentRundownId ? (
-                    <span className="tag-ultima">{COPY.rundowns.lastUsed}</span>
-                  ) : null}
-                  {rundown.openRunId ? (
-                    <span className="tag-aberta" data-testid="marca-execucao-aberta">
-                      {COPY.rundowns.openRun}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="meta">
-                  <span>{formatBrDate(rundown.date)}</span>
-                  <span>
-                    {rundown.trackBlockCount} bloco{rundown.trackBlockCount === 1 ? '' : 's'} na
-                    pauta · {rundown.rescueBlockCount} na reserva
-                  </span>
-                  <span>{formatMinutes(rundown.plannedMinutes)} previstos</span>
-                  {rundown.lastFinishedRunId ? (
-                    <button
-                      type="button"
-                      className="ver-relatorio"
-                      data-testid={`ver-relatorio-${rundown.id}`}
-                      onClick={() => navigate(routes.report(rundown.lastFinishedRunId as string))}
-                    >
-                      {COPY.rundowns.seeReport}
-                    </button>
-                  ) : null}
-                </div>
-              </div>
-              <div className="acoes">
-                <button
-                  type="button"
-                  className="btn btn-suave"
-                  onClick={() => navigate(routes.board(rundown.id))}
-                >
-                  {COPY.rundowns.open}
-                </button>
-                <button
-                  type="button"
-                  data-testid={`acao-fixar-${rundown.id}`}
-                  onClick={() =>
-                    void runWrite(rundown.pinned ? 'desafixar a pauta' : 'fixar a pauta', async () => {
-                      const payload = await api.post<{ rundown: RundownSummary }>(
-                        `/api/rundowns/${rundown.id}/toggle-pin`
-                      );
-                      toast.push(payload.rundown.pinned ? 'Fixada no topo' : 'Desafixada');
-                    })
-                  }
-                >
-                  {rundown.pinned ? COPY.rundowns.unpin : COPY.rundowns.pin}
-                </button>
-                <button type="button" onClick={() => setDialog({ kind: 'rename', rundown })}>
-                  {COPY.rundowns.rename}
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    void runWrite('duplicar a pauta', async () => {
-                      const payload = await api.post<{ rundown: { title: string } }>(
-                        `/api/rundowns/${rundown.id}/duplicate`
-                      );
-                      toast.push(COPY.rundowns.duplicated(payload.rundown.title));
-                    })
-                  }
-                >
-                  {COPY.rundowns.duplicate}
-                </button>
-                <button type="button" onClick={() => setDialog({ kind: 'delete', rundown })}>
-                  {COPY.rundowns.remove}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="vazio" data-testid="estado-vazio-pautas">
-          <EmptyStaffMark />
-          <h2>{COPY.rundowns.emptyTitle}</h2>
-          <p>{COPY.rundowns.emptyBody}</p>
-          <button type="button" className="btn btn-ar" onClick={() => setDialog({ kind: 'create' })}>
-            {COPY.rundowns.createFirst}
-          </button>
-        </div>
-      )}
-
-      {dialog.kind === 'create' ? (
-        <RundownForm
-          mode="create"
-          onDismiss={() => setDialog({ kind: 'none' })}
-          onSubmit={async (input) => {
-            const payload = await api.post<{ rundown: { id: string } }>('/api/rundowns', input);
-            setDialog({ kind: 'none' });
-            toast.push(COPY.rundowns.created);
-            navigate(routes.board(payload.rundown.id));
-          }}
-        />
-      ) : null}
-
-      {dialog.kind === 'rename' ? (
-        <RundownForm
-          mode="rename"
-          initialTitle={dialog.rundown.title}
-          initialDate={dialog.rundown.date}
-          initialKind={dialog.rundown.kind}
-          initialPinned={dialog.rundown.pinned}
-          onDismiss={() => setDialog({ kind: 'none' })}
-          onSubmit={async (input) => {
-            await api.patch(`/api/rundowns/${dialog.rundown.id}`, input);
-            setDialog({ kind: 'none' });
-            toast.push(COPY.rundowns.renamed);
-            await load();
-          }}
-        />
-      ) : null}
-
-      {dialog.kind === 'delete' ? (
-        <Modal
-          title={COPY.rundowns.deleteTitle(dialog.rundown.title)}
-          consequence={COPY.rundowns.deleteConsequence}
-          onDismiss={() => setDialog({ kind: 'none' })}
-          actions={[
-            { label: COPY.common.cancel },
-            {
-              label: COPY.rundowns.deleteConfirm,
-              intent: 'perigo',
-              onSelect: () =>
-                void runWrite('apagar a pauta', async () => {
-                  await api.delete(`/api/rundowns/${dialog.rundown.id}`);
-                  toast.push(COPY.rundowns.deleted);
-                })
-            }
-          ]}
-        />
-      ) : null}
-    </div>
-  );
+  if (dialog.kind === 'rename') {
+    return (
+      <RundownForm
+        mode="rename"
+        initialTitle={dialog.rundown.title}
+        onDismiss={onClose}
+        onSubmit={async (title) => {
+          await api.patch(`/api/rundowns/${dialog.rundown.id}`, { title });
+          onClose();
+          onRenamed();
+        }}
+      />
+    );
+  }
+  if (dialog.kind === 'delete') {
+    return (
+      <Modal
+        title={COPY.rundowns.deleteTitle}
+        text={COPY.rundowns.deleteText(dialog.rundown.title, dialog.rundown.blockCount)}
+        destructive
+        onDismiss={onClose}
+        actions={[
+          { label: COPY.common.cancel, autoFocus: true },
+          { label: COPY.rundowns.deleteConfirm, intent: 'danger', onSelect: () => onDelete(dialog.rundown) }
+        ]}
+      />
+    );
+  }
+  return null;
 }

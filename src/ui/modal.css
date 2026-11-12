@@ -1,252 +1,125 @@
-/* Modal e toast — o gate fala em ouro (fio de 2px à esquerda) */
-.modal-fundo {
+/* Modal, toast, loading skeleton and error banner of the design system. */
+.modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(6, 5, 3, 0.65);
-  z-index: 80;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 70;
+  display: grid;
+  place-items: center;
   padding: 20px;
+  background: var(--veil);
 }
 
 .modal {
-  background: var(--tinta-2);
-  border: 1px solid var(--linha);
-  border-left: 2px solid var(--ouro);
-  border-radius: var(--r-cartao);
-  width: min(460px, 100%);
-  padding: var(--e-6);
+  width: min(100%, 440px);
   max-height: calc(100vh - 40px);
   overflow: auto;
-  animation: modal-entra 0.15s ease-out;
+  background: var(--solid);
+  border: 1px solid var(--line-2);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-panel);
+  padding: 24px;
+  animation: modal-enter 150ms ease-out;
+}
+
+.modal.destructive {
+  border-left-color: var(--danger);
 }
 
 .modal h2 {
-  font: 600 19px var(--font-display);
-  letter-spacing: -0.02em;
-  margin-bottom: var(--e-2);
+  font: 600 19px/1.3 var(--font-ui);
+  margin-bottom: 8px;
 }
 
-.modal .consequencia {
-  color: var(--giz-2);
-  margin-bottom: 18px;
-  font-size: 14px;
+.modal .modal-text {
+  color: var(--ink-2);
+  font-size: 14.5px;
 }
 
-/* Variante de formulário: mesma concha do modal (fundo, z-index, animação),
-   mais larga e sem o fio de ouro — o ouro à esquerda é a marca do gate, e
-   editar um bloco não é decisão irreversível. O corpo rola por dentro para o
-   rodapé de ações não sair da tela num bloco com 30 pontos. */
-.modal-editor {
-  width: min(680px, 100%);
-  border-left: 1px solid var(--linha);
-  padding: 0;
-  overflow: hidden;
+.modal .modal-actions {
   display: flex;
-  flex-direction: column;
-}
-
-.modal-editor form {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  flex: 1;
-}
-
-.modal-editor .cabecalho-editor {
-  padding: var(--e-6) var(--e-6) 0;
-  flex: none;
-}
-
-.modal-editor .cabecalho-editor h2 {
-  margin-bottom: var(--e-4);
-}
-
-.modal-editor .corpo-editor {
-  padding: 0 var(--e-6);
-  overflow-y: auto;
-  min-height: 0;
-  flex: 1;
-}
-
-.modal-editor .secao-editor {
-  border-top: 1px solid var(--linha-fraca);
-  padding-top: var(--e-4);
-  margin-top: var(--e-4);
-}
-
-.modal-editor .secao-editor:first-child {
-  border-top: 0;
-  padding-top: 0;
-  margin-top: 0;
-}
-
-.modal-editor .secao-editor h3 {
-  font: 500 11px var(--font-dados);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--fumaca);
-  margin-bottom: var(--e-3);
-}
-
-.modal-editor .secao-editor > .btn {
-  margin-top: var(--e-2);
-}
-
-/* Etiqueta e duração cabem lado a lado; as dicas têm alturas diferentes, então
-   as colunas alinham pelo topo. */
-.modal-editor .par-campos {
-  display: grid;
-  grid-template-columns: 1fr 170px;
-  gap: var(--e-4);
-  align-items: start;
-}
-
-/* "Duração prevista (minutos)" quebra em duas linhas na coluna estreita e
-   "Etiqueta" não. Reservar duas linhas de rótulo alinha os dois controles pela
-   mesma base, em vez de deixar um degrau entre eles. */
-.modal-editor .par-campos > .campo > label {
-  min-height: 3.3em;
-}
-
-.modal-editor .rodape-editor {
-  flex: none;
-  display: flex;
-  gap: var(--e-2);
-  flex-wrap: wrap;
-  padding: var(--e-4) var(--e-6);
-  border-top: 1px solid var(--linha);
-  background: var(--tinta-2);
-}
-
-@media (max-width: 620px) {
-  .modal-editor .par-campos {
-    grid-template-columns: 1fr;
-  }
-}
-
-.modal .acoes-modal {
-  display: flex;
-  gap: var(--e-3);
   justify-content: flex-end;
   flex-wrap: wrap;
-  margin-top: 18px;
-}
-
-.modal .lista-check {
-  margin: 0 0 var(--e-4);
-  padding-left: 0;
-  list-style: none;
-}
-
-.modal .lista-check li {
-  display: flex;
-  gap: var(--e-3);
-  align-items: baseline;
-  padding: 6px 0;
-  font-size: 14px;
-}
-
-.modal .caminho-quebrado {
-  color: var(--fumaca);
-  font-size: 12px;
-}
-
-.modal .marca-erro {
-  color: var(--erro);
-  font-size: 12px;
-}
-
-.erro-entrar-no-ar {
-  position: fixed;
-  left: 22px;
-  right: 22px;
-  bottom: 22px;
-  z-index: 92;
-}
-
-.ponto-erro {
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--perigo);
-  color: var(--tinta);
-  font: 600 11px var(--font-dados);
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  transform: translateY(2px);
+  gap: 8px;
+  margin-top: 22px;
 }
 
 #toasts {
   position: fixed;
-  left: 22px;
-  bottom: 22px;
-  display: flex;
-  flex-direction: column;
-  gap: var(--e-2);
-  z-index: 95;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 80;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  pointer-events: none;
+  width: max-content;
+  max-width: calc(100vw - 32px);
 }
 
 .toast {
-  background: var(--tinta-3);
-  border: 1px solid var(--linha);
-  border-radius: 6px;
-  padding: var(--e-3) var(--e-4);
+  pointer-events: auto;
   display: flex;
-  gap: 14px;
   align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  border-radius: var(--r-block);
+  background: var(--solid);
+  border: 1px solid var(--line-2);
   font-size: 14px;
-  animation: toast-entra 0.18s ease-out;
-  max-width: 420px;
+  color: var(--ink);
+  box-shadow: var(--shadow-toast);
+  animation: toast-enter 180ms ease-out;
 }
 
 .toast button {
-  color: var(--ouro);
+  color: var(--accent);
   font-weight: 600;
+  min-height: 34px;
+  padding: 0 4px;
 }
 
-/* Estado de carregamento: ocupa o lugar do conteúdo, sem salto de layout */
+/* Loading: takes the place of the content that is coming, without layout jumps. */
 .skeleton {
-  padding: 60px 40px;
   display: flex;
   flex-direction: column;
   gap: 26px;
+  padding: 60px 40px;
 }
 
-.skeleton .linha-sk {
+.skeleton .skeleton-line {
   height: 10px;
   border-radius: 5px;
-  background: linear-gradient(90deg, var(--tinta-2) 25%, var(--tinta-3) 50%, var(--tinta-2) 75%);
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
   background-size: 200% 100%;
-  animation: brilho-sk 1.1s linear infinite;
+  animation: skeleton-shine 1.1s linear infinite;
 }
 
-/* Faixa de erro de escrita: nomeia a ação que falhou e o que fazer */
-.faixa-erro {
+/* Error banner: names the action that failed and offers the retry. */
+.error-banner {
   display: flex;
-  gap: var(--e-3);
+  flex-wrap: wrap;
+  gap: 12px;
   align-items: flex-start;
-  border: 1px solid var(--erro);
-  border-left: 3px solid var(--erro);
-  border-radius: var(--r-controle);
-  background: rgba(226, 93, 93, 0.08);
-  padding: 14px var(--e-4);
-  margin-bottom: var(--e-4);
-  color: var(--giz);
+  justify-content: space-between;
+  border: 1px solid color-mix(in srgb, var(--danger) 60%, transparent);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--r-control);
+  background: color-mix(in srgb, var(--danger) 7%, var(--surface));
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  color: var(--ink);
 }
 
-.faixa-erro .rot {
-  font: 500 11px var(--font-dados);
-  letter-spacing: 0.18em;
+.error-banner .error-label {
+  font: 500 11px/1.3 var(--font-machine);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--erro);
-  margin-bottom: var(--e-1);
+  color: var(--danger);
+  margin-bottom: 4px;
 }
 
-.faixa-erro p {
+.error-banner p {
   font-size: 14px;
-  color: var(--giz-2);
+  color: var(--ink-2);
 }

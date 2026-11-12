@@ -14,7 +14,7 @@ interface ToastEntry {
 
 interface ToastApi {
   push(message: string, action?: ToastAction): void;
-  /** Some com os avisos pendentes — o Palco é tela capturada e não os carrega. */
+  /** Drops pending notices. */
   clear(): void;
 }
 
@@ -44,7 +44,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={api}>
       {children}
-      <div id="toasts" aria-live="polite">
+      <div id="toasts" role="status" aria-live="polite">
         {entries.map((entry) => (
           <div className="toast" key={entry.id} data-testid="toast">
             <span>{entry.message}</span>
