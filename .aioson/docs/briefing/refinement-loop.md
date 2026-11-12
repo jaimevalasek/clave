@@ -1,6 +1,6 @@
 ---
-description: Deterministic Briefing Refiner audit, browser-review, feedback application, and terminal-state loop
-agents: [briefing-refiner]
+description: Deterministic Refiner audit, browser-review, feedback application, and terminal-state loop
+agents: [refiner]
 task_types: [briefing-review, feedback-application]
 triggers: [generate briefing review, pending refinement feedback, apply briefing feedback]
 ---
@@ -19,7 +19,7 @@ Use when `refinement-feedback.json` is absent or the user explicitly requests re
 
 1. Read the current `briefings.md`.
 2. Load `.aioson/docs/feature-completeness-contract.md` as a review lens. Challenge ambiguity, redundancy, missing decisions, unclear risks, vague questions, inconsistent terms, vanished promises, happy-path-only behavior, broad nouns/verbs, failure/recovery, and current-system assumptions contradicted by repository evidence. Apply operational CRUD/list/form/filter/pagination lenses only when operational management is relevant.
-3. Write `.aioson/briefings/{slug}/refinement-findings.json` as a JSON array:
+3. Before writing findings, for rich operational or experiential scope, prior scout evidence, or an explicit enrichment request, load `.aioson/skills/process/briefing-expansion-scout/SKILL.md`. Assess existing ideas and discover overlooked user value independently; update the scout only when evidence or conclusions change. A game needs an experience walkthrough, not only a list of screens. Then write `.aioson/briefings/{slug}/refinement-findings.json` as a JSON array:
 
 ```json
 [
@@ -59,13 +59,13 @@ Use when `refinement-feedback.json` is absent or the user explicitly requests re
 
 Allowed categories: `ambiguity`, `redundancy`, `gap`, `risk`, `pending-decision`, `scope-suggestion`. Allowed severities: `low`, `medium`, `high`. Use `blocking: true` only when Product cannot responsibly write the PRD without resolution. `section_id` is the section-title kebab case.
 
-Material choices use two to four legitimate alternatives. Use `single` for mutually exclusive paths and `multiple` only for independent compatible choices. Labels, descriptions and impacts must explain real differences; never add fake alternatives to make the card look complete. A finding with no real choice may keep the legacy `recommendation` shape and receives visible accept/change/defer actions.
+Material choices use two to four legitimate alternatives. Use `single` for mutually exclusive paths and `multiple` only for independent compatible choices. Labels, descriptions and impacts must explain real differences; never add fake alternatives to make the card look complete. A `scope-suggestion` carries a recommendation only when it cites a `PROM-*` the briefing holds, or on an option that leaves the scope as it is, marked `"defers": true`: the owner takes the recommended option in about 95% of the answers, so recommending scope decides it. An idea with no promise behind it stays on the card with no recommendation, and `briefing:review` refuses the rest as `invalid_findings`. A finding with no real choice may keep the legacy `recommendation` shape and receives visible accept/change/defer actions.
 
 For existing-system fit, include observed behavior and exact repository paths in `text`. Routine evidence-backed corrections belong in `recommendation`, not in a new user question.
 
-If a rich operational surface lacks briefing- or project-level `identity.md`, add at most one non-blocking `pending-decision` suggesting the reference-image route. Never force it.
+If a visible surface lacks briefing- or project-level `identity.md` and no choice is already recorded, add at most one non-blocking `pending-decision` offering a reusable design system: create from references, consolidate from the prototype's accepted direction without references, or decide later. Explain that this saves colors, typography, spacing, and component rules for later screens; the client need not know the filename. Use stable option IDs `identity-references`, `identity-intent`, and `identity-later`. Follow the offer in `prototype-and-delegation.md`; an accepted, confirmed applied decision answers it, so do not ask again. A pending or merely recommended option is not authorization. Never force identity creation or block the review on it.
 
-4. If the rich-surface idea is thin or the user asks whether it is worth pursuing, load `.aioson/skills/process/briefing-expansion-scout/SKILL.md`, write/update `.aioson/briefings/{slug}/expansion-scout.md`, and cite it in a finding. Preserve enough accepted evidence for Product's future capability map without assigning `CAP-*`.
+4. Translate the strongest unresolved scout candidates into actionable review findings before generation. Use nonblocking `scope-suggestion` for optional value, and `gap` or `pending-decision` with `blocking: true` only when a cited promised outcome cannot be responsibly specified without resolution. Explain the before/after benefit, downside and evidence or hypothesis in the existing fields; use two to four credible choices, including keeping the simpler baseline when viable. Leave `selected_option_ids` empty: `recommended: true` is advice, not consent. Cite `expansion-scout.md` and the relevant user intent; never fabricate a source promise for an agent idea. Do not manufacture findings when no useful proposal survives, or reopen accepted/rejected/deferred decisions without new evidence. Preserve enough accepted evidence for Product's future capability map without assigning `CAP-*`.
 5. Generate deterministically:
 
 ```bash
@@ -82,15 +82,17 @@ The CLI owns `review.html`; do not hand-write it unless genuinely unavailable.
 Use when `.aioson/briefings/{slug}/refinement-feedback.json` exists.
 
 1. If the user pasted exported JSON, write it verbatim to the canonical feedback path.
-2. Incorporate accepted findings and decision-bearing notes into the target section's `current_text`. The CLI writes only `current_text`; notes alone never reach `briefings.md`. When text still equals `original_text`, fold in the decision/rationale, mark a resolved open question, and set the section to `change_requested`. Edit only feedback JSON. Ask instead of guessing an ambiguous note.
-3. Dry-run:
+2. Read the round through `aioson briefing:feedback . --slug={slug}` first — the lean view: every finding, comment, decision and blocking item, plus the text of only the sections a note or a status change touches. The raw JSON carries the whole briefing twice (`original_text` and `current_text` for every section); never read it end to end. Incorporate accepted findings and decision-bearing notes into the target section's `current_text` with a surgical edit of the named sections only. The CLI writes only `current_text`; notes alone never reach `briefings.md`. When text still equals `original_text`, fold in the decision/rationale, mark a resolved open question, and set the section to `change_requested`. Edit only feedback JSON. Ask instead of guessing an ambiguous note.
+3. Apply if clean:
 
 ```bash
-aioson briefing:apply-feedback . --slug={slug} --json
+aioson briefing:apply-feedback . --slug={slug} --confirm-if-clean --json
 ```
 
-Show changed/blocked sections, finding decisions, pending blockers, and every note incorporated into text. A dry-run never writes `briefings.md`. For stale feedback, default to regeneration; offer `--allow-stale` only if the user insists.
-4. Stop for explicit confirmation.
+A round is clean when the owner saved the page, with no note, no comment, no other choice, nothing blocked and no finding you wrote already decided, and what you wrote only folds those decisions. Measured on what would be written: a rewritten section is one a decision names, or bookkeeping (open questions, sources, gaps, additional files) that loses at most one line and gains at most two per decision; no section falls below half its lines or gains a `##` heading; every `PROM-*` and `SRC-*` stays, each promise keeping its words and state, with no new promise; and no line holding markup changes, because you see that text without it. Saving was the confirmation: the CLI applies it and answers `applied_without_confirmation: true`, so report what changed and go to `Decide after apply`, with `briefing:approve` still the user's.
+
+Any other round is a dry-run that answers `pending_confirmation: true` and lists `confirmation.reasons`. Show changed/blocked sections, finding decisions, pending blockers, and every note incorporated into text. A dry-run never writes `briefings.md`. For stale feedback, default to regeneration; offer `--allow-stale` only if the user insists.
+4. Stop for explicit confirmation. The user's own words to apply in this conversation, such as "apply the recommended", are that confirmation: never ask twice.
 5. On confirmation:
 
 ```bash

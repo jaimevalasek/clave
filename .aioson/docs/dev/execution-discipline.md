@@ -1,6 +1,6 @@
 ---
 description: "Dev execution discipline — semantic commits, learnings, task tracking, planning, atomic execution, verification gates, skeleton updates, and debugging."
-agents: [dev, deyvin]
+agents: [dev]
 task_types: [implementation, execution]
 triggers: [implementing slices, execution discipline, commit cadence]
 ---
@@ -144,6 +144,8 @@ If a failing issue survives one attempt:
 - follow the protocol from root-cause analysis onward
 
 After 3 failed attempts on the same issue, question the architecture instead of pushing patches blindly.
+
+When the diagnosis itself is ambiguous and needs a survey of more than 5 files or a runtime-flow trace, dispatch a read-only scout: `.aioson/docs/dev/scout.md`.
 
 ## Git worktrees
 

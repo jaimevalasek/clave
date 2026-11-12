@@ -33,6 +33,13 @@
       "reason": "confirmed false positive via commit:prepare"
     },
     {
+      "path": ".aioson/docs/deployer/app-readiness.md",
+      "rules": [
+        "generic_secret_assignment"
+      ],
+      "reason": "linha 39 e texto de documentacao (`?access_token=` na URL de WebSocket, aviso para nao ligar o access log do Traefik), sem valor de segredo; linha inspecionada em 2026-11-12"
+    },
+    {
       "path": "src/ui/typeColors.ts",
       "rules": [
         "generic_secret_assignment"

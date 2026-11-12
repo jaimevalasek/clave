@@ -5,9 +5,9 @@ priority: 10
 version: 1.0.0
 load_tier: trigger
 task_types: [workflow, status-transition, kanban, board]
-triggers: [kanban, board, pipeline, stage, column, drag and drop, reorder, move card, status flow, funil, coluna, arrastar, quadro, etapa]
+triggers: [kanban, board, pipeline, pipeline stage, stage transition, kanban column, board column, drag and drop, reorder, move card, status flow, funil, coluna do kanban, coluna do quadro, arrastar, quadro, etapa do funil, mudar de etapa, mover card, mover cartão]
 aliases: [quadro, funil, arrastar e soltar]
-entities: [Kanban, Board, Pipeline, Stage, Column, Card, Lane, Queue]
+entities: [Kanban, Board, Pipeline, Card, Lane, Swimlane]
 retrieval_intents: [implementation, feature, planning]
 modes: [planning, executing]
 guard_surfaces: [ui]
@@ -28,7 +28,7 @@ When items move between statuses or lists repeatedly and in both directions — 
 ## Applies to
 
 - @briefing: a briefing describing a recurrent stage-based flow records drag-and-drop as the expected primary transition, as a promise or classified open question.
-- @dev / @deyvin: persist the new status/order from the drop event; a drag that only mutates the DOM is a defect.
-- @briefing-refiner / @benchmark: when the surface has a kanban-like flow, the prototype or benchmark build implements working drag-and-drop over mock state — click-only kanban is a blocking finding.
-- @product / @ux-ui: specs for stage-based surfaces name drag-and-drop as the primary transition and list the accessible fallback.
+- @dev: persist the new status/order from the drop event; a drag that only mutates the DOM is a defect.
+- @refiner / @benchmark: when the surface has a kanban-like flow, the prototype or benchmark build implements working drag-and-drop over mock state — click-only kanban is a blocking finding.
+- @product: specs for stage-based surfaces name drag-and-drop as the primary transition and list the accessible fallback.
 - @qa: verification drags a real card and confirms the new status/order persists past a reload; movement that only mutates the DOM is a FAIL.

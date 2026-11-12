@@ -4,10 +4,10 @@ description: Management systems (CRM, ERP, cockpit, admin, back office) open on 
 priority: 10
 version: 1.0.0
 load_tier: trigger
-task_types: [dashboard, crud, reporting, admin]
-triggers: [dashboard, CRM, ERP, cockpit, admin panel, back office, painel, gestão, overview, home screen, KPI, widget, chart, indicador, relatório, métricas]
+task_types: [dashboard, crud, admin]
+triggers: [dashboard, CRM, ERP, cockpit, admin panel, back office, painel, gestão, overview, home screen, KPI, widget, chart, indicador, tela inicial, painel de indicadores]
 aliases: [painel, indicadores, visão geral]
-entities: [Dashboard, Widget, KPI, Chart, Indicator, Metric, Report, Home]
+entities: [Dashboard, Widget, KPI, Chart, Indicator, Home]
 retrieval_intents: [implementation, feature, planning]
 modes: [planning, executing]
 guard_surfaces: [ui]
@@ -28,7 +28,7 @@ If the product manages quantifiable work — CRM, ERP, cockpit, admin panel, bac
 ## Applies to
 
 - @briefing: a briefing for a management surface records which decisions the home must serve, as promises or classified open questions.
-- @briefing-refiner / @benchmark: a management-domain prototype or benchmark build without a value-bearing home is a blocking finding; widgets must be fed by the seeded mock state.
-- @dev / @deyvin: widgets query live data; a hardcoded number that never changes is a defect.
+- @refiner / @benchmark: a management-domain prototype or benchmark build without a value-bearing home is a blocking finding; widgets must be fed by the seeded mock state.
+- @dev: widgets query live data; a hardcoded number that never changes is a defect.
 - @product: the PRD for a management surface names the home widgets and the decision each one serves.
 - @qa: verification changes the underlying data and confirms each widget reflects it; a widget frozen on its seed value is a FAIL.

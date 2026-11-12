@@ -8,12 +8,12 @@ triggers: [feature workflow, workflow next, auto, step, external client, live se
 
 ## Authority
 
-After the current request has been bound to the active feature, `aioson workflow:next --expect-feature=<slug>` owns routing, state, and event emission. A persisted workflow does not establish that binding by itself. Outside that confirmed envelope:
+After the current request has been bound to the active feature, `aioson workflow:next --expect-feature=<slug>` owns routing, state, and event emission. A persisted workflow does not establish that binding by itself: the workflow binds to the feature the registry names (`project-pulse.md` `active_feature`, what `feature:current` answers) — when the registry moves, the binding moves with it, the previous feature's progress is archived under `features/{slug}/workflow.state.json` and restored on return; `workflow.state.json` is derived, never hand-edited. Outside that confirmed envelope:
 
 - Apply the Concrete implementation lane gate first.
 - Preserve an unrelated active workflow unchanged; Simple Plan runs directly in Dev and never calls `workflow:next`.
 - Canonical feature route: Product → Sheldon → Planner → Dev → QA.
-- When the user starts from raw feature sources, use the pre-product route `plans/{slug}/ → Briefing → Briefing Refiner → user approval`; visual/rich surfaces require the feature-owned prototype to be approved before Product.
+- When the user starts from raw feature sources, use the pre-product route `plans/{slug}/ → Briefing → Refiner → user approval`; visual/rich surfaces require the feature-owned prototype to be approved before Product.
 - Product, Sheldon, Planner, Dev, and QA stay in workflow. Other specialists run only for a concrete unresolved decision or enabled/risk-triggered review.
 - Simple Plan goes directly to Dev and ends there.
 - Repair objectively inferable stale/inconsistent context in workflow; unresolved project-context uncertainty routes to Setup.
@@ -51,7 +51,7 @@ Use the current tool name (`codex`, `claude`, or supported equivalent):
 ```bash
 aioson workflow:next . --expect-feature=<slug> --tool=<tool>
 aioson agent:prompt <agent> . --tool=<tool>
-aioson live:start . --tool=<tool> --agent=deyvin --no-launch
+aioson live:start . --tool=<tool> --agent=dev --no-launch
 ```
 
 Inside a live session:
@@ -68,4 +68,4 @@ Runtime telemetry belongs to the gateway. Do not synthesize dashboard records wi
 
 ## Human terminal gate
 
-QA PASS stops with a recommendation for the human to run `aioson feature:close`; neither workflow nor Autopilot runs close/publish automatically.
+After final QA, workflow closes only if `.aioson/closure-policy.json` explicitly enables `auto_close` and the activation is not `--step`. Otherwise show the close command. For verified low-impact residuals, load `.aioson/docs/delivery-followups.md`: persist linked pending Simple Plans before archiving, preserve `accepted_with_followups`, and never bypass material or unknown risks. No policy applies retroactively to unrelated features; closure never authorizes publishing.

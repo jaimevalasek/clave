@@ -17,7 +17,7 @@ Unlike `rules/` (which enforce conventions), docs explain **how something works*
 ---
 description: "Short description of what this doc covers — used by agents to decide relevance"
 scope: "global"       # or a feature slug if doc is scoped to one area
-agents: []            # empty = any agent may load; or restrict: [dev, architect]
+agents: []            # empty = any agent may load; or restrict: [dev, planner]
 ---
 ```
 
@@ -50,7 +50,8 @@ Create a doc when:
 - A third-party API has quirks that affect how agents implement against it
 
 Do NOT create a doc for:
-- Feature-specific decisions (use `design-doc-{slug}.md` instead)
+- Feature-specific decisions (use the PRD/plan decision sections or `aioson decision:add`)
+- Something noticed outside the current scope — a defect, an idea, a process gap (use `aioson observe`)
 - Project conventions (use `rules/` instead)
 - Current implementation state (use `spec-{slug}.md` instead)
 

@@ -33,11 +33,10 @@ High-quality squad output usually does all of this:
 | Manifest rich in words but weak in consequences | Package files that drive behavior, outputs, and checks |
 | Adding agents to look sophisticated | The minimum executor set that covers real work |
 | Domain buzzwords with no operational value | Vocabulary that changes prompts, blueprints, or quality gates |
-| Customer-facing executor with `role:` only (no `backstory`, no `operational_breadth`) | The 4-field block: `role + backstory + goal + operational_breadth` plus `interaction_principles` (see `domain-breadth.md`) |
-| Executor that refuses adjacent requests as "out of scope" | `operational_breadth.adjacent` listing 5–10 items real practitioners handle, plus yes-and `interaction_principles` |
+| Customer-facing executor with `role:` only, or one that refuses adjacent requests as "out of scope" | The Variant B block, plus the breadth anti-pattern table in `domain-breadth.md` |
 | Knowledge/technical executor with `role:` + generic focus bullets only (no `persona`, no `expertise`) | The depth block: `persona + goal + expertise` (frameworks, vocabulary, signature_moves) + `anti_patterns` (see `package-contract.md` § Executor depth block) |
 | `sourceDocs` recorded in the manifest but not reflected in any executor's `vocabulary` / `frameworks` | Distill each source into the relevant executor's depth block; cite it in `expertise.sources` |
-| Executor whose name is the only thing distinguishing it from a generic role | Named frameworks, real terms of art, and `signature_moves` a senior in that role would actually use |
+| Executor whose name is the only thing distinguishing it from a generic role | Task-relevant methods, sourced terms, decision rules and specific failure handling |
 
 ## Elevation moves
 
@@ -56,7 +55,7 @@ Score from `1-5` on:
 - workflow fit
 - artifact completeness
 - domain specificity
-- persona depth (would a senior practitioner in this role recognize the executor as one of their own? does it carry named frameworks, real terms of art, `signature_moves`, and a `quality_bar` — or is it a bare role label with generic bullets? sparse persona = sparse behavior; **applies to every executor**; see `package-contract.md` § Executor depth block)
+- operational depth (does each executor state its decisions, evidence, boundaries, methods and quality bar? A concise grounded stance is sufficient; no biography or framework-count quota; see `package-contract.md` § Executor depth block)
 - domain breadth (the customer-facing specialization of persona depth: does the executor handle obvious adjacent requests a real practitioner would? — applies to customer-facing executors; see `domain-breadth.md`)
 - operational efficiency
 

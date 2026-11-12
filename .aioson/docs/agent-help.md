@@ -12,7 +12,7 @@ Consumed by the `## Help (--help)` section of each agent kernel: a standalone `-
 
 - **What:** product discovery — defines what to build, for whom, and why; writes the PRD base.
 - **When:** starting a new feature or project definition; the kickoff of every feature chain.
-- **Options:** `--auto` (autopilot through implementation and review, stopping before the human `feature:close` gate), `--step` (manual handoffs for this activation). Without a token, follows the feature scheme/project default.
+- **Options:** `--auto` (autopilot through implementation and review, closing after final QA only under an explicitly authorized closure policy), `--step` (manual handoffs for this activation). Without a token, follows the feature scheme/project default.
 - **Typical:** `/product --auto build email notifications`, `/product redesign checkout`.
 - **Produces:** one `prd-{slug}.md` product authority with explicit feature-owned prototype status (`current`/`none`) plus the `features.md` index row.
 - **Next:** `@sheldon` for mandatory independent enrichment and hash-bound approval before Planner; `@copywriter` remains a site-specific content detour.
@@ -24,34 +24,25 @@ Consumed by the `## Help (--help)` section of each agent kernel: a standalone `-
 - **Options:** none — point it at a loose plan/source-pack slug or describe the idea; deterministic discovery uses `aioson briefing:sources`.
 - **Typical:** `/briefing evaluate plans/loyalty-program.md`, `/briefing reconstruct plans/legacy-billing`, `/briefing frame this idea: ...`.
 - **Produces:** `.aioson/briefings/{slug}/briefings.md` (+ prototype when the flow calls for it).
-- **Next:** `@briefing-refiner` for review and user approval — the only next agent. `@product` starts only after the approved briefing (visual scope also requires the approved feature-owned prototype).
+- **Next:** `@refiner` for review and user approval — the only next agent. `@product` starts only after the approved briefing (visual scope also requires the approved feature-owned prototype).
 
-## @briefing-refiner
+## @refiner
 
 - **What:** reviews an existing briefing, or—when none exists—guides a non-canonical visual exploration from screenshots, current front-end evidence, or a multi-model arena.
 - **When:** a briefing needs corrections/decisions, or you want to test visual directions before committing them to a Briefing.
 - **Options:** in exploration mode it asks only unresolved target, single/sequential/arena, isolated/cumulative, blind/labeled, and scan choices.
-- **Typical:** `/briefing-refiner refine loyalty-program`.
+- **Typical:** `/refiner refine loyalty-program`.
 - **Produces:** canonical review/prototype artifacts for an existing Briefing, or immutable variants and reusable-prompt reports under `.aioson/explorations/{slug}/`.
 - **Next:** `@product` after Briefing approval; an exploration first promotes its selected direction to `plans/{briefing-slug}/` and hands off to `@briefing`.
 
 ## @dev
 
 - **What:** implements the reviewed PRD through the approved implementation plan — code, migrations, interfaces, and stack-native tests on the production path.
-- **When:** implementation entry point, resume after a break, or QA corrections.
+- **When:** implementation entry point, Simple Plan work, resume after a break (including a `--context=simple-plan` dev-state), a below-lane known-context fix (≤2 behavior files, no open decision, known verification — no plan file), or QA corrections.
 - **Options:** `--auto` (arm autopilot for this activation: implementation + review cycle), `--step` (override an always-autopilot project and stop at the manual `@qa` handoff for this activation).
-- **Typical:** `/dev --auto`, `/dev` (follows the seeded scheme/flag), `/dev continue feature checkout`.
+- **Typical:** `/dev --auto`, `/dev` (follows the seeded scheme/flag), `/dev continue feature checkout`, `/dev debug the failing upload test`.
 - **Produces:** the working implementation + tests and `dev-state.md` checkpoints; it does not create another specification.
 - **Next:** `@qa` (hub of the post-dev review cycle).
-
-## @deyvin
-
-- **What:** continuity-first pair programming — recovers recent context, works in small validated slices. Alias: `/pair`.
-- **When:** resuming known work, debugging together, a bounded fix on existing context.
-- **Options:** none. Hard boundary: new project/feature, broad redesign, or mixed product+UX+implementation scope → hands off immediately, never codes first.
-- **Typical:** `/deyvin continue yesterday's fix`, `/pair debug the failing upload test`.
-- **Produces:** the validated slice + session continuity records.
-- **Next:** the proper workflow agent when scope expands (`@product`/`@dev`).
 
 ## @discover
 
@@ -64,12 +55,21 @@ Consumed by the `## Help (--help)` section of each agent kernel: a standalone `-
 
 ## @neo
 
-- **What:** the system router — shows the full picture (project state, workflow stage, pending work) and routes you to the right agent. Never implements, never produces artifacts.
+- **What:** the system router — shows the full picture (project state, workflow stage, pending work) and routes you to the right agent. Never implements, never produces artifacts; on request it cleans the feature lifecycle through `aioson feature:triage` (close what QA passed, pause or abandon what went quiet, archive what is closed) and frees the framework's own disk footprint through `aioson storage:triage` (old doc snapshots and rollback folders, oversized logs; heavy paths only when you name them).
 - **When:** you are lost, between features, or unsure which agent/lane fits the task.
-- **Options:** none.
-- **Typical:** `/neo where are we?`, `/neo what should I run next?`.
+- **Options:** `--feature=<slug>` binds the question to one feature (hosts that start every work item at @neo pass it through `aioson agent:prompt neo . --feature=<slug>`); otherwise the pulse's active feature. For a bound feature the route is the engine's next stage from `aioson workflow:status . --json`; Neo's own reading only sets the confidence and names a divergence.
+- **Typical:** `/neo where are we?`, `/neo what should I run next?`, `/neo clean up stuck features`, `/neo free disk space`.
 - **Produces:** orientation + a concrete routing recommendation.
 - **Next:** the agent it names.
+
+## @help
+
+- **What:** a beginner-friendly, read-only guide that explains AIOSON concepts, agents, workflows, and commands in plain language.
+- **When:** you are learning the system, do not understand a term, want a command explained, or need to know how to start.
+- **Options:** none — ask one question in your own words.
+- **Typical:** `@help how does AIOSON work?`, `@help what is a PRD?`, or `/aioson:agent:help which command starts a project?` in Claude-style clients.
+- **Produces:** an explanation in chat, one practical example, and at most one safe next action; it never changes project state.
+- **Next:** stays in Help for learning questions; recommends `@neo` only when the answer depends on the live state of your project.
 
 ## @orache
 
@@ -78,7 +78,7 @@ Consumed by the `## Help (--help)` section of each agent kernel: a standalone `-
 - **Options:** `quick` (D1/D2/D5), `targeted`, or `full`; it reuses matching registered investigation reports within seven days and may read relevant technical cache entries.
 - **Typical:** `/orache investigate the B2B onboarding-tools market`.
 - **Produces:** a verified, registered report under `squad-searches/` with evidence ledger and concrete squad impacts.
-- **Next:** `@squad`; Analyst/Architect only for an explicitly requested modeling/technical follow-up.
+- **Next:** `@squad`; `@product`/`@planner` only for an explicitly requested modeling/technical follow-up.
 
 ## @orchestrator
 
@@ -101,8 +101,8 @@ Consumed by the `## Help (--help)` section of each agent kernel: a standalone `-
 ## @pentester
 
 - **What:** evidence-driven adversarial security review — maps the complete declared threat surface, records explicit standards/path/route coverage, and may apply every eligible deterministic hardening that fits one bounded packet.
-- **When:** sensitive surface (auth, money, uploads, secrets, external URLs) — via `@qa`'s trigger or on demand.
-- **Options:** `--mode=app_target --feature=<slug> --scope=<target>` via `aioson agent:prompt pentester`; `--scope-mode=feature|simple-plan|paths|routes|project` with `--paths=`/`--routes=` chooses what is reviewed, and `--report=full|none` (`--no-report`) chooses whether the HTML bundle is produced. Without those flags the agent asks once. A direct bounded correction over a disabled manifest entry uses `review-cycle:advance ... --manual`.
+- **When:** sensitive surface (auth, money, uploads, secrets, external URLs) — via `@qa`'s trigger or on demand. Slowness with no abuse path is `@quality`'s, not a security review.
+- **Options:** `--mode=app_target --feature=<slug> --scope=<target>` via `aioson agent:prompt pentester`; `--scope-mode=feature|simple-plan|paths|routes|project` with `--paths=`/`--routes=` chooses what is reviewed. `--report=full|none` (`--no-report`) selects HTML; `none` is the default, and `full` runs after corrections. Ask once only when scope remains ambiguous. A direct bounded correction over a disabled manifest entry uses `review-cycle:advance ... --manual`, then `review-cycle:resolve` verifies the diff before reporting.
 - **Typical:** `/aioson:agent:pentester review the auth endpoints of feature accounts`, `/aioson:agent:pentester --scope-mode=project --report=none`. With `--scope-mode=feature` and no slug it lists the project's features (`aioson feature:list`) and asks which one.
 - **Produces:** authoritative `security-findings-{slug}.json` always, plus localized `.aioson/pentester/{run_id}/relatorios/{index,vulnerabilidades,correcoes,cobertura}.html` when `--report=full`; economy mode summarizes in the response and the bundle can still be built later — `aioson pentester:report .` lists the persisted runs, `aioson pentester:report . --feature=<slug> --json` builds one. `@qa` owns closure.
 - **Next:** `@dev` once for cross-cutting findings, or back to `@qa`; Pentester never self-accepts a fix.
@@ -138,7 +138,7 @@ Consumed by the `## Help (--help)` section of each agent kernel: a standalone `-
 
 - **What:** conducts one measured AIOSON traversal for one frozen prompt without clarification questions — route detection, then the real agent chain unattended.
 - **When:** the AIOSON side of a measured comparison (Cockpit mission) or one standalone measured run.
-- **Routes:** a single-screen game/toy crosses `@briefing → @briefing-refiner` and delivers the working prototype HTML; any real app (site, CRM, dashboard) crosses the full chain `briefing → refiner → product → sheldon → planner → dev → qa` in Autopilot.
+- **Routes:** a browser-only game/toy takes the static route — `@briefing → @refiner` refine, then @benchmark builds a real static app (`index.html` + its own CSS/JS + assets), never a briefing prototype; any real app (site, CRM, dashboard) crosses the full chain `briefing → refiner → product → sheldon → planner → dev → qa` in Autopilot.
 - **Typical:** `/benchmark create a cozy underwater strategy game`.
 - **Produces:** the runnable delivery, `benchmark-result.json` (strict schema 1), and `report.md` with stages and auto-decisions; it never creates Arena, model rankings, tokens, or cost data.
 - **Next:** an external orchestrator may collect the isolated result for comparison, or the user can run the standalone entrypoint directly.
@@ -151,6 +151,24 @@ Consumed by the `## Help (--help)` section of each agent kernel: a standalone `-
 - **Typical:** `/shakedown loyalty-program`, `/shakedown the admin orders module`.
 - **Produces:** `.aioson/context/shakedown-{slug}.md` — coverage proof plus a punch list (`bug`/`incomplete`/`polish`) with suggested fix lanes. It finds and lists, never fixes.
 - **Next:** quick wins → `@dev` (Simple Plan); product-scope gaps → `@briefing`/`@product`; verification gaps → `@tester`.
+
+## @deployer
+
+- **What:** takes a containerized app to production on a self-hosted VPS with Dokploy — app readiness, panel hardening, database/cache services, git access by read-only deploy key, application settings, domain and Let's Encrypt, provider firewall, and the access gate before real data.
+- **When:** first deploy to a Dokploy server, a new environment, or a stuck deploy (clone/build/certificate/firewall). Opt-in; never a feature stage or gate.
+- **Options:** pass the environment, the stage, or the problem; it resumes from the project's deployment diary when one exists.
+- **Typical:** `/deployer production on Dokploy`, `/deployer the certificate stays TRAEFIK DEFAULT CERT`.
+- **Produces:** the deployment diary (`.aioson/context/deploy-{environment}.md` or the project's existing one) with status, non-secret inventory, timeline, problems and next steps. It guides and verifies; the operator clicks, and secrets never enter the chat.
+- **Next:** readiness gaps → `@dev` (Simple Plan); exposed-surface review → `@pentester`; release decisions stay with the user.
+
+## @quality
+
+- **What:** engineering quality assessment: static analysis, test effectiveness, regression coverage, performance and speed (measured hotspots, before/after verdicts) and agent/skill evaluations.
+- **When:** explicitly requested or triggered by concrete quality evidence; optional for products and the AIOSON framework. QA retains acceptance. "Can the system run faster?" starts here — not in `@pentester` (security) or `@tester` (behavior).
+- **Options:** specify target and `product` or `framework` profile. Inspect native checks with `aioson quality:run . --dry-run --json`; time a hotspot with `aioson quality:bench` and replay it after a change with `--baseline=<result.json>`.
+- **Typical:** `@quality assess test effectiveness in checkout`; `@quality find why the orders list is slow`; `@quality evaluate the framework's agent contracts`.
+- **Produces:** `.aioson/context/quality-review-{target}.md` with commands, results, raw evidence and a ranked remediation backlog.
+- **Next:** the appropriate implementation/test owner for a confirmed gap, or QA for same-feature acceptance.
 
 ## @copywriter
 

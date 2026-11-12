@@ -14,7 +14,7 @@ Rules **override** agent default conventions. Use them for project-specific stan
 ---
 name: rule-name
 description: One-line description of what this rule enforces
-agents: [dev, architect]   # omit to apply to ALL agents
+agents: [dev, planner]      # omit to apply to ALL agents
 priority: 10               # optional: higher = loaded first (default: 0)
 version: 1.0.0
 modes: [planning, executing]              # optional: restrict to a context:select mode
@@ -27,6 +27,10 @@ retrieval_intents: [database, memory]      # routing: why this file should be di
 paths: [src/billing/**]                   # routing: matched against the files being touched
 ---
 ```
+
+**A lens per agent.** A rule or doc shared by several agents may address sections to some of them with a marker on the heading: `## Planning <!-- agents: planner -->`. Each agent reads the preamble, the sections addressed to nobody, and its own; sections addressed only to other agents are skipped (`context:brief` and the agent activation say `your lens: read lines …`). An H3 inherits its H2's audience. `aioson rule:new`/`doc:new` scaffold one section per agent when two or more are declared.
+
+List fields read the same in the inline form (`agents: [dev, planner]`) and as a YAML block list (`agents:` followed by `- dev` lines); a trailing `# comment` is never part of a value, and a quoted item keeps its commas (`["criar pastas, subpastas"]`). `aioson rules:lint . --docs` names the declarations that silently change who receives a rule: an `agents:` key left without a value (it reaches every agent — write `agents: []` when that is the intent), an agent id that is a near-miss of a real one, a mode other than `planning`/`executing`, and an unknown `load_tier`.
 
 ---
 
@@ -90,6 +94,21 @@ aioson rules:lint .
 
 It flags rules that are selector-invisible or missing required fields.
 
+Lint proves the frontmatter is well-formed; it cannot prove the rule fires on
+the tasks it was written for. That proof lives in `.aioson/evals/*.json`: add
+at least one positive scenario when you create a rule, one `absent` check on a
+neighbouring task it must stay quiet on (precision is measured only where a
+negative exists), then run
+
+```bash
+aioson context:evals .
+```
+
+A failed scenario prints why the engine excluded the rule (agent/mode filter,
+score vs. threshold) and a concrete frontmatter suggestion; the coverage
+report names every routed rule, doc, and skill no scenario proves yet
+(`--strict` for CI).
+
 ---
 
 ## Precedence
@@ -130,6 +149,8 @@ An all-clear always means files were read. `--changed` narrows the check to the 
 
 Breaking a rule is a contract violation; falling short of a skill is a competence gap worth surfacing, not a reason to refuse the handoff. When a rule and a skill declare the same checker, the rule's authority applies.
 
+**At edit time.** With the session guard installed (`aioson hooks:install`), every checker that reads one file at a time (`source-code-language`, `no-native-dialogs`, `file-size`, `function-size`) also judges each pending write in memory. A NEW `HIGH` violation the edit introduces puts the document and the finding in front of the agent before the file lands, whatever the edit's wording. The product Markdown agents write under `.aioson/` (plans, specs, PRDs) is judged by the code it names — cited paths, requested identifiers, fenced code — so a plan that names a translated file hears the naming rule before anything is built. The document's `agents:` and `paths:` still apply, accepted baseline debt stays accepted, and Markdown outside `.aioson/` (docs, notes) and the governance files themselves are never judged: they talk about the product and quote counter-examples on purpose.
+
 ### A project that was already built against a different convention
 
 New violations in a compliant tree are drift, and an agent fixes them on the spot. A codebase written against a different convention from its first commit is something else: the tree is not wrong by accident, and choosing between it and the rule is a decision about the whole project. `rules:check` measures the difference and refuses to decide for you — when most of the tree already breaks the rule, it says so and lays out the three real options:
@@ -153,8 +174,20 @@ Create a rule when:
 - A @dev learning has appeared in 3+ sessions and should be promoted to permanent
 - The team has decided on a project standard that differs from agent defaults
 
+Three questions before any routed knowledge (rule, doc or skill) is written —
+all three must be yes:
+1. Repeated: you keep restating it, session after session.
+2. Non-obvious: there is a "how" the model does not get right on its own.
+3. Stable: it will still hold in weeks, not hours.
+A no on any of them is a decision, a plan line or a chat message, not an
+artifact. Models improve: a skill that taught "how" may later only need to
+give context and format — re-run the evals after a model change and retire
+what no longer earns its trigger (`status: deprecated` in the skill registry
+and no routing frontmatter; `aioson context:usage .` shows what nothing
+selects any more).
+
 Do NOT create a rule for:
-- One-time decisions (use `design-doc.md` decisions section instead)
+- One-time decisions (record them with `aioson decision:add` or in the plan's ADR section)
 - Feature-scoped behavior (use `spec-{slug}.md` or `requirements-{slug}.md`)
 - External API knowledge (use `docs/` instead)
 

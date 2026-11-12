@@ -15,11 +15,13 @@ Autopilot advances this deterministic route:
 product → sheldon → planner → dev [optional declared execution lanes → DEV integration] → qa
 ```
 
-`--auto` enables Autopilot for the current direct/tracked activation even when the project default is off. `--step` disables it for the current activation and wins if both flags are present. Neither flag rewrites the persisted project/feature preference, and neither authorizes the human `feature:close`/publish gate.
+`--auto` enables Autopilot for the current direct/tracked activation even when the project default is off. `--step` disables it for the current activation and wins if both flags are present. Neither flag rewrites the persisted project/feature preference or authorizes closing/publishing by itself. A separate explicit closure policy may authorize close after final QA; `--step` suppresses it.
 
 New `agent-execution-{slug}.json` manifests use schema v2 and add a developer-owned `orchestration` policy. New features default to `mode: autopilot`; `inherit` follows the activation/project scheme, and `step_by_step` forces that feature off. In effective Autopilot, `workflow:execute` derives its default checkpoint budget from `orchestration.max_checkpoints` instead of silently stopping after one transition. Existing v1 manifests remain valid and are never rewritten. A direct/persisted `--step` disarm still wins.
 
 Development lanes are nested inside DEV, not new workflow stages. DEV dispatches only lanes explicitly enabled in `agent-execution-{slug}.json`, one at a time in the shared worktree, and remains responsible for integration and full verification. If a requested host/model is unavailable, autopilot pauses. It may use another host only when that lane contains an applicable explicit fallback.
+
+Inside DEV, every plan phase ends at `aioson phase:next` (`.aioson/docs/dev/phase-loop.md`). Its `directive` is binding on the chain: under the `auto` policy the conversation ends there, and the Play continues with the next phase, or with QA after the last one, from the kickoff. Do not invoke the next agent yourself in that case. Under `suggest` or `off` the chain continues here as before. The last phase passes this activation's `--auto` or `--step` to `phase:next`: the handoff to QA follows this same signal, and with Autopilot off it records nothing and stops DEV.
 
 QA is the single default reviewer. After its first pass, additional specialists run only when both enabled by the user/approved plan and triggered:
 
@@ -49,6 +51,10 @@ Prototype ownership follows the same rule. An exact active-feature path plus mat
 
 The same rule applies to bounded Tester/Pentester corrections: `review-cycle:advance` and configured cycle limits control execution, not routine confirmation prompts.
 
+## Notices that do not stop
+
+A plan at or above the large-plan limit stops nothing. `workflow:next --complete=planner` prints `[Execution Scale]` with its phase and file counts, the payload carries it in `execution`, and `workflow:execute` lists it in `owner_notices`. Whoever runs the chain relays it to the owner before DEV starts, in the same message that reports the handoff, and continues. Once two phases are finished, `aioson dev:progress . --feature={slug}` answers how long the rest will take.
+
 ## Stop conditions
 
 Stop immediately for:
@@ -60,6 +66,10 @@ Stop immediately for:
 - missing authority for an external/destructive action;
 - explicit step-by-step policy.
 
-Autopilot never runs `feature:close`, commit, publish, deploy, or release without explicit human approval.
+Autopilot may run `feature:close` after final QA under the explicit project closure policy (`.aioson/docs/delivery-followups.md`). It never infers permission to commit, publish, deploy, or release from that policy.
 
-The lightweight dossier and `mappings/{slug}/continuity.md` may be updated as non-blocking context caches; neither is scope, evidence, or a gate. Sheldon is mandatory PRD enrichment and approval. Analyst, Architect, Discovery Design Doc, and PM remain opt-in compatibility consultants; they produce bounded advice and are never injected into the canonical chain by classification.
+**A genuine decision is recorded, not remembered.** When an agent meets a choice only the owner can make — a product trade-off the PRD does not settle, a security posture, a contradiction between two approved artifacts — it records it with `aioson decision:add . --feature={slug} --id=DEC-NN --question="…" --evidence="…" --consequence="…" --recommendation="…" [--options="a|b"] --by=@agent` and stops. The checkpoint is durable (`.aioson/context/features/{slug}/decision-checkpoint.json`): `workflow:next` refuses to advance the feature while a blocking decision is pending, `decision:list` shows what is waiting, and only a human records the outcome with `aioson decision:resolve . --feature={slug} --id=DEC-NN --choice="…" --by="<name>"` (`--status=deferred|rejected` for the other outcomes). `--force` on `workflow:next` remains the explicit override, recorded as such. An agent never hand-edits the file.
+
+**The owner confirms understanding, not only progress.** `aioson feature:summary . --feature={slug} --write` renders the executive summary — promises, capabilities, acceptance criteria, planned files, decisions, code-vs-plan drift, visual evidence, gaps — in the project's interaction language with framework jargon translated; `aioson feature:acknowledge . --feature={slug} --by="<owner>"` records that the owner read it, and refuses a summary the artifacts moved past (hash). `feature:close` reports the state; it never blocks on it.
+
+The lightweight dossier and `mappings/{slug}/continuity.md` may be updated as non-blocking context caches; neither is scope, evidence, or a gate. Sheldon is mandatory PRD enrichment and approval. Planner owns technical discovery, architecture decisions, and sequencing inside the implementation plan; no specialist is injected into the canonical chain by classification.

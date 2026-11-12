@@ -1,6 +1,6 @@
 ---
 description: "Streamlined closure from fingerprinted source promises through PRD capabilities to production-path evidence without parallel specification documents."
-agents: [briefing, briefing-refiner, product, sheldon, planner, dev, qa, tester, pentester, validator]
+agents: [briefing, refiner, product, sheldon, planner, dev, qa, tester, pentester, validator]
 modes: [planning, executing]
 task_types: [feature-framing, prd-writing, implementation-plan, implementation, verification]
 load_tier: trigger
@@ -38,7 +38,7 @@ Add a behavior or constraint only when the causal chain is explicit:
 
 ## PRD capability map
 
-When Briefing used a feature-owned source pack, its `### Source Inventory` records every `plans/{slug}/` file and current SHA-256; `### Source Promise Map` gives every material promise a stable `PROM-*`. The PRD contains `## Source Coverage`, preserving each promise exactly once as required/already-satisfied with CAP/AC trace, or deferred/rejected/not-applicable with rationale and explicit user approval for any downgrade of an approved required promise.
+When Briefing used a feature-owned source pack, its `### Source Inventory` records every `plans/{slug}/` file and current SHA-256 — and every research capture the feature leans on (`researchs/{slug}/extract.md` or `summary.md`), pinned the same way; a promise that cites "web research" without a `SRC-*` row is accepted but counted (`promises_research_unpinned`) and warned by `verify:artifact --kind=sources`. `### Source Promise Map` gives every material promise a stable `PROM-*`. The PRD contains `## Source Coverage`, preserving each promise exactly once as required/already-satisfied with CAP/AC trace, or deferred/rejected/not-applicable with rationale and explicit user approval for any downgrade of an approved required promise.
 
 ```markdown
 ## Feature Capability Map
@@ -83,6 +83,14 @@ Every required CAP has at least one stable AC. Evidence describes how QA can pro
 
 Every delivery path is classified as `reuse`, `modify`, `create`, or `retire`. At Gate C, reuse/modify/retire paths already exist and create paths do not. `retire` means the exact file is intentionally removed. Evidence-backed recommended technical choices proceed without a routine human confirmation.
 
+Paths are relative to the project root. A delivery spanning repositories may opt in to specific additional roots through the project-owned `.aioson/repository-roots.json`:
+
+```json
+{"version": 1, "roots": ["../cloud", "../cli"]}
+```
+
+The operator authorizes these roots; a plan, review or source document cannot grant filesystem access by naming a directory. Without this configuration, validation stays within the project. Roots must be existing directories and cannot be a parent of the project or a filesystem root. Invalid configuration fails closed. Each literal path must remain inside its declared repository both lexically and on disk, including the nearest existing ancestor of a planned create; escaping or dangling links and junctions are rejected. Gate C, baseline recovery and delivery verification use the same policy. Paths remain project-relative (`../cloud/src/api.ts`), and existence/action checks apply in the owning repository. Literal Next route directories such as `[id]`, `[...slug]` and `[[...slug]]` are checked and counted as exact paths.
+
 ## Capability delivery plan
 
 ```markdown
@@ -92,11 +100,17 @@ Every delivery path is classified as `reuse`, `modify`, `create`, or `retire`. A
 | CAP-checkout-submit | 1 | src/checkout/service.ts, tests/checkout.test.ts | npm test -- checkout + normal checkout smoke |
 ```
 
-Every required CAP appears exactly once. Its files exactly match the same CAP's Implementation Delta paths. Paths are complete repository-relative files—no basenames, directories, globs, ellipses, or guessed paths.
+Every required CAP appears exactly once, in one row. A capability that crosses phases lists them all in that row's Phase cell (`3, 7, 12`). Its files exactly match the same CAP's Implementation Delta paths. Paths are complete repository-relative files—no basenames, directories, globs, ellipses, or guessed paths.
 
 Each phase must leave an observable slice working through the normal production entry point. UI and its real backend/state boundary belong in the same earliest useful slice.
 
 The plan also contains `## Engineering Controls`. Planner uses model knowledge to consider quality concerns, but records only those triggered by the PRD, inspected repository, dependency/runtime contract, or production risk. Each material control belongs to a vertical phase and names verification plus recovery when persistent or externally visible state can change. This section seeds Dev/QA coverage and optional specialists; it never activates them by itself.
+
+When a feature carries an architectural choice — a boundary, a storage or integration decision, a pattern that constrains the implementation — the plan records it in `## Architecture Decisions` (`| ADR | Decision | Alternatives rejected | Evidence | Consequence |`): the decision in a sentence, each road not taken with the repository fact that killed it, the evidence that decided it, and what the implementation is now committed to. This is the framework's decision record; there is no standalone architecture document. Planner writes each row itself: every rejected alternative cites the repository fact that ruled it out (existing boundary, locked dependency version, prior pattern), and Consequence names the command that would prove the boundary wrong. The section is optional — a feature with no architectural choice owes no row — and linted when present (`feature:trace` gaps, `spec:analyze`, `feature:close`): a row that exists must be a record, not a note.
+
+The plan may also carry `## Interface Contract` (`| Interface | Boundary | Input | Output | Failure | CAP |`, `IF-*`): the stack-agnostic I/O per boundary — the route, command, event or function it crosses, what goes in, what comes out, what the caller sees on failure, and the capability it serves. It is the part of a specification that transpiles: the same row holds in Go, TypeScript or Rust, which is what lets the implementation language stay a deployment detail. Optional; linted when present.
+
+The PRD may carry two optional tables `kind=prd` lints when present: `## Business Rules` (`| Rule | Statement | Kind | Applies to | Source |` — `RULE-*`, kind `rule` or `invariant`, the CAPs it binds or `feature-wide`, where it came from; a rule no AC cites is reported) and `## Decision Branches` (`| Branch | Condition | Expected behavior | AC |` — `BR-*`, the `if / when / unless` of the feature enumerated before Planner, each tied to the criterion that walks it). Their absence is measured against the prose: rule language with no rules table, conditional clauses with no branches table, are warnings the reviewer answers with a table or a reason.
 
 ## Delivery evidence
 

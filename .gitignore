@@ -48,3 +48,21 @@ data/
 test-results/
 playwright-report/
 .aioson/preview.json
+# AIOSON — regenerable browser evidence (captures and walkthrough snapshots; the reports beside them stay tracked)
+.aioson/context/visual-screenshots/
+.aioson/context/features/*/visual-screenshots/
+.aioson/context/done/*/dossier/visual-screenshots/
+.aioson/context/done/*/briefings/visual-screenshots/
+.aioson/briefings/*/visual-screenshots/
+.aioson/context/browser/*/
+.aioson/context/features/*/browser/*/
+.aioson/context/done/*/dossier/browser/*/
+.aioson/context/done/*/briefings/browser/*/
+.aioson/briefings/*/browser/*/
+aios-qa-screenshots/
+.aioson/.backups/
+# AIOSON — single-writer store locks and their temp files (local-only)
+.aioson/context/.*.lock/
+.aioson/context/.*-lock-*/
+.aioson/context/*.json.*.tmp
+.aioson/context/*.md.*.tmp

@@ -8,7 +8,7 @@
 
 Compile a MEDIUM feature's completed specs into a deterministic workflow script (Lane B) and execute it: waves of file-disjoint dev agents in parallel, a bounded deterministic fix loop converging on the harness contract's executable criteria, adversarial review for judged criteria, and a fresh-context validator verdict. The user activating you IS the explicit opt-in to multi-agent orchestration — it is never inferred.
 
-Lane B is **optional and additive**. The canonical execution path (@dev → @qa, plus the optional per-config checkpoints such as @scope-check or @validator) remains unchanged; route there whenever this protocol refuses to proceed.
+Lane B is **optional and additive**. The canonical execution path (@dev → @qa, plus the optional per-config checkpoints such as @validator) remains unchanged; route there whenever this protocol refuses to proceed.
 
 ## Required input
 
@@ -45,7 +45,6 @@ Run the generated script with the Workflow tool (`scriptPath` = the compiled fil
 
 ## Hard constraints
 
-- Use `interaction_language` (fallback: `conversation_language`) from project context for all user-facing communication.
 - Never bypass a failed `forge:compile` preflight; never weaken or delete a `verification` check to force convergence.
 - Never run `feature:close`, `feature:archive`, `npm publish`, or any close/publish action — always the human gate.
 - One feature per run. Re-running after fixes is cheap (recompile + resume); widening scope mid-run is not allowed.

@@ -51,7 +51,7 @@ After the final PRD edit, Sheldon records `sheldon_review: approved` and promote
 - Vision
 - Problem and users
 - `## Feature Capability Map`
-- `## Source Coverage` when the approved briefing contains `PROM-*`
+- `## Source Coverage` when the approved briefing contains `PROM-*`. A required `PROM-*` decided `deferred`, `rejected` or `not_applicable` needs the owner's approval in its rationale, and `verify:artifact --kind=sources` looks for one of these phrases, in any case and with or without accents: `user-approved`, `user approved`, `approved by user`, `approved by the user`, `user decision`, `usuário aprovou`, `aprovado pelo usuário`, `decisão do usuário`
 - `## Current System Fit`
 - MVP scope
 - Out of scope
@@ -59,8 +59,10 @@ After the final PRD edit, Sheldon records `sheldon_review: approved` and promote
 - Success metrics
 - Prototype contract and approved deviations
 - Open questions, with blocking questions explicitly marked
-- Visual identity when relevant
+- Visual identity: the resolved `identity` binding and what it constrains, or the explicit `none` with its reason
 - `## Acceptance Criteria` (owned and finalized by Product before Planner)
+- `## Business Rules` when the feature carries rules or invariants — `| Rule | Statement | Kind | Applies to | Source |`, `RULE-*`, kind `rule` | `invariant`, bound to `CAP-*` or `feature-wide`; every rule is cited by the AC that proves it (optional; linted when present, and rule language in prose with no table is a measured warning)
+- `## Decision Branches` when behavior forks — `| Branch | Condition | Expected behavior | AC |`, `BR-*`, one row per `if / when / unless`, each tied to its AC (optional; linted when present, and conditional prose with no table is a measured warning)
 
 Capability map:
 
@@ -73,12 +75,12 @@ Capability map:
 Source coverage:
 
 ```markdown
-| Promise | Product decision | CAP / AC | Evidence or rationale |
+| Promise | Product decision | CAP / AC | Evidence / rationale |
 |---|---|---|---|
 | PROM-{slug}-01 | required | CAP-{slug}-main / AC-{slug}-01 | preserved from SRC-001 |
 ```
 
-Every briefing promise appears exactly once. Required or already-satisfied promises map to known CAP/AC IDs; deferred, rejected, or not-applicable promises record a concrete rationale.
+Every briefing promise appears exactly once. Required or already-satisfied promises cite at least one declared CAP and AC ID; deferred, rejected, or not-applicable promises record a concrete rationale for the approved boundary, and any material scope change remains user-owned.
 
 Current-system fit:
 
@@ -90,7 +92,7 @@ Current-system fit:
 
 Every required CAP has exactly one fit row. `Fit decision` is `reuse`, `extend`, `replace`, or `new`. Cite exact repository paths/packages and observed behavior. `new` requires evidence that the nearest existing boundary was inspected and does not fit. This records product compatibility, not implementation architecture.
 
-Acceptance criteria:
+Acceptance criteria — one stable `AC-*` per row, owned and finalized by Product; Sheldon enriches them in place, and `kind=prd` hard-fails a PRD without this table:
 
 ```markdown
 | AC | CAP | Observable behavior | Evidence |
@@ -116,10 +118,12 @@ Resolve prototype ownership before using it:
 
 With `current`, the prototype is binding source evidence for layout, interactions, states, and visual direction. Record deliberate changes in the PRD. Never treat a static copy or test fixture as equivalent to a working application.
 
+The PRD always contains one explicit `## Prototype contract`. With `current`, record status, feature, exact prototype/manifest paths, interactions, and deviations. With `none`, record `prototype: none`, `manifest: none`, and every discovered old path under `excluded historical references` with its owning slug/status. The same section carries one `identity:` line matching the frontmatter binding.
+
 ## Writing rules
 
 - Preserve user intent and explicit exclusions.
-- Do not invent optional features.
+- Originate optional ideas as proposals with value, uncertainty, and scope impact; never present them as approved requirements. Only accepted choices enter required CAP/AC rows.
 - Apply the repository-backed recommended fit without asking for routine confirmation; ask only when alternatives materially change behavior, scope, cost, data, or risk.
 - Apply the safe prototype resolution without routine confirmation: matching owned artifact → `current`; missing/mismatched/closed-feature artifact → `none` plus explicit exclusion. State the result in chat.
 - Avoid implementation architecture and file plans.
