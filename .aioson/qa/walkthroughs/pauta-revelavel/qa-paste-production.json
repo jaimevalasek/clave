@@ -1,0 +1,34 @@
+{
+  "name": "qa-paste-production",
+  "feature": "pauta-revelavel",
+  "url": "http://127.0.0.1:5290",
+  "timeout": 10000,
+  "boundary_wait": 5000,
+  "note": "QA-authored. Runs after qa-production-smoke on the same pnpm start build (PORT=5290, BACKEND_PORT=3390): opening the app lands on the empty 'Pauta QA independente'. Paste is driven by a ClipboardEvent carrying a real DataTransfer, because browser:run has no clipboard step.",
+  "steps": [
+    { "do": "goto", "url": "/" },
+    { "do": "expect", "target": "label=Nome da pauta", "value": "Pauta QA independente" },
+    { "do": "expect", "text": "Folha em branco." },
+    { "do": "eval", "expression": "(() => { const dt = new DataTransfer(); dt.setData('text/plain', 'Primeiro parágrafo do roteiro\\r\\n\\r\\nSegundo parágrafo do roteiro\\r\\n\\r\\nTerceiro parágrafo do roteiro'); dt.setData('text/html', '<b style=\"color:#f0f\">Primeiro</b>'); document.body.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true })); return true; })()", "equals": true, "boundary": "PUT /\\/api\\/rundowns\\/[^/]+\\/sheet/ -> 200", "ac": "AC-pauta-revelavel-13" },
+    { "do": "expect", "text": "3 blocos criados: cada linha em branco separa um bloco.", "ac": "AC-pauta-revelavel-13" },
+    { "do": "expect", "target": "testid=sheet-counter", "contains": "de 3", "ac": "AC-pauta-revelavel-13" },
+    { "do": "eval", "expression": "(() => { const dt = new DataTransfer(); dt.setData('text/plain', '- Tópico A\\n  - Sub A1\\n    - Sub A2\\n- Tópico B'); document.body.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true })); return true; })()", "equals": true, "boundary": "PUT /\\/api\\/rundowns\\/[^/]+\\/sheet/ -> 200", "ac": "AC-pauta-revelavel-15" },
+    { "do": "expect", "text": "/Lista colada: 4 blocos/", "ac": "AC-pauta-revelavel-15" },
+    { "do": "expect", "target": "testid=sheet-counter", "contains": "de 7", "ac": "AC-pauta-revelavel-15" },
+    { "do": "expect", "target": "testid=save-state", "contains": "Salvo às", "ac": "AC-pauta-revelavel-09" },
+    { "do": "eval", "expression": "fetch(location.hash.replace('#/rundown/', '/api/rundowns/') + '/sheet').then((r) => r.json()).then((j) => JSON.stringify(j.blocks.filter((b) => b.kind === 'text').map((b) => [b.content.map((r) => r.text).join(''), b.depth, b.size, b.content.some((r) => r.bold || r.color)])))", "contains": "[\"Tópico A\",0,", "ac": "AC-pauta-revelavel-15" },
+    { "do": "eval", "expression": "fetch(location.hash.replace('#/rundown/', '/api/rundowns/') + '/sheet').then((r) => r.json()).then((j) => { const by = Object.fromEntries(j.blocks.map((b) => [b.content.map((r) => r.text).join(''), b])); return [by['Tópico A'].depth, by['Sub A1'].depth, by['Sub A2'].depth, by['Tópico B'].depth, by['Sub A1'].size, by['Sub A2'].size].join(','); })", "equals": "0,1,2,0,small,small", "ac": "AC-pauta-revelavel-15" },
+    { "do": "eval", "expression": "fetch(location.hash.replace('#/rundown/', '/api/rundowns/') + '/sheet').then((r) => r.json()).then((j) => j.blocks.filter((b) => b.kind === 'text').every((b) => b.content.every((r) => !r.bold && !r.color)) && j.blocks.some((b) => b.content.map((r) => r.text).join('') === 'Primeiro parágrafo do roteiro'))", "equals": true, "ac": ["AC-pauta-revelavel-13", "AC-pauta-revelavel-39"], "note": "CRLF splits like LF and the pasted HTML formatting is discarded" },
+
+    { "do": "eval", "expression": "new Promise((resolve) => { const c = document.createElement('canvas'); c.width = 64; c.height = 40; const g = c.getContext('2d'); g.fillStyle = '#d4a017'; g.fillRect(0, 0, 64, 40); c.toBlob((blob) => { const dt = new DataTransfer(); dt.items.add(new File([blob], 'print-qa.png', { type: 'image/png' })); document.body.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true })); resolve(true); }, 'image/png'); })", "equals": true, "boundary": "POST /api/media", "ac": "AC-pauta-revelavel-16" },
+    { "do": "wait", "target": "css=[data-testid=sheet-column] img[src*='/api/media/']", "state": "attached", "timeout": 10000, "ac": "AC-pauta-revelavel-16" },
+    { "do": "expect", "target": "testid=sheet-counter", "contains": "de 8", "ac": "AC-pauta-revelavel-16" },
+    { "do": "expect", "target": "testid=save-state", "contains": "Salvo às", "timeout": 8000 },
+    { "do": "reload" },
+    { "do": "press", "key": "F2" },
+    { "do": "eval", "expression": "new Promise((resolve) => setTimeout(resolve, 600)).then(() => { const img = document.querySelector('[data-testid=sheet-column] img[src*=\"/api/media/\"]'); return Boolean(img && img.complete && img.naturalWidth === 64 && new URL(img.src).origin === location.origin); })", "equals": true, "ac": ["AC-pauta-revelavel-16", "AC-pauta-revelavel-56"], "note": "After a reload the pasted print is served back from the media folder" },
+    { "do": "eval", "expression": "fetch(location.hash.replace('#/rundown/', '/api/rundowns/') + '/sheet').then((r) => r.json()).then((j) => j.blocks.filter((b) => b.kind === 'image').map((b) => b.mediaName + ':' + (b.mediaMissing === false)).join(','))", "equals": "print-qa.png:true", "ac": "AC-pauta-revelavel-16" },
+    { "do": "press", "key": "F2" },
+    { "do": "screenshot", "name": "pasted-sheet" }
+  ]
+}

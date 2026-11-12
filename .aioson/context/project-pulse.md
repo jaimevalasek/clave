@@ -1,11 +1,11 @@
 ---
-last_updated: 2026-08-20
+last_updated: 2026-11-12T01:44:32.154Z
 last_agent: qa
-last_gate: Round 4 (F14): pauta linear, pontos do bloco e tempo relativo; curva de energia e marcadores de video aposentados
-active_feature: clave
-active_work: "clave → @qa → in_progress"
-blockers: none
-next_recommendation: "@product reescreve AC-clave-18 e corrige as decisions invalidas; @dev corrige o identificador nao-ingles"
+last_gate: Gate D: approved
+active_feature: (none)
+active_work: ""
+blockers: "none"
+next_recommendation: "@product start the next feature"
 ---
 
 # Project Pulse
@@ -13,12 +13,14 @@ next_recommendation: "@product reescreve AC-clave-18 e corrige as decisions inva
 ## Status
 
 - **Last agent:** @qa
-- **Active feature:** clave
-- **Active work:** clave → @qa → in_progress
-- **Next:** @product reescreve AC-clave-18 e corrige as decisions invalidas; @dev corrige o identificador nao-ingles
+- **Last gate:** Gate D: approved
+- **Active feature:** (none)
+- **Active work:** none
+- **Blockers:** none
+- **Next:** @product start the next feature
 
 ## Recent Activity
 
-- 2026-08-18 @dev → clave: Camada didatica do prototipo (tour + guia Como usar) implementada pelo caminho de producao
-- 2026-08-20 @dev → clave (Round 4 (F14): pauta linear, pontos do bloco e tempo relativo; curva de energia e marcadores de video aposentados) VERDICT: VITEST 156/156, PLAYWRIGHT 66/66, HARNESS 4/4, AC:TEST-AUDIT 55/55 PASS
-- 2026-08-20 @qa → clave: QA FAIL no round 4: entrega passa toda a verificacao executavel, mas AC-clave-18 nao esta entregue, rules:check acusa HIGH e o plano nao cobre CAP-clave-pontos
+- 2026-11-11 @qa → pauta-revelavel: QA verdict PASS from production-path evidence; Gate D approved
+- 2026-11-11 @validator → pauta-revelavel: Validated pauta-revelavel phase 1: score=1, ready_for_done=true (RG-build/migrate/boot/smoke pass; RG-smoke flaked once, OBS-da8480)
+- 2026-11-12 @qa → pauta-revelavel (Gate D: approved) VERDICT: PASS

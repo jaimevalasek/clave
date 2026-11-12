@@ -1,11 +1,12 @@
 {
   "generator": "aioson verify:artifact@1.0.0",
   "kind": "prd",
-  "slug": "clave",
+  "slug": "pauta-revelavel",
   "root": "C:\\dev\\playapps\\aioson-crave-2",
-  "mode": "advisory",
+  "mode": "blocking",
   "ok": true,
   "blocking": false,
+  "verdict": "pass",
   "issues": [],
   "warnings": [],
   "checks": [
@@ -16,19 +17,28 @@
     }
   ],
   "metrics": {
-    "caps_total": 14,
+    "caps_total": 12,
     "caps_required": 12,
-    "fit_rows": 13,
-    "ac_rows": 52,
-    "proms_total": 14,
-    "proms_covered": 14,
+    "fit_rows": 12,
+    "ac_rows": 57,
+    "proms_total": 17,
+    "proms_covered": 17,
     "fit_rows_without_path": 0,
     "cited_paths_missing": 0,
     "weak_evidence_rows": 0,
     "prototype_status": "current",
     "material_states_missing": [],
-    "file": ".aioson/context/prd-clave.md",
-    "briefing_read": true
+    "business_rules": {
+      "rows": 11,
+      "without_ac": 0
+    },
+    "decision_branches": {
+      "rows": 14,
+      "without_ac": 0
+    },
+    "file": ".aioson/context/prd-pauta-revelavel.md",
+    "briefing_read": true,
+    "bytes": 48473
   },
   "exitCode": 0
 }

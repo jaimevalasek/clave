@@ -1,0 +1,15 @@
+{
+  "name": "qa-capture-check",
+  "feature": "pauta-revelavel",
+  "url": "http://127.0.0.1:5290",
+  "timeout": 10000,
+  "note": "QA-authored window capture for AC-27: the migrated legacy rundown with 2 of 6 blocks on screen. The screenshot is the capture a recorder would get; the hidden image and the two links must not be in it.",
+  "steps": [
+    { "do": "goto", "url": "/#/rundown/2b5f87b5-42ea-492f-b696-e68e7c5e9758" },
+    { "do": "expect", "target": "testid=sheet-counter", "contains": "2 de 6", "ac": "AC-pauta-revelavel-27" },
+    { "do": "expect", "hidden": "testid=preparation-strip", "ac": "AC-pauta-revelavel-27" },
+    { "do": "eval", "expression": "[document.querySelectorAll('[data-testid=sheet-block]').length, document.querySelectorAll('[data-testid=sheet-column] img').length, document.body.innerText.includes('github.com'), document.body.innerText.includes('Linha escrita pelo QA')].join(',')", "equals": "2,1,false,false", "ac": "AC-pauta-revelavel-27" },
+    { "do": "eval", "expression": "[...document.querySelectorAll('[data-testid=sheet-column] [contenteditable]')].every((e) => e.spellcheck === false)", "equals": true, "ac": "AC-pauta-revelavel-27" },
+    { "do": "screenshot", "name": "capture-2-of-6", "full_page": true, "ac": "AC-pauta-revelavel-27" }
+  ]
+}

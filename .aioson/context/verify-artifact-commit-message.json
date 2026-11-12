@@ -1,0 +1,20 @@
+{
+  "generator": "aioson verify:artifact@1.0.0",
+  "kind": "commit-message",
+  "slug": null,
+  "root": "C:\\dev\\playapps\\aioson-crave-2",
+  "mode": "advisory",
+  "ok": true,
+  "blocking": false,
+  "verdict": "pass",
+  "issues": [],
+  "warnings": [],
+  "checks": [
+    {
+      "id": "commit-message",
+      "ok": true,
+      "detail": null
+    }
+  ],
+  "exitCode": 0
+}

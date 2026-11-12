@@ -1,15 +1,14 @@
 {
   "generator": "aioson verify:artifact@1.0.0",
   "kind": "briefing",
-  "slug": "clave",
-  "root": "C:\\dev\\playapps\\clave",
+  "slug": "pauta-revelavel",
+  "root": "C:\\dev\\playapps\\aioson-crave-2",
   "mode": "advisory",
   "ok": true,
   "blocking": false,
+  "verdict": "pass",
   "issues": [],
-  "warnings": [
-    "source lineage not applicable to this briefing"
-  ],
+  "warnings": [],
   "checks": [
     {
       "id": "briefing",
@@ -20,12 +19,12 @@
   "metrics": {
     "sections_present": 8,
     "sections_missing": [],
-    "open_questions_total": 13,
+    "open_questions_total": 18,
     "open_questions_by_class": {
       "research-able": 1,
-      "testable": 2,
-      "decision-required": 10,
-      "out-of-scope": 0
+      "testable": 3,
+      "decision-required": 13,
+      "out-of-scope": 1
     },
     "open_questions_unclassified": 0,
     "tbd_total": 0,
@@ -33,9 +32,11 @@
     "has_source_inventory": true,
     "has_promise_map": true,
     "registry_status": "draft",
-    "file": ".aioson/briefings/clave/briefings.md",
+    "file": ".aioson/briefings/pauta-revelavel/briefings.md",
     "lineage": {
-      "applicable": false
+      "sources_total": 4,
+      "promises_total": 17,
+      "lifecycle_stage": "pre_product"
     },
     "prototype_state": "prototype"
   },

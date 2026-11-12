@@ -6,6 +6,7 @@
   "mode": "advisory",
   "ok": true,
   "blocking": false,
+  "verdict": "pass",
   "issues": [],
   "warnings": [],
   "checks": [
@@ -14,7 +15,7 @@
       "kind": "static",
       "ok": true,
       "files": [
-        ".aioson/briefings/clave/identity.md"
+        "C:\\dev\\playapps\\aioson-crave-2\\.aioson\\briefings\\pauta-revelavel\\identity.md"
       ],
       "missing_files": [],
       "must_match_misses": [],

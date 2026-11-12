@@ -1,24 +1,25 @@
 ---
-last_updated: 2026-08-26
-active_feature: pontos-aninhados
-active_phase: 10
-next_step: "Planos A e B concluídos e verificados"
+last_updated: 2026-11-12
+active_feature: transparencia-da-folha
+next_step: "concluído"
 status: in_progress
 ---
 
 # Dev State
 
-**Feature:** pontos-aninhados
+**Feature:** transparencia-da-folha
 **Status:** in_progress
-**Next step:** Planos A e B concluídos e verificados
+**Next step:** concluído
 
 ## Context package
 
 1. project.context.md
-2. simple-plans/pontos-aninhados.md
+2. simple-plans/transparencia-da-folha.md
 
 ## History
 
-- 2026-08-25: phase 10 — Converter a concha de BlockDrawer para .modal-fundo + .modal.modal-editor
-- 2026-08-26: phase 10 — Plano A concluído. Próximo: migração 4 + Beat.depth + beatRepository
-- 2026-08-26: phase 10 — Planos A e B concluídos e verificados
+- 2026-11-12: phase ? — concluído
+- 2026-11-12: phase ? — tipo + validação do frame; camada do fundo; retângulo no painel
+- 2026-11-12: phase ? — concluído
+- 2026-11-12: phase ? — preferência sheetOpacity ponta a ponta + controle no painel
+- 2026-11-12: phase ? — concluído

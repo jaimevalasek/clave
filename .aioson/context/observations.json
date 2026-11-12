@@ -1,0 +1,146 @@
+{
+  "schema_version": "project-observations/v1",
+  "items": [
+    {
+      "id": "OBS-6f24c9",
+      "kind": "risk",
+      "summary": "pauta-revelavel: with Preparo off, Alt+Down on a sub-item can jump over a hidden topic and land as its child, so the moved block leaves the screen (Desfazer brings it back); consider moving relative to blocks on screen",
+      "detail": null,
+      "paths": [],
+      "feature": null,
+      "origin_feature": "pauta-revelavel",
+      "agent": "dev",
+      "status": "open",
+      "seen": 1,
+      "created_at": "2026-11-11T09:05:50.517Z",
+      "updated_at": "2026-11-11T09:05:50.517Z",
+      "resolution": null,
+      "carried_at": "2026-11-12T01:44:32.422Z"
+    },
+    {
+      "id": "OBS-c27957",
+      "kind": "process",
+      "summary": "pauta-revelavel: ac:test-audit marks AC-pauta-revelavel-47 weak — tests/api/legacyImport.test.ts cites the id only on describe lines far from the expects; cite it on an it() next to an assertion before the final QA (Phase 1 file, outside P…",
+      "detail": null,
+      "paths": [],
+      "feature": "pauta-revelavel",
+      "origin_feature": null,
+      "agent": "dev",
+      "status": "resolved",
+      "seen": 1,
+      "created_at": "2026-11-11T19:06:51.782Z",
+      "updated_at": "2026-11-11T19:31:04.816Z",
+      "resolution": {
+        "as": "fixed",
+        "ref": "pauta-revelavel",
+        "why": "Phase 6: AC-pauta-revelavel-47 now cited on the three it() titles next to their assertions; ac:test-audit --strict PASS",
+        "by": "dev",
+        "at": "2026-11-11T19:31:04.816Z"
+      }
+    },
+    {
+      "id": "OBS-246f13",
+      "kind": "question",
+      "summary": "pauta-revelavel: the approved prototype's list header (#/pautas) has 'Como usar' (opens a rundown, then the tour) and 'Aparência'; the shipped list has neither (AC-08/-46 place them on the ruler only) — decide whether the list needs them",
+      "detail": null,
+      "paths": [
+        "src/features/rundowns/RundownListPage.tsx"
+      ],
+      "feature": null,
+      "origin_feature": "pauta-revelavel",
+      "agent": "dev",
+      "status": "open",
+      "seen": 1,
+      "created_at": "2026-11-11T19:31:05.190Z",
+      "updated_at": "2026-11-11T19:31:05.190Z",
+      "resolution": null,
+      "carried_at": "2026-11-12T01:44:32.422Z"
+    },
+    {
+      "id": "OBS-2292af",
+      "kind": "process",
+      "summary": "pauta-revelavel: workflow:next --complete=dev blocks with '[Harness Block] ... não passou na validação contratual' (progress.json waiting_validation) although harness:check is 4/4 green and verification:plan end-of-feature marks validator …",
+      "detail": null,
+      "paths": [
+        ".aioson/plans/pauta-revelavel/progress.json"
+      ],
+      "feature": null,
+      "origin_feature": "pauta-revelavel",
+      "agent": "dev",
+      "status": "open",
+      "seen": 1,
+      "created_at": "2026-11-11T19:35:21.379Z",
+      "updated_at": "2026-11-11T19:35:21.379Z",
+      "resolution": null,
+      "carried_at": "2026-11-12T01:44:32.422Z"
+    },
+    {
+      "id": "OBS-e8705f",
+      "kind": "risk",
+      "summary": "pauta-revelavel: agent:done visual verify reports precision 86/100 (prototype) -> 64/100 for the whole src: token adherence 57%, 34 spacing values off the 4px grid (3px, 14px, 6px...), unused --shadow-lift and keyframes modal-enter/ink-set…",
+      "detail": null,
+      "paths": [
+        ".aioson/context/verify-artifact-visual.json"
+      ],
+      "feature": null,
+      "origin_feature": "pauta-revelavel",
+      "agent": "dev",
+      "status": "open",
+      "seen": 1,
+      "created_at": "2026-11-11T19:36:15.740Z",
+      "updated_at": "2026-11-11T19:36:15.740Z",
+      "resolution": null,
+      "carried_at": "2026-11-12T01:44:32.422Z"
+    },
+    {
+      "id": "OBS-da8480",
+      "kind": "risk",
+      "summary": "RG-smoke (pnpm playwright test) failed once under harness:check (exit 1, 201s vs 166-180s green) and passed on two re-runs; the failing spec is unknown",
+      "detail": "Validator session 2026-11-11: harness:check #1 at 23:51Z gave RG-smoke exit 1 after 201691 ms with no timeout; a direct pnpm playwright test re-run gave 74 passed (3.0m) and harness:check #2 at 23:59Z gave 4/4 (RG-smoke 166338 ms). The ~35 s extra fits one test hitting the 30 s Playwright timeout. The trace (retain-on-failure) was wiped by the re-run, so the flaky spec is unidentified. Owner: @dev/@tester to look for timing-dependent waits.",
+      "paths": [
+        "playwright.config.ts",
+        "tests/e2e"
+      ],
+      "feature": null,
+      "origin_feature": "pauta-revelavel",
+      "agent": "validator",
+      "status": "open",
+      "seen": 1,
+      "created_at": "2026-11-11T23:59:35.884Z",
+      "updated_at": "2026-11-11T23:59:35.884Z",
+      "resolution": null,
+      "carried_at": "2026-11-12T01:44:32.422Z"
+    },
+    {
+      "id": "OBS-4e7c83",
+      "kind": "process",
+      "summary": "harness:check on Windows loses the tail of a criterion's stdout: RG-smoke output stops at test 52 of 74 even on exit 0, so a failure's Playwright detail and summary never reach last-check-output.json",
+      "detail": "Both harness:check runs (exit 1 and exit 0) stored RG-smoke stdout ending at 'ok 52 … sheet.spec.ts:10:1'; the same command run directly with output redirected to a file prints all 74 lines plus the summary. The failure signature then hashes stderr line 1 ('[WebServer] $ concurrently …'), which does not describe the failure. Suspected cause: async pipe writes not flushed before the child exits under src/sandbox.js executeInSandbox.",
+      "paths": [],
+      "feature": null,
+      "origin_feature": "pauta-revelavel",
+      "agent": "validator",
+      "status": "open",
+      "seen": 1,
+      "created_at": "2026-11-11T23:59:36.197Z",
+      "updated_at": "2026-11-11T23:59:36.197Z",
+      "resolution": null,
+      "carried_at": "2026-11-12T01:44:32.422Z"
+    },
+    {
+      "id": "OBS-f694f3",
+      "kind": "defect",
+      "summary": "aioson update reescreveu .aioson/learnings/INDEX.md para '_No project learnings yet._' apesar de 6 gotchas existirem em .aioson/learnings/gotchas/",
+      "detail": null,
+      "paths": [],
+      "feature": null,
+      "origin_feature": null,
+      "agent": null,
+      "status": "open",
+      "seen": 1,
+      "created_at": "2026-11-12T04:56:54.615Z",
+      "updated_at": "2026-11-12T04:56:54.615Z",
+      "resolution": null
+    }
+  ]
+}

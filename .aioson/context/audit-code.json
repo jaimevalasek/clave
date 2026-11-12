@@ -1,0 +1,1361 @@
+{
+  "generator": "aioson audit:code@1.0.0",
+  "root": "C:\\dev\\playapps\\aioson-crave-2",
+  "scanned_files": 114,
+  "categories": [
+    "TODO",
+    "ANTI_PATTERN",
+    "DEAD_CODE",
+    "DUPLICATION"
+  ],
+  "scope": "changed",
+  "total": 167,
+  "by_severity": {
+    "HIGH": 0,
+    "MED": 14,
+    "LOW": 153
+  },
+  "by_category": {
+    "TODO": 14,
+    "DUPLICATION": 153
+  },
+  "ok": true,
+  "findings": [
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/prototype.html",
+      "line": 96,
+      "snippet": ".texto:empty::before{content:attr(data-placeholder);color:var(--fumaca);font-family:var(--f-voz);font-style:italic;font-"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/prototype.html",
+      "line": 663,
+      "snippet": "if (b.tipo === 'texto') return `<div class=\"texto t-${b.tam || 'm'}\" style=\"--fs:${pxDe(b)}px\" contenteditable=\"true\" sp"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 311,
+      "snippet": "<textarea data-role=\"f-rationale\" rows=\"3\" maxlength=\"2000\" placeholder=\"Por que esta escolha combina com o projeto?\"></"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 355,
+      "snippet": "<label class=\"section-note\"><span>Notas</span><textarea data-role=\"note\" rows=\"3\" placeholder=\"Nota em texto puro para e"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 379,
+      "snippet": "<label class=\"section-note\"><span>Notas</span><textarea data-role=\"note\" rows=\"3\" placeholder=\"Nota em texto puro para e"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 427,
+      "snippet": "<label class=\"section-note\"><span>Notas</span><textarea data-role=\"note\" rows=\"3\" placeholder=\"Nota em texto puro para e"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 448,
+      "snippet": "<label class=\"section-note\"><span>Notas</span><textarea data-role=\"note\" rows=\"3\" placeholder=\"Nota em texto puro para e"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 473,
+      "snippet": "<label class=\"section-note\"><span>Notas</span><textarea data-role=\"note\" rows=\"3\" placeholder=\"Nota em texto puro para e"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 502,
+      "snippet": "<label class=\"section-note\"><span>Notas</span><textarea data-role=\"note\" rows=\"3\" placeholder=\"Nota em texto puro para e"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 551,
+      "snippet": "<label class=\"section-note\"><span>Notas</span><textarea data-role=\"note\" rows=\"3\" placeholder=\"Nota em texto puro para e"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 585,
+      "snippet": "<label class=\"section-note\"><span>Notas</span><textarea data-role=\"note\" rows=\"3\" placeholder=\"Nota em texto puro para e"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 600,
+      "snippet": "<label class=\"section-note\"><span>Notas</span><textarea data-role=\"note\" rows=\"3\" placeholder=\"Nota em texto puro para e"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": "src/features/sheet/sheet.css",
+      "line": 354,
+      "snippet": "content: attr(data-placeholder);"
+    },
+    {
+      "category": "TODO",
+      "severity": "MED",
+      "message": "TODO/FIXME/placeholder/not-implemented residual",
+      "file": "src/features/sheet/TextBlockEditor.tsx",
+      "line": 117,
+      "snippet": "data-placeholder={COPY.sheet.textPlaceholder}"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \" aria-hidden=\" repeated 11x across 6 files (extract a constant)",
+      "file": ".aioson/briefings/pauta-revelavel/prototype.html",
+      "line": 298,
+      "snippet": ".aioson/briefings/pauta-revelavel/prototype.html:298, .aioson/briefings/pauta-revelavel/prototype.html:657, .aioson/briefings/pauta-revelavel/prototype.html:657, src/features/sheet/FormatBar.tsx:113"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"currentColor\" repeated 28x across 2 files (extract a constant)",
+      "file": ".aioson/briefings/pauta-revelavel/prototype.html",
+      "line": 314,
+      "snippet": ".aioson/briefings/pauta-revelavel/prototype.html:314, .aioson/briefings/pauta-revelavel/prototype.html:315, .aioson/briefings/pauta-revelavel/prototype.html:316, .aioson/briefings/pauta-revelavel/prototype.html:317"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \" data-state=\" repeated 8x across 3 files (extract a constant)",
+      "file": ".aioson/briefings/pauta-revelavel/prototype.html",
+      "line": 579,
+      "snippet": ".aioson/briefings/pauta-revelavel/prototype.html:579, .aioson/briefings/pauta-revelavel/prototype.html:619, .aioson/briefings/pauta-revelavel/prototype.html:621, .aioson/briefings/pauta-revelavel/prototype.html:664"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \" spellcheck=\" repeated 10x across 2 files (extract a constant)",
+      "file": ".aioson/briefings/pauta-revelavel/prototype.html",
+      "line": 663,
+      "snippet": ".aioson/briefings/pauta-revelavel/prototype.html:663, .aioson/briefings/pauta-revelavel/review.html:339, .aioson/briefings/pauta-revelavel/review.html:369, .aioson/briefings/pauta-revelavel/review.html:393"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"selectionchange\" repeated 3x across 2 files (extract a constant)",
+      "file": ".aioson/briefings/pauta-revelavel/prototype.html",
+      "line": 811,
+      "snippet": ".aioson/briefings/pauta-revelavel/prototype.html:811, src/features/sheet/FormatBar.tsx:46, src/features/sheet/FormatBar.tsx:50"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"insertLineBreak\" repeated 5x across 3 files (extract a constant)",
+      "file": ".aioson/briefings/pauta-revelavel/prototype.html",
+      "line": 1177,
+      "snippet": ".aioson/briefings/pauta-revelavel/prototype.html:1177, .aioson/briefings/pauta-revelavel/prototype.html:1224, src/features/sheet/TextBlockEditor.tsx:63, src/features/sheet/TextBlockEditor.tsx:121"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"clipboardData\" repeated 4x across 2 files (extract a constant)",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 346,
+      "snippet": ".aioson/briefings/pauta-revelavel/review.html:346, .aioson/briefings/pauta-revelavel/review.html:633, .aioson/briefings/pauta-revelavel/review.html:633, tests/e2e/media.spec.ts:99"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"aria-pressed\" repeated 3x across 2 files (extract a constant)",
+      "file": ".aioson/briefings/pauta-revelavel/review.html",
+      "line": 1053,
+      "snippet": ".aioson/briefings/pauta-revelavel/review.html:1053, .aioson/briefings/pauta-revelavel/review.html:1059, tests/e2e/reveal.spec.ts:240"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \" }, { text: \" repeated 10x across 6 files (extract a constant)",
+      "file": "scripts/smoke-boot.mjs",
+      "line": 78,
+      "snippet": "scripts/smoke-boot.mjs:78, tests/api/rundowns.test.ts:120, tests/api/sheet.test.ts:47, tests/api/sheet.test.ts:74"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \", bold: true, color: \" repeated 6x across 4 files (extract a constant)",
+      "file": "scripts/smoke-boot.mjs",
+      "line": 78,
+      "snippet": "scripts/smoke-boot.mjs:78, tests/api/rundowns.test.ts:120, tests/e2e/formatting.spec.ts:166, tests/unit/textMarks.test.ts:79"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../../shared/blockSize.js\" repeated 3x across 2 files (extract a constant)",
+      "file": "server/src/db/legacySheetImport.ts",
+      "line": 3,
+      "snippet": "server/src/db/legacySheetImport.ts:3, server/src/db/legacySheetImport.ts:4, server/src/repositories/sheetRepository.ts:3"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../../shared/validation/sheet.js\" repeated 3x across 3 files (extract a constant)",
+      "file": "server/src/db/legacySheetImport.ts",
+      "line": 8,
+      "snippet": "server/src/db/legacySheetImport.ts:8, server/src/repositories/sheetRepository.ts:6, server/src/services/sheetService.ts:4"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"PRAGMA table_info(rundowns)\" repeated 3x across 2 files (extract a constant)",
+      "file": "server/src/db/migrations.ts",
+      "line": 104,
+      "snippet": "server/src/db/migrations.ts:104, server/src/db/migrations.ts:146, tests/api/legacyImport.test.ts:264"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"/api/aioson-play\" repeated 3x across 3 files (extract a constant)",
+      "file": "server/src/http/apiCatalog.ts",
+      "line": 46,
+      "snippet": "server/src/http/apiCatalog.ts:46, tests/api/platform.test.ts:58, tests/e2e/platform.spec.ts:13"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"/api/rundowns\" repeated 16x across 9 files (extract a constant)",
+      "file": "server/src/http/apiCatalog.ts",
+      "line": 53,
+      "snippet": "server/src/http/apiCatalog.ts:53, server/src/http/apiCatalog.ts:60, src/App.tsx:38, src/features/rundowns/RundownListPage.tsx:26"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"x-clave-filename\" repeated 7x across 6 files (extract a constant)",
+      "file": "server/src/http/apiCatalog.ts",
+      "line": 141,
+      "snippet": "server/src/http/apiCatalog.ts:141, src/core/api.ts:127, tests/api/media.test.ts:39, tests/api/media.test.ts:118"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"/api/preferences\" repeated 13x across 7 files (extract a constant)",
+      "file": "server/src/http/apiCatalog.ts",
+      "line": 158,
+      "snippet": "server/src/http/apiCatalog.ts:158, server/src/http/apiCatalog.ts:165, tests/api/preferences.test.ts:19, tests/api/preferences.test.ts:27"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"validation_failed\" repeated 6x across 5 files (extract a constant)",
+      "file": "server/src/http/errors.ts",
+      "line": 27,
+      "snippet": "server/src/http/errors.ts:27, src/core/api.ts:21, tests/api/preferences.test.ts:59, tests/api/rundowns.test.ts:56"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../db/database.js\" repeated 8x across 8 files (extract a constant)",
+      "file": "server/src/repositories/preferenceRepository.ts",
+      "line": 1,
+      "snippet": "server/src/repositories/preferenceRepository.ts:1, server/src/repositories/rundownRepository.ts:3, server/src/routes/rundowns.ts:2, server/src/services/preferenceService.ts:1"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../../shared/types.js\" repeated 10x across 7 files (extract a constant)",
+      "file": "server/src/repositories/preferenceRepository.ts",
+      "line": 2,
+      "snippet": "server/src/repositories/preferenceRepository.ts:2, server/src/repositories/preferenceRepository.ts:3, server/src/repositories/rundownRepository.ts:4, server/src/repositories/rundownRepository.ts:5"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../http/errors.js\" repeated 4x across 4 files (extract a constant)",
+      "file": "server/src/services/mediaService.ts",
+      "line": 6,
+      "snippet": "server/src/services/mediaService.ts:6, server/src/services/preferenceService.ts:6, server/src/services/rundownService.ts:3, server/src/services/sheetService.ts:3"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"unsupported_media\" repeated 4x across 4 files (extract a constant)",
+      "file": "server/src/services/mediaService.ts",
+      "line": 91,
+      "snippet": "server/src/services/mediaService.ts:91, tests/api/media.test.ts:95, src/features/appearance/AppearancePanel.tsx:86, src/features/sheet/mediaIntake.ts:68"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"media_too_large\" repeated 5x across 4 files (extract a constant)",
+      "file": "server/src/services/mediaService.ts",
+      "line": 94,
+      "snippet": "server/src/services/mediaService.ts:94, server/src/services/mediaService.ts:110, tests/api/media.test.ts:134, src/features/appearance/AppearancePanel.tsx:85"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"media_signature_mismatch\" repeated 5x across 4 files (extract a constant)",
+      "file": "server/src/services/mediaService.ts",
+      "line": 123,
+      "snippet": "server/src/services/mediaService.ts:123, tests/api/media.test.ts:77, tests/api/media.test.ts:81, src/features/appearance/AppearancePanel.tsx:86"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"./mediaService.js\" repeated 3x across 3 files (extract a constant)",
+      "file": "server/src/services/preferenceService.ts",
+      "line": 9,
+      "snippet": "server/src/services/preferenceService.ts:9, server/src/services/rundownService.ts:8, server/src/services/sheetService.ts:8"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Pauta não encontrada.\" repeated 9x across 2 files (extract a constant)",
+      "file": "server/src/services/rundownService.ts",
+      "line": 27,
+      "snippet": "server/src/services/rundownService.ts:27, server/src/services/rundownService.ts:39, server/src/services/rundownService.ts:50, server/src/services/rundownService.ts:52"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"nothing-revealed\" repeated 4x across 3 files (extract a constant)",
+      "file": "shared/reveal.ts",
+      "line": 62,
+      "snippet": "shared/reveal.ts:62, shared/reveal.ts:119, src/features/sheet/useRevealActions.ts:33, tests/unit/reveal.test.ts:155"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"high-contrast\" repeated 4x across 4 files (extract a constant)",
+      "file": "shared/types.ts",
+      "line": 50,
+      "snippet": "shared/types.ts:50, src/core/vocabulary.ts:241, tests/api/preferences.test.ts:67, src/features/appearance/themes.ts:126"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Dê um nome à pauta, por exemplo \" repeated 4x across 4 files (extract a constant)",
+      "file": "shared/validation/rundown.ts",
+      "line": 9,
+      "snippet": "shared/validation/rundown.ts:9, src/core/vocabulary.ts:117, tests/api/rundowns.test.ts:59, tests/e2e/rundowns.spec.ts:57"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \", mediaName: \" repeated 18x across 3 files (extract a constant)",
+      "file": "shared/validation/sheet.ts",
+      "line": 59,
+      "snippet": "shared/validation/sheet.ts:59, tests/api/legacyImport.test.ts:144, tests/api/legacyImport.test.ts:145, tests/api/legacyImport.test.ts:146"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \" } | { phase: \" repeated 3x across 2 files (extract a constant)",
+      "file": "src/App.tsx",
+      "line": 16,
+      "snippet": "src/App.tsx:16, src/App.tsx:16, src/features/appearance/AppearancePanel.tsx:82"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"application/octet-stream\" repeated 7x across 5 files (extract a constant)",
+      "file": "src/core/api.ts",
+      "line": 126,
+      "snippet": "src/core/api.ts:126, tests/api/media.test.ts:38, tests/api/media.test.ts:102, tests/api/media.test.ts:117"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Renomear pauta\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 82,
+      "snippet": "src/core/vocabulary.ts:82, tests/e2e/rundowns.spec.ts:73, .aioson/briefings/pauta-revelavel/prototype.html:1145"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Nome da pauta\" repeated 11x across 5 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 85,
+      "snippet": "src/core/vocabulary.ts:85, src/core/vocabulary.ts:98, tests/e2e/helpers.ts:13, tests/e2e/helpers.ts:16"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Cópia criada. Ela começa do zero: tudo como planej\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 87,
+      "snippet": "src/core/vocabulary.ts:87, tests/e2e/rundowns.spec.ts:93, .aioson/briefings/pauta-revelavel/prototype.html:1146"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Apagar pauta?\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 88,
+      "snippet": "src/core/vocabulary.ts:88, tests/e2e/rundowns.spec.ts:117, .aioson/briefings/pauta-revelavel/prototype.html:1147"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Pauta apagada.\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 92,
+      "snippet": "src/core/vocabulary.ts:92, tests/e2e/rundowns.spec.ts:136, .aioson/briefings/pauta-revelavel/prototype.html:1147"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Voltar para as pautas\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 97,
+      "snippet": "src/core/vocabulary.ts:97, tests/e2e/reveal.spec.ts:149, tests/e2e/sheet.spec.ts:116"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Folha em branco.\" repeated 4x across 4 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 107,
+      "snippet": "src/core/vocabulary.ts:107, tests/e2e/rundowns.spec.ts:64, tests/e2e/sheet.spec.ts:14, tests/e2e/tour.spec.ts:211"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Apagar bloco\" repeated 7x across 4 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 120,
+      "snippet": "src/core/vocabulary.ts:120, src/core/vocabulary.ts:131, .aioson/briefings/pauta-revelavel/prototype.html:1049, tests/e2e/organize.spec.ts:170"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Apagar bloco?\" repeated 5x across 5 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 128,
+      "snippet": "src/core/vocabulary.ts:128, .aioson/briefings/pauta-revelavel/prototype.html:1049, tests/e2e/media.spec.ts:247, tests/e2e/organize.spec.ts:173"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Ocultar último\" repeated 5x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 135,
+      "snippet": "src/core/vocabulary.ts:135, tests/e2e/reveal.spec.ts:57, tests/e2e/reveal.spec.ts:99, tests/e2e/reveal.spec.ts:106"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Revelar próximo\" repeated 5x across 4 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 137,
+      "snippet": "src/core/vocabulary.ts:137, tests/e2e/appearance.spec.ts:100, tests/e2e/reveal.spec.ts:57, tests/e2e/reveal.spec.ts:65"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"A pauta está vazia. Cole ou escreva o primeiro blo\" repeated 4x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 142,
+      "snippet": "src/core/vocabulary.ts:142, .aioson/briefings/pauta-revelavel/prototype.html:459, .aioson/briefings/pauta-revelavel/prototype.html:898, tests/e2e/reveal.spec.ts:91"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Nada foi revelado nesta tomada ainda.\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 144,
+      "snippet": "src/core/vocabulary.ts:144, .aioson/briefings/pauta-revelavel/prototype.html:907, tests/e2e/reveal.spec.ts:111"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Ocultar este bloco\" repeated 4x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 147,
+      "snippet": "src/core/vocabulary.ts:147, .aioson/briefings/pauta-revelavel/prototype.html:651, tests/e2e/reveal.spec.ts:143, tests/e2e/reveal.spec.ts:153"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Preparo ligado: os ocultos aparecem esmaecidos só \" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 153,
+      "snippet": "src/core/vocabulary.ts:153, .aioson/briefings/pauta-revelavel/prototype.html:929, tests/e2e/reveal.spec.ts:238"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Preparo desligado. A tela está pronta para gravar.\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 154,
+      "snippet": "src/core/vocabulary.ts:154, .aioson/briefings/pauta-revelavel/prototype.html:929, tests/e2e/reveal.spec.ts:271"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"começa oculto\" repeated 4x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 158,
+      "snippet": "src/core/vocabulary.ts:158, .aioson/briefings/pauta-revelavel/prototype.html:649, tests/e2e/reveal.spec.ts:251, tests/e2e/reveal.spec.ts:267"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"começa visível\" repeated 4x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 159,
+      "snippet": "src/core/vocabulary.ts:159, .aioson/briefings/pauta-revelavel/prototype.html:649, tests/e2e/reveal.spec.ts:250, tests/e2e/reveal.spec.ts:255"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Começar uma nova tomada?\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 167,
+      "snippet": "src/core/vocabulary.ts:167, .aioson/briefings/pauta-revelavel/prototype.html:935, tests/e2e/reveal.spec.ts:330"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Arquivo não encontrado\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 178,
+      "snippet": "src/core/vocabulary.ts:178, .aioson/briefings/pauta-revelavel/prototype.html:667, tests/e2e/media.spec.ts:384"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Procurar o arquivo\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 181,
+      "snippet": "src/core/vocabulary.ts:181, tests/e2e/media.spec.ts:386, tests/e2e/media.spec.ts:391"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Formato não suportado\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 182,
+      "snippet": "src/core/vocabulary.ts:182, .aioson/briefings/pauta-revelavel/prototype.html:668, tests/e2e/media.spec.ts:202"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Arquivo grande demais\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 184,
+      "snippet": "src/core/vocabulary.ts:184, .aioson/briefings/pauta-revelavel/prototype.html:669, tests/e2e/media.spec.ts:204"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Não deu para gravar a mídia\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 186,
+      "snippet": "src/core/vocabulary.ts:186, .aioson/briefings/pauta-revelavel/prototype.html:670, tests/e2e/media.spec.ts:206"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Remover bloco\" repeated 4x across 2 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 188,
+      "snippet": "src/core/vocabulary.ts:188, tests/e2e/media.spec.ts:208, tests/e2e/media.spec.ts:232, tests/e2e/media.spec.ts:387"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Pausar áudio\" repeated 5x across 2 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 192,
+      "snippet": "src/core/vocabulary.ts:192, tests/e2e/media.spec.ts:267, tests/e2e/media.spec.ts:275, tests/e2e/media.spec.ts:309"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Diminuir tamanho\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 209,
+      "snippet": "src/core/vocabulary.ts:209, tests/e2e/formatting.spec.ts:92, tests/e2e/formatting.spec.ts:212"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Aumentar tamanho\" repeated 4x across 2 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 211,
+      "snippet": "src/core/vocabulary.ts:211, tests/e2e/formatting.spec.ts:75, tests/e2e/formatting.spec.ts:93, tests/e2e/formatting.spec.ts:131"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Formatar trecho\" repeated 6x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 217,
+      "snippet": "src/core/vocabulary.ts:217, .aioson/briefings/pauta-revelavel/prototype.html:778, tests/e2e/formatting.spec.ts:143, tests/e2e/formatting.spec.ts:179"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Tinta & Ouro\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 237,
+      "snippet": "src/core/vocabulary.ts:237, .aioson/briefings/pauta-revelavel/prototype.html:1056, tests/e2e/appearance.spec.ts:53"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Alto contraste\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 241,
+      "snippet": "src/core/vocabulary.ts:241, .aioson/briefings/pauta-revelavel/prototype.html:1060, tests/e2e/appearance.spec.ts:53"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Escolher cor de destaque\" repeated 4x across 2 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 244,
+      "snippet": "src/core/vocabulary.ts:244, tests/e2e/appearance.spec.ts:92, tests/e2e/appearance.spec.ts:98, tests/e2e/appearance.spec.ts:108"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Usar a do tema\" repeated 4x across 2 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 245,
+      "snippet": "src/core/vocabulary.ts:245, tests/e2e/appearance.spec.ts:90, tests/e2e/appearance.spec.ts:102, tests/e2e/appearance.spec.ts:104"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Tipo de fundo\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 250,
+      "snippet": "src/core/vocabulary.ts:250, tests/e2e/appearance.spec.ts:120, tests/e2e/appearance.spec.ts:162"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Trocar imagem\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 256,
+      "snippet": "src/core/vocabulary.ts:256, .aioson/briefings/pauta-revelavel/prototype.html:1095, tests/e2e/appearance.spec.ts:145"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Esta folha é a pauta inteira\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 277,
+      "snippet": "src/core/vocabulary.ts:277, .aioson/briefings/pauta-revelavel/prototype.html:1107, tests/e2e/tour.spec.ts:15"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"PageDown revela, PageUp esconde\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 281,
+      "snippet": "src/core/vocabulary.ts:281, .aioson/briefings/pauta-revelavel/prototype.html:1108, tests/e2e/tour.spec.ts:16"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Cole, escreva e destaque\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 285,
+      "snippet": "src/core/vocabulary.ts:285, .aioson/briefings/pauta-revelavel/prototype.html:1109, tests/e2e/tour.spec.ts:17"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"<span class=\" repeated 5x across 2 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 286,
+      "snippet": "src/core/vocabulary.ts:286, .aioson/briefings/pauta-revelavel/prototype.html:568, .aioson/briefings/pauta-revelavel/prototype.html:602, .aioson/briefings/pauta-revelavel/prototype.html:657"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"F2 liga o preparo\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 289,
+      "snippet": "src/core/vocabulary.ts:289, .aioson/briefings/pauta-revelavel/prototype.html:1110, tests/e2e/tour.spec.ts:18"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"A cara é sua\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 293,
+      "snippet": "src/core/vocabulary.ts:293, .aioson/briefings/pauta-revelavel/prototype.html:1111, tests/e2e/tour.spec.ts:19"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Tentar de novo\" repeated 6x across 4 files (extract a constant)",
+      "file": "src/core/vocabulary.ts",
+      "line": 300,
+      "snippet": "src/core/vocabulary.ts:300, tests/e2e/rundowns.spec.ts:187, tests/e2e/media.spec.ts:185, tests/e2e/media.spec.ts:210"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../ui/icons\" repeated 6x across 6 files (extract a constant)",
+      "file": "src/features/appearance/AppearancePanel.tsx",
+      "line": 5,
+      "snippet": "src/features/appearance/AppearancePanel.tsx:5, src/features/rundowns/RundownRow.tsx:2, src/features/sheet/MediaBlock.tsx:4, src/features/sheet/SheetBlock.tsx:6"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../../shared/media\" repeated 4x across 3 files (extract a constant)",
+      "file": "src/features/appearance/AppearancePanel.tsx",
+      "line": 6,
+      "snippet": "src/features/appearance/AppearancePanel.tsx:6, src/features/sheet/MediaBlock.tsx:6, src/features/sheet/mediaIntake.ts:2, src/features/sheet/mediaIntake.ts:3"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"./applyAppearance\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/features/appearance/AppearancePanel.tsx",
+      "line": 9,
+      "snippet": "src/features/appearance/AppearancePanel.tsx:9, src/features/appearance/appearanceStore.ts:5, src/features/appearance/appearanceStore.ts:6"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"background-image-input\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/features/appearance/AppearancePanel.tsx",
+      "line": 124,
+      "snippet": "src/features/appearance/AppearancePanel.tsx:124, tests/e2e/appearance.spec.ts:138, tests/e2e/appearance.spec.ts:148"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"btn btn-icon\" repeated 8x across 4 files (extract a constant)",
+      "file": "src/features/appearance/AppearancePanel.tsx",
+      "line": 239,
+      "snippet": "src/features/appearance/AppearancePanel.tsx:239, src/features/rundowns/RundownRow.tsx:42, src/features/rundowns/RundownRow.tsx:58, src/features/sheet/SheetPage.tsx:22"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"--margin-line\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/features/appearance/applyAppearance.ts",
+      "line": 31,
+      "snippet": "src/features/appearance/applyAppearance.ts:31, tests/unit/themes.test.ts:63, tests/unit/themes.test.ts:64"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"--color-accent\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/features/appearance/applyAppearance.ts",
+      "line": 51,
+      "snippet": "src/features/appearance/applyAppearance.ts:51, tests/unit/themes.test.ts:62, tests/unit/themes.test.ts:72"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../../shared/textMarks\" repeated 10x across 7 files (extract a constant)",
+      "file": "src/features/appearance/themes.ts",
+      "line": 2,
+      "snippet": "src/features/appearance/themes.ts:2, src/features/sheet/FormatBar.tsx:4, src/features/sheet/TextBlockEditor.tsx:4, src/features/sheet/domText.ts:1"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../core/vocabulary\" repeated 17x across 17 files (extract a constant)",
+      "file": "src/features/guide/TourOverlay.tsx",
+      "line": 3,
+      "snippet": "src/features/guide/TourOverlay.tsx:3, src/features/guide/guideContent.ts:1, src/features/rundowns/RundownForm.tsx:3, src/features/rundowns/RundownListPage.tsx:4"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"[data-aioson-tour=\" repeated 7x across 3 files (extract a constant)",
+      "file": "src/features/guide/TourOverlay.tsx",
+      "line": 23,
+      "snippet": "src/features/guide/TourOverlay.tsx:23, .aioson/briefings/pauta-revelavel/prototype.html:1107, .aioson/briefings/pauta-revelavel/prototype.html:1108, .aioson/briefings/pauta-revelavel/prototype.html:1109"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \" data-testid=\" repeated 22x across 9 files (extract a constant)",
+      "file": "src/features/guide/TourOverlay.tsx",
+      "line": 104,
+      "snippet": "src/features/guide/TourOverlay.tsx:104, src/features/guide/TourOverlay.tsx:120, src/features/rundowns/RundownListPage.tsx:57, src/features/rundowns/RundownListPage.tsx:131"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"tour-spotlight\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/features/guide/TourOverlay.tsx",
+      "line": 105,
+      "snippet": "src/features/guide/TourOverlay.tsx:105, src/features/guide/TourOverlay.tsx:105, tests/e2e/tour.spec.ts:58"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"btn btn-primary\" repeated 4x across 3 files (extract a constant)",
+      "file": "src/features/guide/TourOverlay.tsx",
+      "line": 125,
+      "snippet": "src/features/guide/TourOverlay.tsx:125, src/features/rundowns/RundownListPage.tsx:48, src/features/rundowns/RundownListPage.tsx:60, src/ui/Modal.tsx:27"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../core/api\" repeated 11x across 11 files (extract a constant)",
+      "file": "src/features/rundowns/RundownForm.tsx",
+      "line": 2,
+      "snippet": "src/features/rundowns/RundownForm.tsx:2, src/features/rundowns/RundownListPage.tsx:2, src/features/appearance/AppearancePanel.tsx:3, src/features/appearance/appearanceStore.ts:2"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../ui/ErrorBanner\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/features/rundowns/RundownForm.tsx",
+      "line": 4,
+      "snippet": "src/features/rundowns/RundownForm.tsx:4, src/features/rundowns/RundownListPage.tsx:5, src/features/sheet/SheetPage.tsx:4"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../ui/Modal\" repeated 4x across 4 files (extract a constant)",
+      "file": "src/features/rundowns/RundownForm.tsx",
+      "line": 5,
+      "snippet": "src/features/rundowns/RundownForm.tsx:5, src/features/rundowns/RundownListPage.tsx:7, src/features/sheet/SheetColumn.tsx:8, src/features/sheet/SheetPage.tsx:7"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../core/router\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/features/rundowns/RundownListPage.tsx",
+      "line": 3,
+      "snippet": "src/features/rundowns/RundownListPage.tsx:3, src/features/sheet/SheetPage.tsx:2, src/features/sheet/SheetRuler.tsx:4"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../ui/Toast\" repeated 5x across 5 files (extract a constant)",
+      "file": "src/features/rundowns/RundownListPage.tsx",
+      "line": 8,
+      "snippet": "src/features/rundowns/RundownListPage.tsx:8, src/features/sheet/MediaBlock.tsx:5, src/features/sheet/useBlockActions.ts:3, src/features/sheet/useRevealActions.ts:4"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../../shared/types\" repeated 12x across 10 files (extract a constant)",
+      "file": "src/features/rundowns/RundownListPage.tsx",
+      "line": 11,
+      "snippet": "src/features/rundowns/RundownListPage.tsx:11, src/features/appearance/AppearancePanel.tsx:7, src/features/appearance/AppearancePanel.tsx:8, src/features/appearance/appearanceStore.ts:3"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"./useSheetShortcuts\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/features/sheet/FormatBar.tsx",
+      "line": 8,
+      "snippet": "src/features/sheet/FormatBar.tsx:8, src/features/sheet/SheetPage.tsx:16, src/features/sheet/useSheetInput.ts:10"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"./mediaIntake\" repeated 4x across 4 files (extract a constant)",
+      "file": "src/features/sheet/MediaBlock.tsx",
+      "line": 7,
+      "snippet": "src/features/sheet/MediaBlock.tsx:7, src/features/sheet/SheetPage.tsx:11, src/features/sheet/structureOps.ts:4, src/features/sheet/useSheetInput.ts:6"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"./sheetStore\" repeated 25x across 17 files (extract a constant)",
+      "file": "src/features/sheet/MediaBlock.tsx",
+      "line": 9,
+      "snippet": "src/features/sheet/MediaBlock.tsx:9, src/features/sheet/SheetBlock.tsx:10, src/features/sheet/SheetBlock.tsx:11, src/features/sheet/SheetColumn.tsx:14"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"./structureOps\" repeated 6x across 5 files (extract a constant)",
+      "file": "src/features/sheet/MediaBlock.tsx",
+      "line": 10,
+      "snippet": "src/features/sheet/MediaBlock.tsx:10, src/features/sheet/SheetBlock.tsx:12, src/features/sheet/SheetColumn.tsx:15, src/features/sheet/useBlockActions.ts:8"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"write-failed\" repeated 5x across 3 files (extract a constant)",
+      "file": "src/features/sheet/MediaBlock.tsx",
+      "line": 74,
+      "snippet": "src/features/sheet/MediaBlock.tsx:74, src/features/sheet/mediaIntake.ts:44, src/features/sheet/mediaIntake.ts:66, src/features/sheet/mediaIntake.ts:70"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Control+Enter\" repeated 6x across 2 files (extract a constant)",
+      "file": "src/features/sheet/MediaBlock.tsx",
+      "line": 125,
+      "snippet": "src/features/sheet/MediaBlock.tsx:125, tests/e2e/media.spec.ts:274, tests/e2e/media.spec.ts:276, tests/e2e/media.spec.ts:280"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"@dnd-kit/sortable\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/features/sheet/SheetBlock.tsx",
+      "line": 1,
+      "snippet": "src/features/sheet/SheetBlock.tsx:1, src/features/sheet/SheetColumn.tsx:3, src/features/sheet/SheetColumn.tsx:4"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"block-collapse\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/features/sheet/SheetBlock.tsx",
+      "line": 68,
+      "snippet": "src/features/sheet/SheetBlock.tsx:68, tests/e2e/reveal.spec.ts:290, tests/e2e/reveal.spec.ts:306"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"block-planned\" repeated 7x across 2 files (extract a constant)",
+      "file": "src/features/sheet/SheetBlock.tsx",
+      "line": 80,
+      "snippet": "src/features/sheet/SheetBlock.tsx:80, tests/e2e/reveal.spec.ts:250, tests/e2e/reveal.spec.ts:251, tests/e2e/reveal.spec.ts:254"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"block-handle\" repeated 8x across 2 files (extract a constant)",
+      "file": "src/features/sheet/SheetBlock.tsx",
+      "line": 174,
+      "snippet": "src/features/sheet/SheetBlock.tsx:174, tests/e2e/organize.spec.ts:36, tests/e2e/organize.spec.ts:37, tests/e2e/organize.spec.ts:52"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"block-remove\" repeated 7x across 4 files (extract a constant)",
+      "file": "src/features/sheet/SheetBlock.tsx",
+      "line": 192,
+      "snippet": "src/features/sheet/SheetBlock.tsx:192, tests/e2e/media.spec.ts:235, tests/e2e/media.spec.ts:246, tests/e2e/organize.spec.ts:106"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../../shared/reveal\" repeated 8x across 7 files (extract a constant)",
+      "file": "src/features/sheet/SheetColumn.tsx",
+      "line": 10,
+      "snippet": "src/features/sheet/SheetColumn.tsx:10, src/features/sheet/SheetPage.tsx:8, src/features/sheet/SheetRuler.tsx:9, src/features/sheet/mediaPlayback.ts:2"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../../shared/sheetTree\" repeated 8x across 7 files (extract a constant)",
+      "file": "src/features/sheet/SheetColumn.tsx",
+      "line": 11,
+      "snippet": "src/features/sheet/SheetColumn.tsx:11, src/features/sheet/paste.ts:1, src/features/sheet/pasteOps.ts:3, src/features/sheet/sheetStore.ts:6"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"./useBlockActions\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/features/sheet/SheetColumn.tsx",
+      "line": 16,
+      "snippet": "src/features/sheet/SheetColumn.tsx:16, src/features/sheet/SheetPage.tsx:14, src/features/sheet/useSheetShortcuts.ts:6"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"./useRevealActions\" repeated 4x across 4 files (extract a constant)",
+      "file": "src/features/sheet/SheetColumn.tsx",
+      "line": 17,
+      "snippet": "src/features/sheet/SheetColumn.tsx:17, src/features/sheet/SheetPage.tsx:15, src/features/sheet/SheetRuler.tsx:14, src/features/sheet/useSheetShortcuts.ts:7"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"drop-overlay\" repeated 3x across 2 files (extract a constant)",
+      "file": "src/features/sheet/SheetColumn.tsx",
+      "line": 23,
+      "snippet": "src/features/sheet/SheetColumn.tsx:23, tests/e2e/media.spec.ts:81, tests/e2e/media.spec.ts:86"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"collapsed-note\" repeated 4x across 2 files (extract a constant)",
+      "file": "src/features/sheet/SheetColumn.tsx",
+      "line": 156,
+      "snippet": "src/features/sheet/SheetColumn.tsx:156, tests/e2e/reveal.spec.ts:294, tests/e2e/reveal.spec.ts:303, tests/e2e/reveal.spec.ts:308"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../../shared/blockSize\" repeated 12x across 7 files (extract a constant)",
+      "file": "src/features/sheet/SizeBar.tsx",
+      "line": 3,
+      "snippet": "src/features/sheet/SizeBar.tsx:3, src/features/sheet/SizeBar.tsx:4, src/features/sheet/formatOps.ts:1, src/features/sheet/formatOps.ts:2"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"input, textarea, select\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/features/sheet/useSheetInput.ts",
+      "line": 15,
+      "snippet": "src/features/sheet/useSheetInput.ts:15, src/features/sheet/useSheetShortcuts.ts:20, src/ui/useFocusTrap.ts:14"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"error-banner\" repeated 3x across 3 files (extract a constant)",
+      "file": "src/ui/ErrorBanner.tsx",
+      "line": 23,
+      "snippet": "src/ui/ErrorBanner.tsx:23, tests/e2e/rundowns.spec.ts:185, tests/e2e/sheet.spec.ts:178"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"JetBrains Mono\" repeated 7x across 4 files (extract a constant)",
+      "file": "src/ui/fonts.css",
+      "line": 14,
+      "snippet": "src/ui/fonts.css:14, src/ui/tokens.css:17, tests/e2e/platform.spec.ts:113, .aioson/briefings/pauta-revelavel/prototype.html:16"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \" aria-label=\" repeated 30x across 3 files (extract a constant)",
+      "file": "src/ui/LoadingSkeleton.tsx",
+      "line": 7,
+      "snippet": "src/ui/LoadingSkeleton.tsx:7, .aioson/briefings/pauta-revelavel/prototype.html:569, .aioson/briefings/pauta-revelavel/prototype.html:600, .aioson/briefings/pauta-revelavel/prototype.html:601"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"planilha.xlsx\" repeated 3x across 2 files (extract a constant)",
+      "file": "tests/api/legacyImport.test.ts",
+      "line": 100,
+      "snippet": "tests/api/legacyImport.test.ts:100, tests/e2e/media.spec.ts:194, tests/e2e/media.spec.ts:203"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Desenvolvimento\" repeated 6x across 4 files (extract a constant)",
+      "file": "tests/api/legacyImport.test.ts",
+      "line": 101,
+      "snippet": "tests/api/legacyImport.test.ts:101, tests/e2e/sheet.spec.ts:80, tests/e2e/sheet.spec.ts:85, tests/e2e/tour.spec.ts:238"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../helpers/testServer\" repeated 10x across 5 files (extract a constant)",
+      "file": "tests/api/media.test.ts",
+      "line": 5,
+      "snippet": "tests/api/media.test.ts:5, tests/api/media.test.ts:6, tests/api/platform.test.ts:4, tests/api/platform.test.ts:5"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"${server.url}/api/media\" repeated 4x across 2 files (extract a constant)",
+      "file": "tests/api/media.test.ts",
+      "line": 35,
+      "snippet": "tests/api/media.test.ts:35, tests/api/media.test.ts:100, tests/api/media.test.ts:113, tests/helpers/sheetFixtures.ts:69"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"manifest.json\" repeated 4x across 2 files (extract a constant)",
+      "file": "tests/api/platform.test.ts",
+      "line": 9,
+      "snippet": "tests/api/platform.test.ts:9, .aioson/briefings/pauta-revelavel/review.html:350, .aioson/briefings/pauta-revelavel/review.html:633, .aioson/briefings/pauta-revelavel/review.html:633"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"GET /api/aioson-play\" repeated 4x across 2 files (extract a constant)",
+      "file": "tests/api/platform.test.ts",
+      "line": 83,
+      "snippet": "tests/api/platform.test.ts:83, .aioson/briefings/pauta-revelavel/review.html:350, .aioson/briefings/pauta-revelavel/review.html:633, .aioson/briefings/pauta-revelavel/review.html:633"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../helpers/sheetFixtures\" repeated 16x across 13 files (extract a constant)",
+      "file": "tests/api/preferences.test.ts",
+      "line": 3,
+      "snippet": "tests/api/preferences.test.ts:3, tests/api/rundowns.test.ts:6, tests/api/rundowns.test.ts:7, tests/e2e/helpers.ts:5"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../shared/types\" repeated 7x across 7 files (extract a constant)",
+      "file": "tests/api/preferences.test.ts",
+      "line": 6,
+      "snippet": "tests/api/preferences.test.ts:6, tests/api/rundowns.test.ts:8, tests/e2e/helpers.ts:4, tests/api/sheet.test.ts:8"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"/api/rundowns/${rundownId}/sheet\" repeated 5x across 3 files (extract a constant)",
+      "file": "tests/api/rundowns.test.ts",
+      "line": 35,
+      "snippet": "tests/api/rundowns.test.ts:35, tests/e2e/helpers.ts:48, tests/e2e/helpers.ts:79, tests/api/sheet.test.ts:28"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Episódio 12: filas\" repeated 4x across 3 files (extract a constant)",
+      "file": "tests/api/rundowns.test.ts",
+      "line": 70,
+      "snippet": "tests/api/rundowns.test.ts:70, tests/api/rundowns.test.ts:73, tests/e2e/rundowns.spec.ts:61, .aioson/briefings/pauta-revelavel/prototype.html:532"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \", accent: null, background: { kind: \" repeated 4x across 2 files (extract a constant)",
+      "file": "tests/e2e/appearance.spec.ts",
+      "line": 14,
+      "snippet": "tests/e2e/appearance.spec.ts:14, tests/unit/themes.test.ts:58, tests/unit/themes.test.ts:64, tests/unit/themes.test.ts:75"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \").getByRole(\" repeated 8x across 3 files (extract a constant)",
+      "file": "tests/e2e/appearance.spec.ts",
+      "line": 45,
+      "snippet": "tests/e2e/appearance.spec.ts:45, tests/e2e/reveal.spec.ts:106, tests/e2e/reveal.spec.ts:239, tests/e2e/reveal.spec.ts:269"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \")).toHaveAttribute(\" repeated 12x across 4 files (extract a constant)",
+      "file": "tests/e2e/appearance.spec.ts",
+      "line": 46,
+      "snippet": "tests/e2e/appearance.spec.ts:46, tests/e2e/appearance.spec.ts:59, tests/e2e/appearance.spec.ts:74, tests/e2e/appearance.spec.ts:78"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \" }).getByRole(\" repeated 3x across 2 files (extract a constant)",
+      "file": "tests/e2e/appearance.spec.ts",
+      "line": 51,
+      "snippet": "tests/e2e/appearance.spec.ts:51, tests/e2e/appearance.spec.ts:130, tests/e2e/organize.spec.ts:125"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \")).toHaveCSS(\" repeated 7x across 4 files (extract a constant)",
+      "file": "tests/e2e/appearance.spec.ts",
+      "line": 60,
+      "snippet": "tests/e2e/appearance.spec.ts:60, tests/e2e/appearance.spec.ts:126, tests/e2e/appearance.spec.ts:133, tests/e2e/appearance.spec.ts:142"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \")).toHaveText([\" repeated 4x across 2 files (extract a constant)",
+      "file": "tests/e2e/appearance.spec.ts",
+      "line": 121,
+      "snippet": "tests/e2e/appearance.spec.ts:121, tests/e2e/formatting.spec.ts:42, tests/e2e/formatting.spec.ts:174, tests/e2e/formatting.spec.ts:176"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \", mimeType: \" repeated 3x across 2 files (extract a constant)",
+      "file": "tests/e2e/appearance.spec.ts",
+      "line": 138,
+      "snippet": "tests/e2e/appearance.spec.ts:138, tests/e2e/appearance.spec.ts:148, tests/e2e/media.spec.ts:392"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \")).toHaveText(\" repeated 15x across 5 files (extract a constant)",
+      "file": "tests/e2e/appearance.spec.ts",
+      "line": 149,
+      "snippet": "tests/e2e/appearance.spec.ts:149, tests/e2e/formatting.spec.ts:94, tests/e2e/formatting.spec.ts:97, tests/e2e/formatting.spec.ts:110"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"@playwright/test\" repeated 12x across 10 files (extract a constant)",
+      "file": "tests/e2e/fixtures.ts",
+      "line": 1,
+      "snippet": "tests/e2e/fixtures.ts:1, tests/e2e/fixtures.ts:20, tests/e2e/helpers.ts:1, tests/e2e/helpers.ts:2"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \").filter({ hasText: \" repeated 11x across 5 files (extract a constant)",
+      "file": "tests/e2e/formatting.spec.ts",
+      "line": 115,
+      "snippet": "tests/e2e/formatting.spec.ts:115, tests/e2e/media.spec.ts:216, tests/e2e/media.spec.ts:293, tests/e2e/organize.spec.ts:48"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Hoje vamos falar de filas\" repeated 4x across 2 files (extract a constant)",
+      "file": "tests/e2e/formatting.spec.ts",
+      "line": 140,
+      "snippet": "tests/e2e/formatting.spec.ts:140, tests/e2e/formatting.spec.ts:162, tests/e2e/formatting.spec.ts:181, tests/unit/textMarks.test.ts:64"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"../../shared/reveal\" repeated 3x across 2 files (extract a constant)",
+      "file": "tests/e2e/helpers.ts",
+      "line": 3,
+      "snippet": "tests/e2e/helpers.ts:3, tests/unit/reveal.test.ts:12, tests/unit/reveal.test.ts:13"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"sheet-continue\" repeated 8x across 5 files (extract a constant)",
+      "file": "tests/e2e/helpers.ts",
+      "line": 37,
+      "snippet": "tests/e2e/helpers.ts:37, src/features/sheet/SheetColumn.tsx:272, tests/e2e/media.spec.ts:82, tests/e2e/media.spec.ts:218"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"[data-testid=\" repeated 8x across 5 files (extract a constant)",
+      "file": "tests/e2e/helpers.ts",
+      "line": 110,
+      "snippet": "tests/e2e/helpers.ts:110, src/features/sheet/useRevealActions.ts:37, src/features/sheet/useSheetShortcuts.ts:9, src/features/sheet/useSheetShortcuts.ts:10"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \", shown), textDraft(\" repeated 6x across 3 files (extract a constant)",
+      "file": "tests/e2e/media.spec.ts",
+      "line": 167,
+      "snippet": "tests/e2e/media.spec.ts:167, tests/e2e/organize.spec.ts:72, tests/e2e/organize.spec.ts:72, tests/e2e/organize.spec.ts:138"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \")).toContainText(\" repeated 5x across 2 files (extract a constant)",
+      "file": "tests/e2e/media.spec.ts",
+      "line": 263,
+      "snippet": "tests/e2e/media.spec.ts:263, tests/e2e/media.spec.ts:354, tests/e2e/media.spec.ts:394, tests/e2e/tour.spec.ts:142"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \", { ...shown, depth: 1, size: \" repeated 7x across 2 files (extract a constant)",
+      "file": "tests/e2e/paste.spec.ts",
+      "line": 40,
+      "snippet": "tests/e2e/paste.spec.ts:40, tests/e2e/subitems.spec.ts:67, tests/e2e/subitems.spec.ts:128, tests/e2e/subitems.spec.ts:159"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"block-bullet\" repeated 7x across 2 files (extract a constant)",
+      "file": "tests/e2e/paste.spec.ts",
+      "line": 107,
+      "snippet": "tests/e2e/paste.spec.ts:107, tests/e2e/paste.spec.ts:108, tests/e2e/subitems.spec.ts:132, tests/e2e/subitems.spec.ts:134"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"sheet-column\" repeated 8x across 7 files (extract a constant)",
+      "file": "tests/e2e/platform.spec.ts",
+      "line": 56,
+      "snippet": "tests/e2e/platform.spec.ts:56, src/features/sheet/SheetColumn.tsx:252, src/features/sheet/SheetPage.tsx:95, tests/e2e/appearance.spec.ts:152"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"/#/rundown/${id}\" repeated 3x across 3 files (extract a constant)",
+      "file": "tests/e2e/platform.spec.ts",
+      "line": 81,
+      "snippet": "tests/e2e/platform.spec.ts:81, tests/e2e/reveal.spec.ts:379, tests/e2e/tour.spec.ts:45"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Pergunta ao chat\" repeated 3x across 3 files (extract a constant)",
+      "file": "tests/e2e/reveal.spec.ts",
+      "line": 28,
+      "snippet": "tests/e2e/reveal.spec.ts:28, tests/e2e/tour.spec.ts:41, tests/unit/paste.test.ts:55"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"Outro tópico\" repeated 5x across 2 files (extract a constant)",
+      "file": "tests/e2e/reveal.spec.ts",
+      "line": 138,
+      "snippet": "tests/e2e/reveal.spec.ts:138, tests/e2e/reveal.spec.ts:144, tests/e2e/reveal.spec.ts:160, tests/e2e/reveal.spec.ts:166"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"preparation-strip\" repeated 4x across 2 files (extract a constant)",
+      "file": "tests/e2e/reveal.spec.ts",
+      "line": 187,
+      "snippet": "tests/e2e/reveal.spec.ts:187, tests/e2e/reveal.spec.ts:189, tests/e2e/reveal.spec.ts:235, tests/e2e/tour.spec.ts:185"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"**/api/rundowns/*/sheet\" repeated 6x across 2 files (extract a constant)",
+      "file": "tests/e2e/reveal.spec.ts",
+      "line": 421,
+      "snippet": "tests/e2e/reveal.spec.ts:421, tests/e2e/reveal.spec.ts:434, tests/e2e/sheet.spec.ts:95, tests/e2e/sheet.spec.ts:103"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"sheet-counter\" repeated 13x across 6 files (extract a constant)",
+      "file": "tests/e2e/rundowns.spec.ts",
+      "line": 100,
+      "snippet": "tests/e2e/rundowns.spec.ts:100, tests/e2e/media.spec.ts:144, tests/e2e/media.spec.ts:148, tests/e2e/media.spec.ts:212"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \", { level: 1, name: \" repeated 5x across 3 files (extract a constant)",
+      "file": "tests/e2e/rundowns.spec.ts",
+      "line": 180,
+      "snippet": "tests/e2e/rundowns.spec.ts:180, tests/e2e/vocabulary.spec.ts:32, tests/e2e/vocabulary.spec.ts:43, tests/e2e/sheet.spec.ts:149"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \"linha 1\\nlinha 2\" repeated 3x across 2 files (extract a constant)",
+      "file": "tests/e2e/sheet.spec.ts",
+      "line": 63,
+      "snippet": "tests/e2e/sheet.spec.ts:63, tests/e2e/sheet.spec.ts:70, tests/unit/paste.test.ts:44"
+    },
+    {
+      "category": "DUPLICATION",
+      "severity": "LOW",
+      "message": "literal \").getByLabel(\" repeated 3x across 2 files (extract a constant)",
+      "file": "tests/e2e/sheet.spec.ts",
+      "line": 110,
+      "snippet": "tests/e2e/sheet.spec.ts:110, tests/e2e/sheet.spec.ts:114, tests/e2e/tour.spec.ts:254"
+    }
+  ]
+}

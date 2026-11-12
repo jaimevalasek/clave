@@ -1,11 +1,12 @@
 {
   "generator": "aioson verify:artifact@1.0.0",
   "kind": "sources",
-  "slug": "clave",
+  "slug": "pauta-revelavel",
   "root": "C:\\dev\\playapps\\aioson-crave-2",
   "mode": "blocking",
   "ok": true,
   "blocking": false,
+  "verdict": "pass",
   "issues": [],
   "warnings": [],
   "checks": [
@@ -17,14 +18,17 @@
   ],
   "metrics": {
     "applicable": true,
-    "sources_total": 1,
-    "sources_present": 1,
+    "sources_total": 4,
+    "sources_present": 4,
     "sources_missing": 0,
-    "promises_total": 14,
-    "promises_required": 13,
-    "coverage_rows": 14,
-    "lifecycle_stage": "post_prd_absorbed",
-    "absorbed": true
+    "promises_total": 17,
+    "promises_required": 17,
+    "promises_research_unpinned": 0,
+    "coverage_rows": 17,
+    "coverage_checked": true,
+    "lifecycle_stage": "pre_product",
+    "absorbed": false,
+    "approval_drift": false
   },
   "exitCode": 0
 }
